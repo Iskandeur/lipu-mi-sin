@@ -1,0 +1,54 @@
+baseURL = 'https://alexandre-pinoteau.fr/'
+languageCode = 'en-us'
+title = 'Alexandre Pinoteau'
+theme = 'PaperMod'
+
+[params]
+  defaultTheme = "auto"
+  ShowShareButtons = true
+  ShowReadingTime = true
+  displayFullLang = true
+  
+  [params.profileMode]
+    enabled = true
+    title = "Alexandre Pinoteau"
+    subtitle = "IT Professional"
+    imageUrl = "https://github.com/alexandre-pinoteau.png" # Placeholder if they have a GitHub profile
+    imageTitle = "Alexandre Pinoteau"
+    
+    [[params.profileMode.buttons]]
+      name = "CV"
+      url = "/cv"
+    
+    [[params.profileMode.buttons]]
+      name = "Projects"
+      url = "/projects"
+      
+    [[params.profileMode.buttons]]
+      name = "Blog"
+      url = "/posts"
+
+  [params.socialIcons]
+    [[params.socialIcons]]
+      name = "github"
+      url = "https://github.com/" # User to fill
+    [[params.socialIcons]]
+        name = "linkedin"
+        url = "https://linkedin.com/" # User to fill
+
+[menu]
+  [[menu.main]]
+    identifier = "cv"
+    name = "CV"
+    url = "/cv"
+    weight = 10
+  [[menu.main]]
+    identifier = "projects"
+    name = "Projects"
+    url = "/projects"
+    weight = 20
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/posts"
+    weight = 30
