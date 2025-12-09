@@ -13,7 +13,7 @@ theme = 'PaperMod'
     enabled = true
     title = "Alexandre Pinoteau"
     subtitle = "IT Professional"
-    imageUrl = "https://github.com/alexandre-pinoteau.png" # Placeholder if they have a GitHub profile
+    imageUrl = "https://github.com/Iskandeur.png" # Placeholder if they have a GitHub profile
     imageTitle = "Alexandre Pinoteau"
     
     [[params.profileMode.buttons]]
@@ -30,10 +30,10 @@ theme = 'PaperMod'
 
     [[params.socialIcons]]
       name = "github"
-      url = "https://github.com/" # User to fill
+      url = "https://github.com/Iskandeur"
     [[params.socialIcons]]
         name = "linkedin"
-        url = "https://linkedin.com/" # User to fill
+        url = "https://www.linkedin.com/in/p1n0t34u/"
 
 [menu]
   [[menu.main]]
