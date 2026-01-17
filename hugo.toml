@@ -12,14 +12,11 @@ theme = 'PaperMod'
   [params.profileMode]
     enabled = true
     title = "Alexandre Pinoteau"
-    subtitle = "IT Professional"
+    subtitle = "A curious"
     imageUrl = "https://github.com/Iskandeur.png" # Placeholder if they have a GitHub profile
     imageTitle = "Alexandre Pinoteau"
     
-    [[params.profileMode.buttons]]
-      name = "CV"
-      url = "/cv"
-    
+
     [[params.profileMode.buttons]]
       name = "Projects"
       url = "/projects"
@@ -36,11 +33,7 @@ theme = 'PaperMod'
         url = "https://www.linkedin.com/in/p1n0t34u/"
 
 [menu]
-  [[menu.main]]
-    identifier = "cv"
-    name = "CV"
-    url = "/cv"
-    weight = 10
+
   [[menu.main]]
     identifier = "projects"
     name = "Projects"
