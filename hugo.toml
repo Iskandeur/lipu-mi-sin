@@ -21,9 +21,9 @@ theme = 'PaperMod'
       name = "Projects"
       url = "/projects"
       
-    [[params.profileMode.buttons]]
-      name = "Blog"
-      url = "/posts"
+    # [[params.profileMode.buttons]]
+    #   name = "Blog"
+    #   url = "/posts"
 
     [[params.socialIcons]]
       name = "github"
@@ -39,8 +39,8 @@ theme = 'PaperMod'
     name = "Projects"
     url = "/projects"
     weight = 20
-  [[menu.main]]
-    identifier = "blog"
-    name = "Blog"
-    url = "/posts"
-    weight = 30
+  # [[menu.main]]
+  #   identifier = "blog"
+  #   name = "Blog"
+  #   url = "/posts"
+  #   weight = 30
