@@ -11,8 +11,8 @@ Here you can find a list of my IT projects.
 
 ### 🔴 Live Services
 
-- **[SOC Platform](https://soc.alexandre-pinoteau.fr/)** — Security Operations Center dashboard
-- **[GRC Platform](https://grc.alexandre-pinoteau.fr/)** — Governance, Risk & Compliance platform
+- **[SOC Platform](https://soc.alexandre-pinoteau.fr/)** — Gamified Detection Engineering training platform for SOC analysts. Built with [detection-engineer-hero](https://github.com/Iskandeur/detection-engineer-hero).
+- **[GRC Platform](https://grc.alexandre-pinoteau.fr/)** — Gamified revision platform for Governance, Risk & Compliance exams.
 
 ---
 
@@ -25,7 +25,7 @@ Here you can find a list of my IT projects.
 ### 🔐 Security & OSINT
 
 - **[cyber-zap-public](https://github.com/Iskandeur/cyber-zap-public)** — AI-powered Cyber Threat Intelligence pipeline using n8n. Aggregates CISA KEV, CERT-FR, and ransomware feeds, then delivers scored alerts via WhatsApp/Telegram.
-- **[detection-engineer-hero](https://github.com/Iskandeur/detection-engineer-hero)** — Gamified Detection Engineering training platform for SOC analysts.
+- **[detection-engineer-hero](https://github.com/Iskandeur/detection-engineer-hero)** — Source code for the [SOC Platform](https://soc.alexandre-pinoteau.fr/). Gamified Detection Engineering training platform for SOC analysts.
 - **[adversarial-llm-poc](https://github.com/Iskandeur/adversarial-llm-poc)** — Research Proof of Concept demonstrating LLM vulnerabilities to improve security postures.
 - **[email-verifier-tool](https://github.com/Iskandeur/email-verifier-tool)** — OSINT utility to validate email existence for security auditing.
 - **[subdomain-utility](https://github.com/Iskandeur/subdomain-utility)** — Enumeration tool for subdomains.
