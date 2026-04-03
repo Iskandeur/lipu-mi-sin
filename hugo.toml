@@ -31,6 +31,9 @@ theme = 'PaperMod'
     [[params.socialIcons]]
         name = "linkedin"
         url = "https://www.linkedin.com/in/p1n0t34u/"
+    [[params.socialIcons]]
+        name = "email"
+        url = "mailto:alexandre.pinoteau@protonmail.com"
 
 [menu]
 
