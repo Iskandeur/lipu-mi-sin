@@ -12,10 +12,10 @@ Here you can find a list of my IT projects.
 ### 🔴 Live Services
 
 - **[Bounce-CTI](https://bounce.alexandre-pinoteau.fr/)** — Autonomous CTI investigation tool. Feed it a domain / IP / file hash, and a Claude Code agent pivots through public sources building a live infrastructure graph in your browser. Built with [bounce-cti](https://github.com/Iskandeur/bounce-cti).
-- **[ilo-sike](https://ilo-sike.alexandre-pinoteau.fr/)** — A user-shaped atlas of countries. Pick how much each thing matters to you (from GDP per capita to cheese variety), and the world re-ranks itself live. Built with [ilo-sike](https://github.com/Iskandeur/ilo-sike).
-- **[ModelGuessr](https://modelguessr.vercel.app/)** — GeoGuessr, for LLMs. Built with [modelguessr](https://github.com/Iskandeur/modelguessr).
 - **[SOC Platform](https://soc.alexandre-pinoteau.fr/)** — Gamified Detection Engineering training platform for SOC analysts. Built with [detection-engineer-hero](https://github.com/Iskandeur/detection-engineer-hero).
 - **[GRC Platform](https://grc.alexandre-pinoteau.fr/)** — Gamified revision platform for Governance, Risk & Compliance exams.
+- **[ModelGuessr](https://modelguessr.vercel.app/)** — GeoGuessr, for LLMs. Built with [modelguessr](https://github.com/Iskandeur/modelguessr).
+- **[ilo-sike](https://ilo-sike.alexandre-pinoteau.fr/)** — A user-shaped atlas of countries. Pick how much each thing matters to you (from GDP per capita to cheese variety), and the world re-ranks itself live. Built with [ilo-sike](https://github.com/Iskandeur/ilo-sike).
 
 ---
 
