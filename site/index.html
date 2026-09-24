@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alexandre Pinoteau · agents that investigate, errors that get measured</title>
+  <meta name="description" content="AI × threat intelligence. I build agents that investigate (CTI, OSINT, SOC) and publish how often they are wrong: evaluation protocols, calibration, prompt-injection tests.">
+  <link rel="canonical" href="https://alexandre-pinoteau.fr/">
+  <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://alexandre-pinoteau.fr/">
+  <meta property="og:title" content="Alexandre Pinoteau · AI × threat intelligence">
+  <meta property="og:description" content="I build agents that investigate, and I measure when they get it wrong.">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Person","name":"Alexandre Pinoteau","url":"https://alexandre-pinoteau.fr/","sameAs":["https://github.com/Iskandeur","https://www.linkedin.com/in/p1n0t34u/"],"knowsAbout":["Cyber threat intelligence","OSINT","LLM agents","AI evaluation","Security operations"]}
+  </script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Alexandre Pinoteau, home">
+      <svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="4" cy="9" r="2.6" fill="currentColor"/><circle cx="14" cy="4" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14" cy="14" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 1.6"/><path d="M6.3 8 12 4.9M6.3 10 12 13.1" stroke="currentColor" stroke-width="1.2"/></svg>
+      alexandre-pinoteau
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#question">question</a>
+      <a href="#work">work</a>
+      <a href="#method">method</a>
+      <a href="#log">log</a>
+      <a href="#contact">contact</a>
+    </nav>
+    <button class="theme-btn" type="button" id="theme" aria-label="Colour theme: automatic. Click to change.">theme: auto</button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div>
+        <p class="kicker"><span class="dot" aria-hidden="true"></span><span class="tag">AI × threat intelligence · CTI · OSINT · SOC</span></p>
+        <h1>I build agents that investigate, <em>and I measure when they get it wrong.</em></h1>
+        <p class="lede">I'm <strong>Alexandre Pinoteau</strong>. My agents pivot through public threat-intelligence sources and draw the infrastructure graph as they go. My evaluation protocols then check which of those claims <strong>survive contact with a source</strong>.</p>
+        <div class="cta">
+          <a class="btn primary" href="#work">See the work</a>
+          <a class="btn" href="https://github.com/Iskandeur">GitHub</a>
+        </div>
+      </div>
+
+      <figure class="board" aria-labelledby="board-cap">
+        <div class="board-head"><span>illustrative trace</span><span>budget 3 hops · 23/60 calls</span></div>
+        <svg class="anim" viewBox="0 0 520 330" role="img" aria-labelledby="g-title g-desc">
+          <title id="g-title">How an investigation graph separates facts from leads</title>
+          <desc id="g-desc">A seed file name leads to a hash, a domain and an origin certificate that are corroborated by sources. A CDN address is defused and never pivoted on. Two claims that came from the model itself remain dashed leads until a source confirms them.</desc>
+
+          <path class="g-edge ok" data-step="2" d="M128 165 C 160 140, 170 110, 196 98"/>
+          <path class="g-edge ok" data-step="3" d="M226 92 L 314 72"/>
+          <path class="g-edge def" data-step="3" d="M226 104 C 260 130, 290 160, 314 172"/>
+          <path class="g-edge ok" data-step="4" d="M346 70 L 430 70"/>
+          <path class="g-edge ok" data-step="5" d="M452 88 L 462 150"/>
+          <path class="g-edge lead" data-step="4" d="M128 178 C 150 215, 170 240, 196 252"/>
+          <path class="g-edge lead" data-step="6" d="M226 256 C 280 270, 320 280, 352 280"/>
+
+          <g class="g-node seed" data-step="1">
+            <rect x="22" y="150" width="106" height="30" rx="3"/>
+            <text x="75" y="169" text-anchor="middle">dropper.exe</text>
+          </g>
+          <text class="g-badge def" x="22" y="142" data-step="1">SEED</text>
+
+          <g class="g-node ok" data-step="2">
+            <circle cx="210" cy="96" r="14"/>
+            <text x="210" y="128" text-anchor="middle">sha256 9f3c…</text>
+          </g>
+          <text class="g-badge ok" x="186" y="70" data-step="2">✓ VT · MB</text>
+
+          <g class="g-node ok" data-step="3">
+            <circle cx="330" cy="70" r="14"/>
+            <text x="330" y="102" text-anchor="middle">upd4te-cdn[.]example</text>
+          </g>
+          <text class="g-badge ok" x="306" y="44" data-step="3">✓ URLSCAN</text>
+
+          <g class="g-node def" data-step="3">
+            <circle cx="330" cy="176" r="12"/>
+            <text x="330" y="204" text-anchor="middle">104.16.x.x</text>
+            <text class="sub" x="330" y="216" text-anchor="middle">CDN range</text>
+          </g>
+          <text class="g-badge def" x="352" y="180" data-step="3">DEFUSED · no pivot</text>
+
+          <g class="g-node ok" data-step="4">
+            <circle cx="446" cy="70" r="14"/>
+            <text x="446" y="44" text-anchor="middle">origin TLS cert</text>
+          </g>
+
+          <g class="g-node ok" data-step="5">
+            <circle cx="466" cy="164" r="14"/>
+            <text x="466" y="196" text-anchor="middle">3 sibling domains</text>
+          </g>
+          <text class="g-badge ok" x="436" y="210" data-step="5">✓ SAN · crt.sh</text>
+
+          <g class="g-node lead" data-step="4">
+            <circle cx="210" cy="256" r="13"/>
+            <text x="210" y="288" text-anchor="middle">campaign name?</text>
+          </g>
+          <text class="g-badge lead" x="170" y="304" data-step="4">LEAD · conf ≤ 0.35</text>
+
+          <g class="g-node lead" data-step="6">
+            <circle class="pulse" cx="366" cy="280" r="13"/>
+            <text x="366" y="312" text-anchor="middle">actor attribution?</text>
+          </g>
+          <text class="g-badge lead" x="388" y="276" data-step="6">NO SOURCE YET</text>
+        </svg>
+        <figcaption class="board-foot" id="board-cap">
+          <span class="lg"><i class="f"></i>corroborated by a primary source</span>
+          <span class="lg"><i class="l"></i>model's lead: never exported</span>
+          <span class="lg"><i class="d"></i>defused noise</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="strip" role="region" aria-label="Key figures">
+    <div class="wrap">
+      <ul>
+        <li><b>~50</b><span>public CTI sources an investigation can pivot through</span></li>
+        <li><b>3 · 60</b><span>hard budget per run: hops, API calls</span></li>
+        <li><b>12</b><span>real-world cases in the published benchmark</span></li>
+        <li><b>0</b><span>hallucinated nodes in the latest published run</span></li>
+        <li><b>80/80</b><span>injected items that flipped GPT-5.2 in my routing study</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="block" id="question" aria-labelledby="q-title">
+    <div class="wrap">
+      <div class="sec-head"><span class="num">01</span><h2 id="q-title">The question</h2></div>
+      <div class="thesis">
+        <span aria-hidden="true"></span>
+        <div>
+          <blockquote>It's easy to make an agent produce threat intelligence. The hard part is <em>proving it didn't make any of it up.</em></blockquote>
+          <p>Buyers of threat intelligence already say so: in Recorded Future's 2025 survey, the complaint cited most often (by 50% of companies) was that they could not judge <a href="https://www.cybersecuritydive.com/news/threat-intelligence-customer-complaints-recorded-future/805300/">the accuracy and credibility of the reports</a> they were getting. Vendors respond with more generation. I think the answer is more verifiability.</p>
+          <p>So I evaluate an agent the way intelligence tradecraft evaluates a source. Every assertion traces back to a primary source. What the model merely believes stays separate from what it can show. Restraint is scored alongside recall. And the protocol is published, so anyone can check the numbers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="work" aria-labelledby="w-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">02</span><h2 id="w-title">Selected work</h2>
+        <p>All public. The numbers come from each project's own published runs.</p>
+      </div>
+
+      <div class="work">
+        <article class="card feature">
+          <div style="display:flex;flex-direction:column;gap:.85rem">
+            <div class="meta"><span class="chip live">● live</span><span class="chip">Python · FastAPI</span><span class="chip">Claude Code · MCP</span><span class="chip">React · Cytoscape</span></div>
+            <h3>Bounce-CTI</h3>
+            <p>An autonomous CTI investigation agent. You give it one observable (a domain, an IP, a hash, a JARM fingerprint, even the bare filename of a malicious binary). A headless Claude Code agent then pivots across public sources, using MCP tools only: no shell, no filesystem. The infrastructure graph streams live to the browser.</p>
+            <p>CDN ranges, parking nameservers and sinkholes are defused <em>before</em> the agent can pivot on them. Anything the model proposes from its own knowledge becomes a <strong>lead</strong>: its confidence is capped at 0.35, it is kept out of STIX, blocklists and detection rules, and it is promoted only once a primary source corroborates it. OSINT and due-diligence modes (registries, sanctions screening) sit on the same engine.</p>
+            <div class="links">
+              <a href="https://bounce.alexandre-pinoteau.fr/">Project page</a>
+              <a href="https://github.com/Iskandeur/bounce-cti">Source</a>
+              <a href="https://github.com/Iskandeur/bounce-cti/blob/main/EVAL_PROTOCOL.md">EVAL_PROTOCOL v3</a>
+              <a href="https://github.com/Iskandeur/bounce-cti/blob/main/media/demo.mp4">20-second demo</a>
+            </div>
+          </div>
+          <ul class="facts" aria-label="Bounce-CTI figures">
+            <li><b>12 cases</b><span>drawn from public vendor write-ups and scored on two tracks: capability (pivot choice, budget, defusing, hypothesis) and recall<small>EVAL_PROTOCOL v3</small></span></li>
+            <li><b>92.9</b><span>mean capability score on the fresh subset, up 6.9 on the previous run<small>run of 2026-06-01</small></span></li>
+            <li><b>0 / 5</b><span>cases failing the hallucination gate, where a single invented node or edge fails the run<small>hard gate</small></span></li>
+            <li><b>3</b><span>benign seeds (Cloudflare, jsDelivr, Wikipedia) that check the agent knows when to stop<small>restraint track</small></span></li>
+          </ul>
+        </article>
+
+        <article class="card wide">
+          <div class="meta"><span class="chip live">● live</span><span class="chip">calibration</span><span class="chip">prompt injection</span></div>
+          <h3>System 1 / System 2</h3>
+          <p>When should a cheap decision model hand an input over to a frontier LLM? I recorded eight tasks, with every item answered by both models, so the routing threshold is judged on real answers. On 600 MASSIVE utterances, the small model's confidence is well calibrated (ECE 4.5%, AUROC 0.83). Under prompt injection, a one-line <em>"annotation team re-labelled this"</em> flips GPT-5.2 on 80 of 80 items, against 26 of 80 for the small model. Escalating attacked inputs makes the hybrid <em>worse</em>.</p>
+          <div class="links">
+            <a href="https://iskandeur.github.io/system1-system2/">Playground</a>
+            <a href="https://iskandeur.github.io/system1-system2/study.html">Study</a>
+            <a href="https://github.com/Iskandeur/system1-system2">Source</a>
+          </div>
+        </article>
+
+        <article class="card wide">
+          <div class="meta"><span class="chip live">● live</span><span class="chip">TypeScript · React Flow</span><span class="chip">multi-agent</span></div>
+          <h3>Swarm Studio</h3>
+          <p>A browser studio to design, run and watch multi-agent swarms. You work directly on the topology: who may talk to whom, human approval gates, shared memory, and typed decision nodes that escalate to an LLM only when they are unsure. You can also describe a swarm in one sentence and a model draws it. There is no backend, and a demo provider runs everything without an API key.</p>
+          <div class="links">
+            <a href="https://iskandeur.github.io/swarm-studio/">Open the app</a>
+            <a href="https://github.com/Iskandeur/swarm-studio">Source</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="meta"><span class="chip">Splunk · SPL</span><span class="chip">SOC</span></div>
+          <h3>splunk-lab-in-a-box</h3>
+          <p>A self-hosted Splunk lab. The official 109,864-event dataset is time-shifted so "last 24 hours" still returns data. Nine labs have answer keys measured on the running instance, and ten checks confirm the lab is ready. An AI coding agent can run and grade it.</p>
+          <div class="links"><a href="https://github.com/Iskandeur/splunk-lab-in-a-box">Source</a></div>
+        </article>
+
+        <article class="card">
+          <div class="meta"><span class="chip">n8n</span><span class="chip">CTI triage</span></div>
+          <h3>CyberZap</h3>
+          <p>A CTI pipeline that pulls CISA KEV, CERT-FR, ZDI and ransomware.live, has an LLM score and summarise each item, and pushes the alerts to chat channels.</p>
+          <div class="links"><a href="https://github.com/Iskandeur/cyber-zap-public">Source</a></div>
+        </article>
+
+        <article class="card">
+          <div class="meta"><span class="chip">Claude Code</span><span class="chip">agent memory</span></div>
+          <h3>compagnon-starter</h3>
+          <p>A starter kit for a persistent Claude Code agent. Its identity, memory and procedures live in versioned Markdown, and the agent runs its own onboarding on the first session.</p>
+          <div class="links"><a href="https://github.com/Iskandeur/compagnon-starter">Source</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="method" aria-labelledby="m-title">
+    <div class="wrap">
+      <div class="sec-head"><span class="num">03</span><h2 id="m-title">How I work</h2></div>
+      <div class="principles">
+        <div><h3><span>i.</span>A lead is not a finding</h3><p>What a model "knows" is useful for naming a campaign or picking the right registry. It stays labelled, dashed and out of every export until a source backs it.</p></div>
+        <div><h3><span>ii.</span>Hallucination is a gate, not a metric</h3><p>An average score hides the one invented edge that ends up in a blocklist. A single fabricated node fails the run.</p></div>
+        <div><h3><span>iii.</span>Restraint gets a score too</h3><p>An agent that pivots on Cloudflare or Wikipedia is busy, not good. Benign seeds are part of the benchmark.</p></div>
+        <div><h3><span>iv.</span>Negative results get published</h3><p>"Escalating to the bigger model buys nothing on this task" and "the LLM is the weaker link under injection" are results.</p></div>
+      </div>
+      <div class="toolbox" aria-label="Toolbox">
+        <span class="chip">Claude Code (headless)</span><span class="chip">MCP servers</span><span class="chip">OpenRouter</span>
+        <span class="chip">Python · FastAPI</span><span class="chip">TypeScript · React</span><span class="chip">Node</span>
+        <span class="chip">STIX 2.1</span><span class="chip">OpenCTI</span><span class="chip">pDNS · CT · RDAP pivoting</span>
+        <span class="chip">Splunk SPL</span><span class="chip">Sigma</span><span class="chip">KQL</span><span class="chip">YARA</span><span class="chip">ELK</span>
+        <span class="chip">Volatility</span><span class="chip">MITRE ATT&amp;CK</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="log" aria-labelledby="l-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="num">04</span><h2 id="l-title">Log since April 2026</h2>
+        <p>What went public since this site was last updated.</p>
+      </div>
+      <ol class="log" reversed>
+        <li><time datetime="2026-09-21">2026-09-21</time><h3><a href="https://iskandeur.github.io/system1-system2/">System 1 / System 2</a></h3><p>Routing playground and full study: calibration, held-out thresholds, prompt-injection experiment, open-weight models run on a CPU.</p></li>
+        <li><time datetime="2026-09-18">2026-09-18</time><h3><a href="https://github.com/Iskandeur/bounce-cti">Bounce-CTI</a>: demo video</h3><p>Twenty seconds: one IOC pasted, CDN and parked nameservers defused before the pivot, and a lead promoted to a finding only once a source corroborates it.</p></li>
+        <li><time datetime="2026-09-15">2026-09-15</time><h3><a href="https://github.com/Iskandeur/splunk-lab-in-a-box">splunk-lab-in-a-box</a></h3><p>Nine hands-on SPL labs on a self-hosted instance, with measured answer keys.</p></li>
+        <li><time datetime="2026-09-14">2026-09-14</time><h3><a href="https://iskandeur.github.io/swarm-studio/">Swarm Studio</a></h3><p>Multi-agent swarms as a visible, editable graph. Live on GitHub Pages.</p></li>
+        <li><time datetime="2026-08-04">2026-08-04</time><h3><a href="https://github.com/Iskandeur/compagnon-starter">compagnon-starter</a></h3><p>Persistent-agent starter kit: memory as versioned files, self-run onboarding.</p></li>
+        <li><time datetime="2026-07-27">2026-07-27</time><h3><a href="https://github.com/Iskandeur/bounce-cti">Bounce-CTI</a>: Shodan, free endpoints first</h3><p>Shodan tools for CTI and OSINT behind a credit guard: metered search stays off unless it is explicitly allowed.</p></li>
+        <li><time datetime="2026-07-23">2026-07-23</time><h3><a href="https://iskandeur.github.io/bigfive-world-map/">bigfive-world-map</a></h3><p>Big Five personality averages by country, with the statistical caveats stated before the map.</p></li>
+        <li><time datetime="2026-07-21">2026-07-21</time><h3><a href="https://iskandeur.github.io/toki-pona-agent-bench/">toki-pona-agent-bench</a></h3><p>12 agents × 6 tasks × 3 conditions, forced to reason in a 120-word language. Accuracy held up (90–100%). The visible "reasoning" turned out to be theatre.</p></li>
+        <li><time datetime="2026-06">June 2026</time><h3><a href="https://github.com/Iskandeur/bounce-cti">Bounce-CTI</a>: OSINT and due-diligence verticals, EVAL_PROTOCOL v3</h3><p>91 commits in the month. Added a username sweep across ~49 platforms, company resolution through GLEIF, Companies House and SEC EDGAR, OFAC/EU/UK sanctions screening, and the v3 benchmark run of 1 June.</p></li>
+        <li><time datetime="2026-05">May 2026</time><h3><a href="https://github.com/Iskandeur/bounce-cti">Bounce-CTI</a>: hypothesis-first loop</h3><p>The agent now states a hypothesis before it pivots. Also added an autonomous pivot-drain loop, key rotation with per-day quotas, and a source-health cache so dead sources get skipped.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="archive" aria-labelledby="a-title">
+    <div class="wrap">
+      <div class="sec-head"><span class="num">05</span><h2 id="a-title">Earlier</h2></div>
+      <ul class="archive">
+        <li><a href="https://github.com/Iskandeur/detection-engineer-hero">detection-engineer-hero</a>Gamified detection-engineering drills for SOC analysts.</li>
+        <li><a href="https://github.com/Iskandeur/adversarial-llm-poc">adversarial-llm-poc</a>Proof of concept of LLM vulnerabilities, for defenders.</li>
+        <li><a href="https://github.com/Iskandeur/whatsapp-social-graph">whatsapp-social-graph</a>Link analysis on exported messaging metadata.</li>
+        <li><a href="https://github.com/Iskandeur/email-verifier-tool">email-verifier-tool</a>OSINT check of whether an address exists.</li>
+        <li><a href="https://github.com/Iskandeur/subdomain-utility">subdomain-utility</a>Subdomain enumeration.</li>
+        <li><a href="https://github.com/Iskandeur/decipher">decipher</a>Automatic cipher detection by frequency analysis.</li>
+        <li><a href="https://github.com/Iskandeur/auto-3-tier-aws">auto-3-tier-aws</a>Immutable three-tier AWS infrastructure built with Packer, Ansible and Terraform.</li>
+        <li><a href="https://github.com/Iskandeur/wiki-flow-viz">wiki-flow-viz</a>CLI that streams live Wikimedia edits, with filters and CSV output.</li>
+        <li><a href="https://github.com/Iskandeur/jargon-remover">jargon-remover</a>Turning jargon into plain language with Gemini.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" aria-labelledby="c-title">
+    <div class="wrap">
+      <div class="sec-head"><span class="num">06</span><h2 id="c-title">Tell me where my protocol is wrong.</h2>
+        <p>If you evaluate agents, automate CTI or work on AI security, I'd like to compare notes, and I'd rather be shown a flaw with numbers than be agreed with.</p>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="mailto:alexandre.pinoteau@protonmail.com">Email</a>
+        <a class="btn" href="https://www.linkedin.com/in/p1n0t34u/">LinkedIn</a>
+        <a class="btn" href="https://github.com/Iskandeur">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Alexandre Pinoteau</span>
+    <span>Hand-written HTML and CSS. No trackers, no cookies, no web fonts. Updated 2026-09-24.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('theme');
+    var root = document.documentElement;
+    var order = ['auto', 'light', 'dark'];
+    function current() { return root.getAttribute('data-theme') || 'auto'; }
+    function render() {
+      var t = current();
+      btn.textContent = 'theme: ' + t;
+      btn.setAttribute('aria-label', 'Colour theme: ' + (t === 'auto' ? 'automatic' : t) + '. Click to change.');
+    }
+    btn.addEventListener('click', function () {
+      var next = order[(order.indexOf(current()) + 1) % order.length];
+      if (next === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', next);
+      try { next === 'auto' ? localStorage.removeItem('theme') : localStorage.setItem('theme', next); } catch (e) {}
+      render();
+    });
+    render();
+  })();
+</script>
+</body>
+</html>
