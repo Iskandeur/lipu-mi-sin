@@ -41,7 +41,7 @@
 
   /* ---------- the yard ---------- */
   var yard = $("#yard"), cv = $("#blocks"), cx = cv.getContext("2d");
-  var W = 0, H = 0, dpr = 1, blocks = [], grab = null, knocked = 0, fontFam;
+  var wantChaos = false, W = 0, H = 0, dpr = 1, blocks = [], grab = null, knocked = 0, fontFam;
   var PAL = ["#f3ecdc", "#ff7a3d", "#7fc8f8", "#9be38c", "#ffd166"];
   var EXTRA = "ЖЯФжあん字你好龍عبשאñçàßΩ★?!&@#".split("");
   var TITLE = "building stuff.";
@@ -77,6 +77,7 @@
     blocks.forEach(function (b) { b.supp = supported(b); });
     yard.classList.add("live");
     knocked = 0; updateCount();
+    if (wantChaos) setTimeout(function () { if (wantChaos) { wantChaos = false; chaos(); } }, 500);
   }
   function spawn(ch, x) {
     var size = Math.max(34, Math.min(80, W / 9));
@@ -242,7 +243,8 @@
   window.addEventListener("resize", function () { var w = yard.getBoundingClientRect().width; if (Math.abs(w - rw) > 40) { rw = w; layout(); draw(); } });
 
   setLang(I.lang, false);
-  showGreet(I.lang === "tok" ? "en" : I.lang); gi = Math.max(0, order.indexOf(I.lang));
+  if (I.lang === "tok") { greet.textContent = "toki"; greet.lang = "tok"; } else showGreet(I.lang);
+  gi = Math.max(0, order.indexOf(I.lang));
   rw = yard.getBoundingClientRect().width; layout(); draw();
 
   /* #chaos: arrive after the earthquake */
@@ -251,7 +253,8 @@
     for (var i = 0; i < 8; i++) spawn(EXTRA[(Math.random() * EXTRA.length) | 0], Math.random() * W);
     kick();
   }
-  if (location.hash === "#chaos") setTimeout(chaos, 400);
+  wantChaos = location.hash === "#chaos";
+  if (wantChaos) setTimeout(function () { if (wantChaos) { wantChaos = false; chaos(); } }, 700);
   window.addEventListener("hashchange", function () { if (location.hash === "#chaos") chaos(); });
 
   console.log("%cbuilding stuff.", "font:900 28px system-ui;color:#ff7a3d", "\nYou opened the console. Nothing is minified, help yourself. Try typing a word on the page.");
