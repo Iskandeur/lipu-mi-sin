@@ -42,12 +42,12 @@
   /* ---------- the yard ---------- */
   var yard = $("#yard"), cv = $("#blocks"), cx = cv.getContext("2d");
   var wantChaos = false, W = 0, H = 0, dpr = 1, blocks = [], grab = null, knocked = 0, fontFam;
-  var PAL = ["#f3ecdc", "#ff7a3d", "#7fc8f8", "#9be38c", "#ffd166"];
+  var PAL = ["#f1ead9", "#ff8f52", "#6fe3cc", "#ffc977", "#c9b8ff"];
   var EXTRA = "ЖЯФжあん字你好龍عبשאñçàßΩ★?!&@#".split("");
   var TITLE = "building stuff.";
-  fontFam = getComputedStyle(document.body).fontFamily;
+  fontFam = '"Bricolage", ' + getComputedStyle(document.body).fontFamily;
 
-  function measure(ch, size) { cx.font = "900 " + size + "px " + fontFam; return cx.measureText(ch).width; }
+  function measure(ch, size) { cx.font = "800 " + size + "px " + fontFam; return cx.measureText(ch).width; }
   function Block(ch, x, y, w, h, color, home) {
     return { ch: ch, x: x, y: y, w: w, h: h, vx: 0, vy: 0, color: color, home: home, sleep: !!home, size: h * .78, rot: 0 };
   }
@@ -60,12 +60,14 @@
     var rows = W < 640 ? ["stuff.", "building"] : [TITLE.replace(" ", " ")];
     var longest = rows.reduce(function (a, b) { return a.length > b.length ? a : b; });
     var size = 100, gap = 0;
+    var padX = parseFloat(getComputedStyle(yard.querySelector(".hi")).insetInlineStart) || 16;
     var wAt = function (s) { var t = 0; for (var i = 0; i < longest.length; i++) t += measure(longest[i], s) + gap; return t; };
-    size = Math.min(size * (W * .96) / wAt(size), H / (rows.length * 1.18 + .2));
+    /* the letters stand on the ground of the scene: big, but never taller than its lower band */
+    size = Math.min(size * (W - padX * 2) / wAt(size), H * (W < 640 ? .155 : .2));
     var bh = size * 1.12, ground = H, colorI = 0;
     rows.forEach(function (row, ri) {
       var y = ground - bh * (ri + 1);
-      var x = Math.max(4, (W - wAt(size) * row.length / longest.length) * 0) + 4;
+      var x = padX;
       for (var i = 0; i < row.length; i++) {
         var ch = row[i], cw = measure(ch, size);
         if (ch === " ") { x += cw * 1.1; continue; }
@@ -146,9 +148,12 @@
     for (var i = 0; i < blocks.length; i++) {
       var b = blocks[i], awake = !b.sleep;
       cx.save(); cx.translate(b.x + b.w / 2, b.y + b.h / 2); cx.rotate(b.rot);
-      if (awake || b === grab) { rr(-b.w / 2, -b.h / 2, b.w, b.h, Math.min(12, b.w * .18)); cx.fillStyle = b.home ? "#f3ecdc" : b.color; cx.fill(); cx.fillStyle = "#14110d"; }
-      else cx.fillStyle = "#f3ecdc";
-      cx.font = "900 " + b.size + "px " + fontFam;
+      if (awake || b === grab) {
+        cx.shadowColor = "rgba(0,0,0,.45)"; cx.shadowBlur = 18; cx.shadowOffsetY = 6;
+        rr(-b.w / 2, -b.h / 2, b.w, b.h, Math.min(12, b.w * .18)); cx.fillStyle = b.home ? "#f1ead9" : b.color; cx.fill();
+        cx.shadowColor = "transparent"; cx.fillStyle = "#0e121c";
+      } else { cx.fillStyle = "#f1ead9"; cx.shadowColor = "rgba(5,7,14,.55)"; cx.shadowBlur = 24; cx.shadowOffsetY = 4; }
+      cx.font = "800 " + b.size + "px " + fontFam;
       cx.fillText(b.ch, 0, b.h * .04);
       cx.restore();
     }
@@ -246,6 +251,13 @@
   if (I.lang === "tok") { greet.textContent = "toki"; greet.lang = "tok"; } else showGreet(I.lang);
   gi = Math.max(0, order.indexOf(I.lang));
   rw = yard.getBoundingClientRect().width; layout(); draw();
+  /* the letters are drawn in the display font: lay them out again once it has arrived */
+  if (document.fonts && document.fonts.load) document.fonts.load('800 100px "Bricolage"').then(function () { if (!knocked) { layout(); draw(); } });
+
+  /* the bar stays out of the scene's way until you scroll */
+  var bar = $(".bar");
+  function solid() { bar.classList.toggle("solid", scrollY > 40); }
+  window.addEventListener("scroll", solid, { passive: true }); solid();
 
   /* #chaos: arrive after the earthquake */
   function chaos() {
@@ -257,5 +269,5 @@
   if (wantChaos) setTimeout(function () { if (wantChaos) { wantChaos = false; chaos(); } }, 700);
   window.addEventListener("hashchange", function () { if (location.hash === "#chaos") chaos(); });
 
-  console.log("%cbuilding stuff.", "font:900 28px system-ui;color:#ff7a3d", "\nYou opened the console. Nothing is minified, help yourself. Try typing a word on the page.");
+  console.log("%cbuilding stuff.", "font:800 28px system-ui;color:#ff8f52", "\nYou opened the console. Nothing is minified, help yourself. Try typing a word on the page.");
 })();

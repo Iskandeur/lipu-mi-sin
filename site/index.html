@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Alexandre Pinoteau · building stuff</title>
 <meta name="description" content="Alexandre Pinoteau builds AI agents that investigate (threat intel, OSINT, SOC), and the tools that check what they report.">
-<meta name="theme-color" content="#14110d">
+<meta name="theme-color" content="#0e121c">
 <meta property="og:title" content="Alexandre Pinoteau · building stuff">
 <meta property="og:description" content="AI agents that go investigate. And the tools that check what they bring back.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <script src="i18n.js"></script>
 </head>
@@ -35,9 +36,17 @@
 
 <main id="top">
   <section class="hero" aria-labelledby="h1">
-    <p class="hi"><span id="greet" lang="en">hello</span>, <span data-i="iam">I'm</span> Alexandre<span class="dot">.</span></p>
     <h1 id="h1" class="sr">building stuff.</h1>
     <div class="yard" id="yard">
+      <picture class="art">
+        <source media="(max-width: 40rem)" type="image/avif" srcset="img/scene-m.avif">
+        <source media="(max-width: 40rem)" type="image/webp" srcset="img/scene-m.webp">
+        <source type="image/avif" srcset="img/scene-1376.avif">
+        <source type="image/webp" srcset="img/scene-960.webp 960w, img/scene-1376.webp 1376w" sizes="100vw">
+        <img id="art" src="img/scene-1376.webp" width="1376" height="768" fetchpriority="high" decoding="async"
+          alt="Pixel art: a workbench on a cliff at the edge of the world, at dusk. Little lantern drones fly out over the clouds, threads of light linking them into a graph.">
+      </picture>
+      <p class="hi"><span id="greet" lang="en">hello</span>, <span data-i="iam">I'm</span> Alexandre<span class="dot">.</span></p>
       <canvas id="blocks" aria-hidden="true"></canvas>
       <p class="title-static" aria-hidden="true">building stuff.</p>
     </div>
@@ -116,8 +125,14 @@
 </main>
 
 <footer class="foot">
-  <p data-i="foot">Hand-made. No cookies, no trackers, no framework.</p>
-  <p class="egg-hint" data-i="egg">There is an eleventh language. It has 120 words.</p>
+  <div class="horizon" aria-hidden="true"></div>
+  <div class="foot-row">
+    <div>
+      <p data-i="foot">Hand-made. No cookies, no trackers, no framework.</p>
+      <p class="egg-hint" data-i="egg">There is an eleventh language. It has 120 words.</p>
+    </div>
+    <a class="up" href="#top" aria-label="Top">↑</a>
+  </div>
 </footer>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script src="app.js"></script>

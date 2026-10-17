@@ -243,6 +243,19 @@
   root.lang = lang === "tok" ? "tok" : lang;
   root.dir = RTL[lang] ? "rtl" : "ltr";
   if (lang !== "en") root.className += " i18n-wait";
+  var ALT = {
+    en: "Pixel art: a workbench on a cliff at the edge of the world, at dusk. Little lantern drones fly out over the clouds, threads of light linking them into a graph.",
+    fr: "Pixel art : un établi sur une falaise au bout du monde, au crépuscule. De petits drones à lanterne s'envolent au-dessus des nuages, reliés par des fils de lumière.",
+    es: "Pixel art: un banco de trabajo en un acantilado al borde del mundo, al anochecer. Pequeños drones con farol vuelan sobre las nubes, unidos por hilos de luz.",
+    it: "Pixel art: un banco da lavoro su una scogliera ai confini del mondo, al tramonto. Piccoli droni con lanterna volano sopra le nuvole, legati da fili di luce.",
+    ru: "Пиксель-арт: верстак на обрыве на краю света, в сумерках. Маленькие дроны с фонариками летят над облаками, связанные нитями света.",
+    ar: "فن البكسل: طاولة عمل على جرف عند حافة العالم وقت الغروب. طائرات صغيرة بفوانيس تحلّق فوق الغيوم، تربطها خيوط من الضوء.",
+    he: "פיקסל־ארט: שולחן עבודה על צוק בקצה העולם, בשעת דמדומים. רחפנים קטנים עם פנסים עפים מעל העננים, מחוברים בחוטי אור.",
+    ja: "ピクセルアート：世界の果ての崖に置かれた作業台、夕暮れ。ランタンを下げた小さなドローンが雲の上へ飛び立ち、光の糸でつながっていく。",
+    zh: "像素画:黄昏时分,世界尽头的悬崖上放着一张工作台。提着灯笼的小无人机飞向云海,彼此由光线连成一张网。",
+    id: "Pixel art: meja kerja di tebing di ujung dunia, saat senja. Drone kecil berlentera terbang di atas awan, terhubung benang cahaya.",
+    tok: "sitelen: supa pali li lon nena lon pini ma. ilo waso lili li tawa sewi kon. linja suno li linja e ona."
+  };
   window.I18N = {
     T: T, RTL: RTL, lang: lang, keep: keep,
     apply: function (l) {
@@ -253,6 +266,8 @@
         var k = els[i].getAttribute("data-i");
         if (d[k] !== undefined) els[i].textContent = d[k];
       }
+      var art = document.getElementById("art");
+      if (art) art.alt = ALT[l] || ALT.en;
       document.title = "Alexandre Pinoteau · building stuff";
       root.classList.remove("i18n-wait");
     }
