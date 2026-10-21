@@ -84,9 +84,11 @@ a:hover { color: var(--hot); text-decoration-color: var(--hot); }
   letter-spacing: -.045em; direction: ltr; text-align: left; text-shadow: 0 4px 30px rgba(0,0,0,.5); }
 .yard.live .title-static { display: none; }
 .hero-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 1rem 2.5rem; padding: 1.4rem var(--pad) 0; }
+@media (max-width: 60rem) { .hero-foot { grid-template-columns: 1fr; align-items: start; } }
 .sub { margin: 0; font: 500 clamp(1.2rem, 1rem + 1.1vw, 1.9rem)/1.25 var(--display); letter-spacing: -.015em; max-width: 30ch; text-wrap: balance; }
 .hint { margin: 0; color: var(--mute); font-family: var(--mono); font-size: .8rem; display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center;
   justify-content: flex-end; max-width: 26rem; text-align: end; }
+@media (max-width: 60rem) { .hint { justify-content: flex-start; text-align: start; max-width: none; } }
 .btn { font: inherit; color: var(--bg); background: var(--ink); border: 0; border-radius: 999px; padding: .5rem 1rem; cursor: pointer; font-weight: 700;
   transition: background .2s, transform .2s var(--ease); }
 .btn:hover { background: var(--hot); transform: translateY(-1px); }

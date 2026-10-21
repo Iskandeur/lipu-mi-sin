@@ -21,8 +21,8 @@
   }
   sel.addEventListener("change", function () { setLang(sel.value, true); });
 
-  /* the greeting goes around his languages; five quick taps open the eleventh */
-  var greet = $("#greet"), order = ["en", "fr", "es", "it", "ru", "ar", "he", "ja", "zh", "id"], gi = 0, taps = [];
+  /* the greeting goes around his languages; five quick taps open the tenth */
+  var greet = $("#greet"), order = ["en", "fr", "es", "it", "ru", "ar", "ja", "zh", "id"], gi = 0, taps = [];
   function showGreet(l) {
     greet.classList.add("flip");
     setTimeout(function () { greet.textContent = T[l].greet; greet.lang = l; greet.dir = I.RTL[l] ? "rtl" : "ltr"; greet.classList.remove("flip"); }, reduce ? 0 : 250);
@@ -43,7 +43,7 @@
   var yard = $("#yard"), cv = $("#blocks"), cx = cv.getContext("2d");
   var wantChaos = false, W = 0, H = 0, dpr = 1, blocks = [], grab = null, knocked = 0, fontFam;
   var PAL = ["#f1ead9", "#ff8f52", "#6fe3cc", "#ffc977", "#c9b8ff"];
-  var EXTRA = "ЖЯФжあん字你好龍عبשאñçàßΩ★?!&@#".split("");
+  var EXTRA = "ЖЯФжあん字你好龍عبñçàßΩ★?!&@#".split("");
   var TITLE = "building stuff.";
   fontFam = '"Bricolage", ' + getComputedStyle(document.body).fontFamily;
 
@@ -233,7 +233,7 @@
     el.textContent = knocked ? (T[I.lang] || T.en).count.replace("{n}", knocked) : "";
   }
 
-  /* typing drops letters too; typing t-o-k-i opens the eleventh language */
+  /* typing drops letters too; typing t-o-k-i opens the tenth language */
   var typed = "";
   document.addEventListener("keydown", function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
