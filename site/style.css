@@ -129,7 +129,7 @@ details[open] .ptag::after { transform: rotate(45deg); }
 .more { font-family: var(--mono); font-size: .88rem; margin-top: 1.6rem; }
 .now { font: 500 clamp(1.45rem, 1rem + 2vw, 2.7rem)/1.18 var(--display); letter-spacing: -.025em; max-width: 26ch; margin: 0 0 1rem; text-wrap: balance; }
 .now.quiet { font: 400 clamp(1rem, .9rem + .5vw, 1.25rem)/1.4 var(--mono); color: var(--teal); letter-spacing: 0; max-width: 60ch; }
-.big { font: 800 clamp(4rem, 16vw, 13rem)/.88 var(--display); letter-spacing: -.055em; margin: 0 0 2rem; }
+.big { font: 500 clamp(2.4rem, 7vw, 5.5rem)/1 var(--display); letter-spacing: -.03em; margin: 0 0 2rem; }
 .contact { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .7rem; font-family: var(--mono); font-size: clamp(.88rem, .84rem + .3vw, 1.05rem); }
 .contact a { display: inline-block; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: .6rem 1.1rem; word-break: break-all;
   transition: border-color .2s, background .2s, color .2s, transform .25s var(--ease); }
