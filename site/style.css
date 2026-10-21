@@ -43,7 +43,30 @@ a:hover { color: var(--hot); text-decoration-color: var(--hot); }
 /* ---------- hero: the scene ---------- */
 .hero { padding: 0; }
 .yard { position: relative; height: min(calc(56vw + 5rem), 100svh); min-height: 30rem; touch-action: pan-y; overflow: hidden; isolation: isolate; }
-.art { position: absolute; inset: 0 0 4rem 0; z-index: -2; }
+/* a little bigger than its frame, so the parallax never shows an edge */
+.art { position: absolute; inset: -12px -18px calc(4rem - 12px) -18px; z-index: -2; }
+.yard #sky { z-index: -1; pointer-events: none; cursor: auto; }
+.snd { display: grid; place-items: center; width: 2.1rem; height: 2.1rem; padding: 0; border-radius: 999px; cursor: pointer;
+  background: rgba(14,18,28,.45); border: 1px solid rgba(241,234,217,.25); color: var(--ink); }
+.snd:hover { color: var(--hot); border-color: currentColor; }
+.snd svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.snd svg path:first-child { fill: currentColor; }
+.snd[aria-pressed="true"] .x, .snd[aria-pressed="false"] .w { display: none; }
+.posts { list-style: none; margin: 0; padding: 0; }
+.posts a { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; padding: .9rem 0; border-top: 1px solid rgba(241,234,217,.12);
+  color: var(--ink); text-decoration: none; font-size: 1.15rem; }
+.posts a:hover span { color: var(--hot); }
+.posts time { font-family: var(--mono); font-size: .85rem; opacity: .6; padding-top: .2rem; }
+.posts:not(:empty) + .empty { display: none; }
+/* article pages (modeles/article.html) */
+.post .prose { max-width: 42rem; margin: 0 auto; padding-top: 7rem; }
+.prose h1 { font: 800 clamp(2.2rem, 1.5rem + 3vw, 3.6rem)/1 var(--display); letter-spacing: -.035em; margin: .3rem 0 2rem; }
+.prose .meta { font-family: var(--mono); font-size: .85rem; opacity: .6; margin: 0; }
+.prose article { font-size: 1.12rem; line-height: 1.7; }
+.prose article h2 { font: 700 1.5rem/1.2 var(--display); margin-top: 2.4rem; }
+.prose article pre, .prose article code { font-family: var(--mono); font-size: .9em; }
+.prose article pre { overflow-x: auto; padding: 1rem; border-radius: 10px; background: rgba(241,234,217,.06); }
+.prose article img { max-width: 100%; height: auto; border-radius: 10px; }
 .art img { width: 100%; height: 100%; object-fit: cover; object-position: 40% 35%; display: block; }
 .yard::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
@@ -128,11 +151,14 @@ html[lang="tok"] body { --hot: var(--teal); }
 
 @media (max-width: 40rem) {
   .bar { gap: .6rem; }
-  .bar nav { gap: .9rem; margin-inline-start: 0; }
+  .bar nav { gap: .75rem; margin-inline-start: 0; font-size: .92rem; }
+  .bar nav a { white-space: nowrap; }
+  .bar nav a[href="#now"] { display: none; }
+  .art { inset-block-end: calc(5rem - 12px); }
+  .posts a { grid-template-columns: 1fr; gap: .2rem; }
   .mark { display: none; }
   .lang { margin-inline-start: auto; }
   .yard { height: calc(min(120vw, 68svh) + 5rem); min-height: 0; }
-  .art { inset-block-end: 5rem; }
   .art img { object-position: 50% 30%; }
   .yard::before { background:
     linear-gradient(180deg, rgba(14,18,28,.6) 0%, rgba(14,18,28,0) 24%),

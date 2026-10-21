@@ -21,8 +21,10 @@
   <nav aria-label="Sections">
     <a href="#stuff" data-i="nav1">Stuff</a>
     <a href="#now" data-i="nav2">Now</a>
+    <a href="#blog" data-i="nav4">Blog</a>
     <a href="#hello" data-i="nav3">Hello</a>
   </nav>
+  <button id="snd" class="snd" type="button" aria-pressed="false" data-ia="sndOff" aria-label="Sound on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg></button>
   <label class="lang">
     <span class="sr" data-i="langLabel">Language</span>
     <select id="lang" aria-label="Language">
@@ -38,14 +40,13 @@
   <section class="hero" aria-labelledby="h1">
     <h1 id="h1" class="sr">building stuff.</h1>
     <div class="yard" id="yard">
-      <picture class="art">
-        <source media="(max-width: 40rem)" type="image/avif" srcset="img/scene-m.avif">
-        <source media="(max-width: 40rem)" type="image/webp" srcset="img/scene-m.webp">
-        <source type="image/avif" srcset="img/scene-1376.avif">
-        <source type="image/webp" srcset="img/scene-960.webp 960w, img/scene-1376.webp 1376w" sizes="100vw">
-        <img id="art" src="img/scene-1376.webp" width="1376" height="768" fetchpriority="high" decoding="async"
+      <picture class="art" id="artbox">
+        <source type="image/avif" srcset="img/scene-960.avif 960w, img/scene-1600.avif 1600w, img/scene-2560.avif 2560w, img/scene-3840.avif 3840w" sizes="(max-width: 40rem) 230vw, 106vw">
+        <source type="image/webp" srcset="img/scene-960.webp 960w, img/scene-1600.webp 1600w, img/scene-2560.webp 2560w, img/scene-3840.webp 3840w" sizes="(max-width: 40rem) 230vw, 106vw">
+        <img id="art" src="img/scene-1600.webp" width="5504" height="3072" fetchpriority="high"
           alt="Pixel art: a workbench on a cliff at the edge of the world, at dusk. Little lantern drones fly out over the clouds, threads of light linking them into a graph.">
       </picture>
+      <canvas id="sky" aria-hidden="true"></canvas>
       <p class="hi"><span id="greet" lang="en">hello</span>, <span data-i="iam">I'm</span> Alexandre<span class="dot">.</span></p>
       <canvas id="blocks" aria-hidden="true"></canvas>
       <p class="title-static" aria-hidden="true">building stuff.</p>
@@ -113,8 +114,16 @@
     <p class="now quiet" data-i="now2">Trust, but verify. Mostly verify.</p>
   </section>
 
+  <section id="blog" class="sec" aria-labelledby="s4">
+    <h2 id="s4h"><span class="num">03</span> / <span data-i="s4" id="s4">blog</span></h2>
+    <!-- Posts: one file per post in blog/ (copy ../modeles/article.html), then one <li> here, newest first:
+         <li><a href="blog/slug.html"><time datetime="2026-11-02">02.11.2026</time><span>Title</span></a></li> -->
+    <ol class="posts" id="posts"></ol>
+    <p class="now quiet empty" data-i="blog0">Nothing here yet. The first post is on its way.</p>
+  </section>
+
   <section id="hello" class="sec" aria-labelledby="s3">
-    <h2 id="s3"><span class="num">03</span> / <span data-i="s3">hello</span></h2>
+    <h2 id="s3"><span class="num">04</span> / <span data-i="s3">hello</span></h2>
     <p class="big" data-i="big">Say hello.</p>
     <ul class="contact">
       <li><a href="mailto:alexandre.pinoteau@protonmail.com">alexandre.pinoteau@protonmail.com</a></li>
@@ -135,6 +144,8 @@
   </div>
 </footer>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="sound.js"></script>
+<script src="scene.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

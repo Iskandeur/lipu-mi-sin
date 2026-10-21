@@ -27,7 +27,7 @@
     greet.classList.add("flip");
     setTimeout(function () { greet.textContent = T[l].greet; greet.lang = l; greet.dir = I.RTL[l] ? "rtl" : "ltr"; greet.classList.remove("flip"); }, reduce ? 0 : 250);
   }
-  function enterToki() { setLang("tok"); greet.textContent = "toki"; greet.lang = "tok"; greet.dir = "ltr"; toast(T.tok.found); }
+  function enterToki() { if (window.SOUND) SOUND.chime(); setLang("tok"); greet.textContent = "toki"; greet.lang = "tok"; greet.dir = "ltr"; toast(T.tok.found); }
   greet.addEventListener("click", function () {
     if (I.lang === "tok") { setLang(prev); return; }
     var now = Date.now(); taps = taps.filter(function (t) { return now - t < 1600; }); taps.push(now);
@@ -106,7 +106,7 @@
       if (b.sleep) { if (b.supp && !supported(b)) b.sleep = false; else continue; }
       b.vy = Math.min(b.vy + G, 28); b.vx *= .995;
       b.x += b.vx; b.y += b.vy;
-      if (b.y + b.h > H) { b.y = H - b.h; b.vy *= -.25; b.vx *= .82; if (Math.abs(b.vy) < 1) b.vy = 0; }
+      if (b.y + b.h > H) { if (b.vy > 4 && window.SOUND) SOUND.hit(b.vy); b.y = H - b.h; b.vy *= -.25; b.vx *= .82; if (Math.abs(b.vy) < 1) b.vy = 0; }
       if (b.x < 0) { b.x = 0; b.vx *= -.5; }
       if (b.x + b.w > W) { b.x = W - b.w; b.vx *= -.5; }
       b.rot += (b.vx * .004 - b.rot) * .2;
@@ -116,7 +116,7 @@
       if (!overlap(a, c)) continue;
       var fa = a.sleep && a !== grab, fc = c.sleep && c !== grab;
       var moving = Math.abs(a.vx) + Math.abs(a.vy) + Math.abs(c.vx) + Math.abs(c.vy);
-      if (fa && moving > 3) { a.sleep = fa = false; }
+      if (fa && moving > 3) { a.sleep = fa = false; if (window.SOUND) SOUND.hit(moving * .6); }
       if (fc && moving > 3) { c.sleep = fc = false; }
       if (a === grab) fa = true; if (c === grab) fc = true;
       if (fa && fc) continue;
@@ -177,7 +177,7 @@
       var b = blocks[i];
       if (p.x >= b.x - 6 && p.x <= b.x + b.w + 6 && p.y >= b.y - 6 && p.y <= b.y + b.h + 6) {
         grab = b; b.sleep = false; b.vx = b.vy = 0; px = p.x - b.x; py = p.y - b.y; hist = [{ x: p.x, y: p.y, t: e.timeStamp }];
-        cv.setPointerCapture(e.pointerId); kick(); return;
+        cv.setPointerCapture(e.pointerId); if (window.SOUND) SOUND.grab(); kick(); return;
       }
     }
     tapAt = { x: p.x, y: p.y };
@@ -193,7 +193,7 @@
     if (hit({ x: t.clientX - r.left, y: t.clientY - r.top })) e.preventDefault();
   }, { passive: false });
   cv.addEventListener("pointermove", function (e) {
-    if (!grab) return;
+    if (!grab) { var hp = pos(e); cv.style.cursor = window.SCENE && SCENE.over(hp.x, hp.y) ? "pointer" : ""; return; }
     var p = pos(e);
     grab.x = Math.max(0, Math.min(W - grab.w, p.x - px)); grab.y = Math.min(H - grab.h, p.y - py);
     hist.push({ x: p.x, y: p.y, t: e.timeStamp }); if (hist.length > 5) hist.shift();
@@ -201,7 +201,7 @@
   var tapAt = null;
   cv.addEventListener("pointerup", function (e) {
     if (!tapAt) return; var p = pos(e);
-    if (Math.abs(p.x - tapAt.x) + Math.abs(p.y - tapAt.y) < 12) { spawn(EXTRA[(Math.random() * EXTRA.length) | 0], p.x); kick(); }
+    if (Math.abs(p.x - tapAt.x) + Math.abs(p.y - tapAt.y) < 12 && !(window.SCENE && SCENE.tap(p.x, p.y))) { if (window.SOUND) SOUND.pop(); spawn(EXTRA[(Math.random() * EXTRA.length) | 0], p.x); kick(); }
     tapAt = null;
   });
   cv.addEventListener("pointercancel", function () { tapAt = null; });
@@ -218,7 +218,7 @@
   $("#rebuild").addEventListener("click", function () {
     blocks = blocks.filter(function (b) { return b.home; });
     blocks.forEach(function (b) { b.sleep = true; b.vx = b.vy = 0; });
-    rebuilding = true;
+    rebuilding = true; if (window.SOUND) SOUND.rebuild();
     var t0 = performance.now(), from = blocks.map(function (b) { return { x: b.x, y: b.y, r: b.rot }; });
     (function home(t) {
       var k = reduce ? 1 : Math.min(1, (t - t0) / 700), e = 1 - Math.pow(1 - k, 3);
