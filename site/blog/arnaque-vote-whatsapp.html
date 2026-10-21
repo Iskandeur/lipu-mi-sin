@@ -27,7 +27,7 @@
 <main class="sec prose inv">
   <p class="kicker">Enquête · arnaque WhatsApp · threat intel</p>
   <h1>« Vote pour Sophie » : autopsie d'une arnaque WhatsApp</h1>
-  <p class="lede">Un matin, un message me demande de voter pour la fille d'amis à un concours de ballet. Le soir, deux proches de ma famille reçoivent presque le même. Derrière ce petit service rendu : une machine à voler des comptes WhatsApp, qui tourne depuis des mois.</p>
+  <p class="lede">Un midi, un message me demande de voter pour la fille d'amis à un concours de ballet. Le soir, deux proches de ma famille reçoivent presque le même. Derrière ce petit service rendu : une machine à voler des comptes WhatsApp, qui tourne depuis des mois.</p>
   <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>enquête menée avec Bounce, mon agent d'enquête</span></p>
 
   <div class="modes">
@@ -177,14 +177,14 @@
         <g fill="#141a28" stroke="#262f42" stroke-width="2"><rect x="8" y="40" width="156" height="160" rx="16"/><rect x="202" y="40" width="156" height="160" rx="16"/><rect x="396" y="40" width="156" height="160" rx="16"/><rect x="590" y="40" width="156" height="160" rx="16" stroke="#ff8f52"/><rect x="784" y="40" width="188" height="160" rx="16" stroke="#6fe3cc"/></g>
         <g font-size="42" text-anchor="middle"><text x="86" y="100">🔗</text><text x="280" y="100">🐣</text><text x="474" y="100">🎭</text><text x="668" y="100">💧</text><text x="878" y="100">🕸️</text></g>
         <g font-size="19" font-weight="700" text-anchor="middle"><text x="86" y="140">1 lien</text><text x="280" y="140">un site né</text><text x="474" y="140">un masque</text><text x="668" y="140" class="hot">une fuite</text><text x="878" y="140" class="teal">46 sites</text></g>
-        <g font-size="16" text-anchor="middle" class="mute"><text x="86" y="166">reçu sur</text><text x="86" y="186">WhatsApp</text><text x="280" y="166">il y a moins</text><text x="280" y="186">de 2 heures</text><text x="474" y="166">Cloudflare cache</text><text x="474" y="186">le vrai serveur</text><text x="668" y="166">un site jumeau</text><text x="668" y="186">mal caché</text><text x="878" y="166">même kit, mêmes</text><text x="878" y="186">serveurs, même équipe</text></g>
+        <g font-size="16" text-anchor="middle" class="mute"><text x="86" y="166">reçu sur</text><text x="86" y="186">WhatsApp</text><text x="280" y="166">il y a tout juste</text><text x="280" y="186">une heure</text><text x="474" y="166">Cloudflare cache</text><text x="474" y="186">le vrai serveur</text><text x="668" y="166">un site jumeau</text><text x="668" y="186">mal caché</text><text x="878" y="166">même kit, mêmes</text><text x="878" y="186">serveurs, même équipe</text></g>
         <text x="490" y="260" text-anchor="middle" font-size="18" class="mute">Chaque étape est une « piste » (un pivot) : une info qui en révèle une autre.</text>
       </svg>
     </figure>
 
     <p>Concrètement, voici ce qui s'est passé le 21 octobre :</p>
     <ol class="tl">
-      <li><time>fin de matinée</time><p>Je reçois le message. Le nom de domaine <code>balletday.click</code> a été acheté <strong>moins de deux heures plus tôt</strong>. Les escrocs jettent leurs sites comme des mouchoirs : un site neuf n'a encore aucune mauvaise réputation, donc aucun antivirus ne le bloque.</p></li>
+      <li><time>12h44</time><p>Je reçois le message. Le nom de domaine <code>balletday.click</code> a été acheté <strong>une heure plus tôt</strong>. Les escrocs jettent leurs sites comme des mouchoirs : un site neuf n'a encore aucune mauvaise réputation, donc aucun antivirus ne le bloque.</p></li>
       <li><time>début d'après-midi</time><p>J'ouvre le lien dans un ordinateur jetable et surveillé (une « sandbox », any.run). On y voit la page charger une copie de l'interface de WhatsApp Web, puis tenter de se connecter à WhatsApp avec un numéro. Le mécanisme est confirmé.</p></li>
       <li class="k"><time>après-midi</time><p>Bounce part du lien et trouve <strong>27, puis 32 sites jumeaux</strong> : même page, même chemin caché, mêmes titres traduits. Et surtout <strong>un serveur qui n'était pas caché</strong> derrière le masque, en Allemagne, qui héberge une dizaine de ces sites.</p></li>
       <li><time>19h54</time><p>Ma famille me transfère les deux messages « Eliška ». Nouveau lien, <code>1forit21.shop</code>. Nouvelle enquête Bounce.</p></li>
@@ -196,7 +196,7 @@
     <h2><span class="n">05</span>Ce qu'on a trouvé, en chiffres</h2>
     <div class="stats">
       <div class="stat"><b>46</b><span>noms de domaine reliés par nos deux enquêtes Bounce</span></div>
-      <div class="stat"><b>&lt; 2 h</b><span>l'âge du site quand le message m'est arrivé</span></div>
+      <div class="stat"><b>1 h</b><span>l'âge du site quand le message m'est arrivé</span></div>
       <div class="stat"><b>12</b><span>langues au moins pour la même fausse page</span></div>
       <div class="stat"><b>2</b><span>serveurs cachés, retrouvés chez le même hébergeur</span></div>
       <div class="stat"><b>6 mois</b><span>entre le message d'avril et celui d'octobre, au mot près</span></div>
@@ -254,7 +254,7 @@
       <p class="t">TL;DR</p>
       <ul class="tldr">
         <li>Campagne de faux votes diffusée sur WhatsApp, thème ballet, au nom d'une vraie école de Prague. Ce que vit la victime est expliqué dans la version tout public ; cette version-ci porte sur <strong>l'infrastructure et l'attribution</strong>.</li>
-        <li>Seed <code>balletday[.]click</code>, enregistré un peu plus d'une heure avant réception. Pivots menés avec Bounce, mon agent CTI, sur sources passives : <strong>46 domaines</strong> reliés, kit baptisé « FIBS Prague Ballet Vote ».</li>
+        <li>Seed <code>balletday[.]click</code>, enregistré environ une heure avant réception. Pivots menés avec Bounce, mon agent CTI, sur sources passives : <strong>46 domaines</strong> reliés, kit baptisé « FIBS Prague Ballet Vote ».</li>
         <li><strong>Deux origines hors CDN</strong>, toutes deux dans des plages attribuées à Dedik.io : <code>85.239.144[.]247</code> (AS207043) et <code>87.58.197[.]45</code> (AS62164). Le certificat de la seconde nomme <code>fws2panel[.]sbs</code>.</li>
         <li>Campagne industrialisée : numéro de campagne, numéro de template, statistiques par visiteur, build antérieur aux domaines, distributeurs de trafic avec paramètres d'affiliation.</li>
         <li>Lien avec <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">ma vague d'avril 2026</a> : même texte de leurre au mot près, mais <strong>aucune infrastructure commune</strong>. Deux hypothèses restent ouvertes : un opérateur unique, ou un kit loué à plusieurs équipes.</li>
@@ -267,7 +267,7 @@
 
     <h3>Chronologie de l'enquête (21/10/2026, heure de Paris)</h3>
     <ol class="tl">
-      <li><time>12:46</time><p>Réception de <code>balletday[.]click/l/fibs2026e10</code>. RDAP : créé à 11:43 chez Dynadot, derrière un proxy de confidentialité ; certificat Let's Encrypt du jour.</p></li>
+      <li><time>12:44</time><p>Réception de <code>balletday[.]click/l/fibs2026e10</code>. RDAP : créé à 11:43 chez Dynadot, derrière un proxy de confidentialité ; certificat Let's Encrypt du jour.</p></li>
       <li><time>13:07</time><p>Première passe passive : front Cloudflare, titre de page en russe, identifiants de campagne dans la page.</p></li>
       <li><time>13:12</time><p>Comparaison avec la vague d'avril (favicon, hash du titre, hash JS, certificats, NS, IP) : aucune empreinte commune.</p></li>
       <li class="k"><time>13:22</time><p>Run Bounce sur l'URL complète. Le premier passage bute sur le CDN ; je le relance avec des consignes de pivots ciblés à 14:55 puis 15:55.</p></li>
