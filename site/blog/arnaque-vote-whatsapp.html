@@ -28,7 +28,7 @@
   <p class="kicker">Enquête · arnaque WhatsApp · threat intel</p>
   <h1>« Vote pour Sophie » : autopsie d'une arnaque WhatsApp</h1>
   <p class="lede">Un midi, un message me demande de voter pour la fille d'amis à un concours de ballet. Le soir, deux proches de ma famille reçoivent presque le même. Derrière ce petit service rendu : une machine à voler des comptes WhatsApp, qui tourne depuis des mois.</p>
-  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>enquête menée avec Bounce, mon agent d'enquête</span></p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>avec l'aide de Bounce</span></p>
 
   <div class="modes">
     <div class="switch" role="group" aria-label="Version de l'article">
@@ -64,7 +64,7 @@
     </div>
 
     <p>Le message a l'air banal. Il vient d'un contact, il est poli, il demande un geste qui ne coûte rien. Et c'est justement pour ça qu'il marche. Je l'ai reçu le 21 octobre. Le soir même, deux personnes de ma famille m'ont transféré presque le même, cette fois pour « Eliška » et « un cours de danse gratuit ».</p>
-    <p>Je travaille sur des agents d'IA qui mènent des enquêtes en cybersécurité. Alors plutôt que de simplement supprimer le message, j'ai tiré le fil. Voici ce qu'il y a au bout.</p>
+    <p>Plutôt que de simplement le supprimer, j'ai voulu comprendre ce qu'il y avait derrière. Voici ce qu'on y trouve.</p>
 
     <h2><span class="n">01</span>Comment marche l'arnaque, en cinq étapes</h2>
     <ol class="steps">
@@ -167,7 +167,7 @@
 
     <h2><span class="n">04</span>Comment on enquête sur une arnaque comme celle-ci</h2>
     <p>Un site internet, c'est un peu comme une boutique. Il a une <strong>enseigne</strong> (le nom, <code>balletday.click</code>), une <strong>adresse</strong> (le serveur où il est hébergé), une <strong>carte d'identité</strong> (son certificat de sécurité, le petit cadenas) et un <strong>registre de commerce</strong> (qui a acheté le nom, quand). Les escrocs cachent tout ça. Mais il y a presque toujours une trace qui dépasse.</p>
-    <p>Mon travail, c'est de tirer sur ces traces, une par une. Je le fais avec <strong>Bounce</strong>, un agent d'IA que je développe : on lui donne un lien suspect, il mène l'enquête tout seul, piste après piste, et dessine au fur et à mesure la carte de ce qu'il trouve. Moi, je relis, je vérifie, je le relance sur les bonnes pistes, et je tranche.</p>
+    <p>Enquêter, c'est tirer sur ces traces, une par une. Pour celle-ci, j'ai utilisé <strong>Bounce</strong>, un outil d'enquête automatisé que je développe : on lui donne un lien suspect, il suit les pistes une à une et dessine la carte de ce qu'il trouve. Ce qu'il rapporte doit ensuite être relu et vérifié, piste par piste.</p>
 
     <figure class="wide diagram" aria-label="Schéma : tirer le fil d'une enquête">
       <svg viewBox="0 0 980 300" role="img" aria-labelledby="fil-t">
@@ -195,7 +195,7 @@
 
     <h2><span class="n">05</span>Ce qu'on a trouvé, en chiffres</h2>
     <div class="stats">
-      <div class="stat"><b>46</b><span>noms de domaine reliés par nos deux enquêtes Bounce</span></div>
+      <div class="stat"><b>46</b><span>noms de domaine reliés à cette campagne</span></div>
       <div class="stat"><b>1 h</b><span>l'âge du site quand le message m'est arrivé</span></div>
       <div class="stat"><b>12</b><span>langues au moins pour la même fausse page</span></div>
       <div class="stat"><b>2</b><span>serveurs cachés, retrouvés chez le même hébergeur</span></div>
@@ -241,7 +241,7 @@
       <li><time>mars-mai 2026 · Tchéquie, Suisse</time><p>La société Whalebone recense plus de 200 domaines dans plus de 15 pays. Le centre national suisse pour la cybersécurité donne l'exemple de « Sofia ».</p></li>
       <li class="k"><time>août-octobre 2026 · Autriche, Espagne</time><p>Le site autrichien Mimikama décrit la fausse « école de ballet de Prague » dès août. Et le 21 octobre, le jour où je reçois mon message, l'Espagne lance une alerte nationale sur… Eliska et Sofie.</p></li>
     </ol>
-    <p><strong>Ce que notre enquête ajoute</strong> : le lien avec la vague d'avril que j'avais documentée, les deux serveurs cachés derrière les sites et la piste de leur « panneau de contrôle », et les sites rabatteurs. Et une version en français : je n'ai trouvé aucune alerte dédiée à cette arnaque chez les autorités françaises.</p>
+    <p><strong>Ce que cette enquête apporte en plus</strong> : le lien avec la vague d'avril, les deux serveurs cachés derrière les sites et la piste de leur « panneau de contrôle », et les sites rabatteurs. Et une version en français : je n'ai trouvé aucune alerte dédiée à cette arnaque chez les autorités françaises.</p>
     <p class="note">Les sources détaillées sont listées en bas de la version technique.</p>
   </article>
 
@@ -254,15 +254,15 @@
       <p class="t">TL;DR</p>
       <ul class="tldr">
         <li>Campagne de faux votes diffusée sur WhatsApp, thème ballet, au nom d'une vraie école de Prague. Ce que vit la victime est expliqué dans la version tout public ; cette version-ci porte sur <strong>l'infrastructure et l'attribution</strong>.</li>
-        <li>Seed <code>balletday[.]click</code>, enregistré environ une heure avant réception. Pivots menés avec Bounce, mon agent CTI, sur sources passives : <strong>46 domaines</strong> reliés, kit baptisé « FIBS Prague Ballet Vote ».</li>
+        <li>Seed <code>balletday[.]click</code>, enregistré environ une heure avant réception. Pivots sur sources passives, avec l'agent CTI Bounce : <strong>46 domaines</strong> reliés, kit baptisé « FIBS Prague Ballet Vote ».</li>
         <li><strong>Deux origines hors CDN</strong>, toutes deux dans des plages attribuées à Dedik.io : <code>85.239.144[.]247</code> (AS207043) et <code>87.58.197[.]45</code> (AS62164). Le certificat de la seconde nomme <code>fws2panel[.]sbs</code>.</li>
         <li>Campagne industrialisée : numéro de campagne, numéro de template, statistiques par visiteur, build antérieur aux domaines, distributeurs de trafic avec paramètres d'affiliation.</li>
-        <li>Lien avec <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">ma vague d'avril 2026</a> : même texte de leurre au mot près, mais <strong>aucune infrastructure commune</strong>. Deux hypothèses restent ouvertes : un opérateur unique, ou un kit loué à plusieurs équipes.</li>
+        <li>Lien avec <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">la vague d'avril 2026</a> : même texte de leurre au mot près, mais <strong>aucune infrastructure commune</strong>. Deux hypothèses restent ouvertes : un opérateur unique, ou un kit loué à plusieurs équipes.</li>
       </ul>
     </div>
 
     <h2><span class="n">01</span>Contexte et méthode</h2>
-    <p>Le 21/10/2026, je reçois le leurre. Le même soir, deux proches de ma famille reçoivent une variante pointant vers <code>1forit21[.]shop</code>. J'ai mené l'enquête en binôme avec <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">code</a>), l'agent de threat intelligence que je développe. Il part d'un observable, choisit lui-même ses pivots, construit le graphe d'infrastructure en direct et rédige un rapport avec son hypothèse de travail, ses preuves et son autocritique. Mon rôle : orienter les pivots, croiser avec mes enquêtes passées, relire chaque affirmation, écarter les faux liens et trancher.</p>
+    <p>Le 21/10/2026, je reçois le leurre. Le même soir, deux proches de ma famille reçoivent une variante pointant vers <code>1forit21[.]shop</code>. L'enquête s'appuie sur <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">code</a>), un agent de threat intelligence : il part d'un observable, choisit ses pivots, construit le graphe d'infrastructure et rédige un rapport avec son hypothèse de travail, ses preuves et son autocritique. Ses pivots ont été orientés à la main, croisés avec la vague d'avril et relus un à un avant d'être retenus.</p>
     <div class="box teal"><p class="t">Règles d'engagement</p><p>Sources passives et publiques : DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, DNS passif. Une détonation en sandbox (any.run). Rien saisi sur les pages, aucun contournement de protection, aucune personne physique nommée. Indicateurs « défangés » (<code>[.]</code>). Les éléments issus de rapports tiers non publics ne sont pas repris ici.</p></div>
 
     <h3>Chronologie de l'enquête (21/10/2026, heure de Paris)</h3>
@@ -297,7 +297,7 @@
       <li><strong>Construit avant les domaines.</strong> Le paramètre de version des fichiers de traduction date le build du 19/10 à 04:09, deux jours avant l'enregistrement de <code>balletday[.]click</code>. Le kit est stable ; les domaines sont consommables.</li>
       <li><strong>Pensé pour l'Europe entière.</strong> Le pack de traduction couvre 42 langues. Les scans publics urlscan montrent des titres dans au moins 12 langues (FR, DE, EN, ES, IT, NL, PT, FI, PL, NO, IS, TR). Le titre par défaut est en russe, ce qui recoupe l'analyse de Whalebone sur un kit écrit par des russophones. C'est un indice, pas une attribution.</li>
       <li><strong>Du trafic acheté en plus du bouche-à-oreille.</strong> Pixels Meta et TikTok, et des distributeurs de trafic (<code>schoolbalet[.]club</code>, <code>kiddancebattle[.]web[.]id</code>, <code>baletkids[.]com</code>) qui renvoient vers les pages avec des paramètres <code>sub_id_16</code>/<code>sub_id_17</code>, la convention de nommage du traqueur Keitaro. C'est la signature d'un réseau d'affiliés.</li>
-      <li><strong>Un faux pivot écarté.</strong> La page charge aussi un traceur publicitaire depuis <code>tk.mowell[.]tech</code>. Une recherche urlscan le trouve sur près de 2 900 pages sans rapport, surtout des boutiques en ligne : c'est un service publicitaire mutualisé, pas un lien entre campagnes. Bounce et moi l'avons exclu du graphe.</li>
+      <li><strong>Un faux pivot écarté.</strong> La page charge aussi un traceur publicitaire depuis <code>tk.mowell[.]tech</code>. Une recherche urlscan le trouve sur près de 2 900 pages sans rapport, surtout des boutiques en ligne : c'est un service publicitaire mutualisé, pas un lien entre campagnes. Il a été exclu du graphe.</li>
     </ul>
     <div class="pair">
       <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="La page de vote en français."><figcaption>Le template 27, en français (scan public urlscan).</figcaption></figure>
@@ -355,14 +355,14 @@
     </div>
     <p>Je penche pour la B, sans trancher. Ce qui ferait basculer : une IP d'origine commune aux deux vagues, un certificat partagé, ou le serveur d'origine réel de la vague d'octobre. Rien de tel n'est accessible par les seules sources passives.</p>
 
-    <h2><span class="n">07</span>Ce que ça dit de la méthode</h2>
-    <p>Trois choses que j'aime bien, dans cette enquête, parce qu'elles montrent le métier autant que l'outil :</p>
+    <h2><span class="n">07</span>Notes de méthode</h2>
+    <p>Trois points qui ont compté dans cette enquête :</p>
     <ul>
-      <li><strong>Désamorcer avant de pivoter.</strong> Le réflexe du débutant, c'est de sauter sur le JARM ou sur une IP Cloudflare partagée et de « trouver » des milliers de liens imaginaires. La valeur est dans ce qu'on <em>écarte</em> : le JARM générique, le pixel publicitaire mutualisé, le registrar bon marché.</li>
+      <li><strong>Désamorcer avant de pivoter.</strong> Pivoter sur un JARM ou une IP Cloudflare partagés fait « trouver » des milliers de liens imaginaires. Une bonne partie du travail consiste à <em>écarter</em> : le JARM générique, le pixel publicitaire mutualisé, le registrar bon marché.</li>
       <li><strong>Une seule fuite suffit.</strong> Tout le front est masqué ; il a suffi d'un domaine frère mal configuré pour révéler une origine, et de là tout le reste.</li>
-      <li><strong>Nommer son niveau de confiance.</strong> « Même acteur » n'est pas un fait, c'est une hypothèse à 15 ou 60 %. Le dire, c'est la moitié du travail de threat intel.</li>
+      <li><strong>Nommer son niveau de confiance.</strong> « Même acteur » n'est pas un fait, c'est une hypothèse, plus ou moins probable. Il faut le dire comme tel.</li>
     </ul>
-    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="Graphe Bounce de l'enquête balletday.click et son journal de raisonnement."><figcaption><b>L'enquête <code>balletday[.]click</code>.</b> À droite, le journal : Bounce explique chaque pivot, ce qu'il désamorce et pourquoi. C'est ce raisonnement, pas seulement le graphe, que je cherche à rendre fiable.</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="Graphe Bounce de l'enquête balletday.click et son journal de raisonnement."><figcaption><b>L'enquête <code>balletday[.]click</code>.</b> À droite, le journal : Bounce explique chaque pivot, ce qu'il désamorce et pourquoi. C'est ce raisonnement écrit, plus que le graphe, qui permet de vérifier les conclusions.</figcaption></figure>
 
     <h2><span class="n">08</span>Indicateurs (défangés)</h2>
     <div class="box">
