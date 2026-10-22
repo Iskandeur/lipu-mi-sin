@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="id" dir="ltr" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrixHub: mesin pencari data curian Anda · Alexandre Pinoteau</title>
+<meta name="description" content="BrixHub mengklaim mengindeks 14 miliar data pribadi curian dan menawarkan penghapusan profil Anda dengan bayaran. Siapa, apa, bagaimana, apakah ini legal, mengapa ia tetap daring? Investigasinya, dalam versi untuk umum dan versi teknis.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BrixHub: mesin pencari data curian Anda">
+<meta property="og:description" content="Ia mengklaim mengindeks 14 miliar profil dan menjual penghapusan profil Anda. Dibidik oleh pengadilan, tetap daring. Bagaimana ia bertahan, dan apa kata hukum.">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/brixhub/brixhub-accueil.webp">
+<meta property="og:locale" content="id_ID">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=2">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"brixhub",lang:"id",langs:["fr","en","es","it","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← blog</a></nav>
+  <label class="lang"><span class="sr">Bahasa</span><select id="blog-lang" aria-label="Bahasa"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Investigasi · kebocoran data · OSINT</p>
+  <h1>BrixHub: mesin pencari data curian Anda</h1>
+  <p class="lede">Sebuah situs tempat Anda mengetikkan nama Anda, lalu ia memuntahkan alamat, nomor telepon, dan nomor jaminan sosial Anda. Ia mengaku mengindeks 14 miliar profil, yang berasal dari peretasan. Dan ia menawari Anda untuk menghapus profil Anda… dengan bayaran. Ia dibidik oleh pengadilan Prancis, namun tetap saja daring. Aku telah menelusuri bagaimana ia bertahan.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>dengan bantuan Bounce</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="Versi artikel">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>Untuk umum<small>memahami dan melindungi diri</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>Teknis<small>infra, rotasi, hukum</small></span></button>
+    </div>
+    <p class="hint2">Dua artikel, satu investigasi yang sama. Kamu bisa berpindah dari satu ke yang lain kapan saja.</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <div class="box hot">
+      <p class="t">Kalau kamu cuma baca ini</p>
+      <ol class="rules">
+        <li><span><strong>Jangan gunakan</strong>, bahkan karena penasaran, bahkan untuk mencari namamu sendiri. Mencari orang lain bisa membuatmu terancam tuntutan, dan pengadilan Prancis telah menunjuk seorang jaksa atas situs ini.</span></li>
+        <li><span><strong>Jangan pernah membayar</strong> untuk menghapus profilmu, dan <strong>jangan pernah mengirim kartu identitasmu</strong>. Kamu akan membayar orang-orang yang memegang data curianmu, dan memberi mereka satu data lagi.</span></li>
+        <li><span><strong>Kamu bisa memeriksa kebocoran datamu secara gratis dan aman</strong> di <a href="https://haveibeenpwned.com">haveibeenpwned.com</a>, layanan sah yang tidak menampilkan data apa pun.</span></li>
+        <li><span><strong>Kalau datamu berkeliaran</strong>: ganti sandi-sandi pentingmu, aktifkan autentikasi dua faktor, dan pantau rekening bankmu.</span></li>
+      </ol>
+    </div>
+
+    <p>BrixHub adalah sebuah mesin pencari. Tapi alih-alih halaman web, ia menggali <strong>kebocoran data</strong>: berkas-berkas yang dicuri saat peretasan perusahaan dan instansi pemerintah. Anda mengetikkan sebuah nama, nomor telepon, e-mail, dan ia memberi Anda sebuah profil. Ia mengklaim <strong>lebih dari 14 miliar entri</strong>.</p>
+    <p>Pada Oktober 2026, pers Prancis mengangkat kasusnya dan menteri Digital membawanya ke pengadilan. Banyak orang bertanya-tanya apa ini, dan apakah ia bisa digunakan. Jawaban singkatnya: <strong>tidak, jangan sekali-kali</strong>. Inilah alasannya, dan bagaimana situs semacam ini bekerja.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/brixhub-accueil.webp" width="1400" height="1050" loading="lazy" alt="Halaman beranda BrixHub: latar gelap, sebuah mata bergaya sirkuit cetak, slogan « BrixHub tetap dapat diakses », penghitung 14 556 649 351 entri, tombol « Mulai pencarian » dan « Penghapusan GDPR »."><figcaption><b>Etalasenya.</b> Desain yang rapi, penghitung di angka 14 miliar, sebuah tombol « Penghapusan GDPR », dan bahkan sebuah gelembung « bot Telegram kami mengirimimu alamat baru jika situs berubah atau diblokir ». Semuanya dirancang untuk menenangkan dan untuk bertahan dari pemblokiran.</figcaption></figure>
+
+    <h2><span class="n">01</span>Dari mana data ini berasal?</h2>
+    <p>Dari kebocoran yang nyata. Beberapa tahun terakhir, banyak perusahaan dan lembaga Prancis kecurian berkas pelanggan mereka: operator telekomunikasi, perusahaan asuransi bersama, situs perdagangan, layanan publik. Setiap kebocoran berarti jutaan orang yang nama, alamat, nomor telepon, atau yang lebih buruk, tersebar bebas.</p>
+    <p>Situs seperti BrixHub tidak meretas apa pun sendiri. Ia <strong>mengumpulkan</strong> berkas-berkas yang tersebar ini, menyilangkannya, dan membuatnya <strong>bisa dicari hanya dengan satu klik</strong>. Di situlah seluruh masalahnya: satu kebocoran yang terpisah menyusahkan untuk dimanfaatkan, tapi sebuah mesin yang menggabungkan nama, alamat, nomor telepon, dan nomor jaminan sosial Anda dalam satu profil adalah senjata untuk perundungan, pencurian identitas, dan penipuan.</p>
+    <div class="box"><p class="t">Perlu dicatat</p><p>BrixHub dengan bangga menampilkan nama lembaga-lembaga publik sebagai sumber. Tak satu pun yang mengonfirmasinya, dan aku tidak mengulang klaim-klaim ini: itu adalah ucapannya, bukan fakta yang mapan.</p></div>
+
+    <h2><span class="n">02</span>Bisnis sebenarnya: menjual ketenanganmu sendiri kepadamu</h2>
+    <p>Yang paling licik bukanlah pencariannya. Melainkan opsi <strong>« Penghapusan GDPR »</strong>. Situs itu menawari Anda, dengan bayaran, untuk menghapus profil Anda. Sekitar beberapa euro untuk segelintir profil, menurut kesaksian. Kadang, penghapusan « gratis »… sebagai ganti foto kartu identitas Anda.</p>
+    <div class="box hot">
+      <p class="t">Ini jebakan di dalam jebakan</p>
+      <p>Anda akan membayar orang-orang yang memegang data curian Anda, agar mereka berjanji menghapusnya. Tidak ada yang menjamin mereka melakukannya. Dan jika Anda mengirim kartu identitas Anda, Anda memberi mereka satu data lagi, yang kali ini benar-benar asli. Menteri Digital menyatakannya di depan umum pada 5 Oktober: « jangan pernah membayar untuk menghapus data Anda » (<a href="https://www.techniques-ingenieur.fr/actualite/breves-afp/donnees-personnelles-la-ministre-du-numerique-saisit-la-justice-contre-brixhub-164449/">AFP</a>). Jadi: <strong>jangan bayar, jangan kirim apa pun</strong>.</p>
+    </div>
+    <p>Dan ini bukan sekadar peringatan teoretis. Di X (dulu Twitter), para pengguna internet bercerita telah membayar untuk menghapus profil mereka: profil itu memang hilang… beberapa hari, sebelum <strong>muncul kembali</strong>. Wajar: menghapus satu baris dari tampilan tidak membuat data itu hilang dari berkas curian, yang disimpan oleh operatornya. Ia bisa menayangkannya lagi, menjualnya kembali, atau membuat Anda membayar lagi.</p>
+
+    <figure class="shot"><img src="img/brixhub/brixhub-recherche.webp" width="1400" height="1050" loading="lazy" alt="Halaman pencarian BrixHub: kolom-kolom « Nama », « Nama depan », « Nama lahir », « Nama tampilan », dan bagian-bagian yang terlipat « Kelahiran », « Kontak », « Lokasi »."><figcaption>Formulir pencarian. Di sana kita memasukkan nama, nama depan, tanggal lahir. Janji yang ditampilkan: « Satu kriteria. Semua yang telah bocor. »</figcaption></figure>
+
+    <h2><span class="n">03</span>Mengapa ia tidak ditutup?</h2>
+    <p>Karena menutup situs seperti ini jauh lebih sulit daripada kelihatannya. BrixHub bermain di tiga sisi:</p>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 18l22 10v16c0 14-9 22-22 26-13-4-22-12-22-26V28z" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linejoin="round"/><path d="M34 44l7 7 13-14" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><h3>Sebuah tabir</h3><p>Situs itu bersembunyi di balik perantara teknis (Cloudflare) yang menyamarkan alamat server aslinya. Kita melihat fasadnya, bukan gedungnya.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M26 34h36M26 44h36M26 54h36" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="34" r="3" fill="#ffc977"/><circle cx="20" cy="44" r="3" fill="#ffc977"/><circle cx="20" cy="54" r="3" fill="#ffc977"/></svg>
+        <div><h3>Alamat-alamat habis pakai</h3><p>Ia berganti nama domain segera setelah satu diblokir: .fun, .net, .site, .org, .cc, lalu .to, .ru, .st… Saat satu pintu tertutup, pintu lain sudah terbuka.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M28 44a16 16 0 0 1 32 0" fill="none" stroke="#ff8f52" stroke-width="3"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/><path d="M44 50v12M34 62h20" stroke="#ff8f52" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>Negara-negara yang permisif</h3><p>Ia memilih ekstensi yang dikelola oleh negara-negara kecil (São Tomé untuk .st, Tonga untuk .to) yang tidak mengawasi konten dan hanya bertindak atas putusan pengadilan.</p></div>
+      </li>
+    </ol>
+    <p>Hasilnya: ia tidak bisa dijatuhkan dengan satu klik. Yang menjatuhkan situs-situs ini, umumnya, bukanlah penutupan domain, melainkan <strong>penangkapan orang-orang yang menjalankannya</strong>. Dan itu butuh waktu.</p>
+
+    <h2><span class="n">04</span>Apa kata hukum</h2>
+    <p>Aku bukan ahli hukum, tapi inilah yang muncul dari sumber-sumber:</p>
+    <ul>
+      <li><strong>Melihat situsnya</strong> bukanlah, dengan sendirinya, sebuah pelanggaran yang teridentifikasi.</li>
+      <li><strong>Mencari orang lain</strong>, lalu menyimpan, membagikan, atau menggunakan hasilnya, sebaliknya membuat Anda menghadapi risiko nyata: penadahan, pengumpulan data secara curang, bahkan perundungan atau pencurian identitas jika Anda menyasar seseorang.</li>
+      <li><strong>Mengoperasikan situsnya</strong> (mereka yang menjalankannya) termasuk dalam akses dan ekstraksi data secara curang: beberapa tahun penjara dan denda besar.</li>
+    </ul>
+    <p>Pada 5 Oktober 2026, menteri Digital membawa perkara ini ke jaksa Paris. Nasihatnya, yang dikutip di mana-mana: « jangan pernah membayar untuk menghapus data Anda ».</p>
+
+    <div class="box teal">
+      <p class="t">Mungkin kamu ada di dalam berkas mereka. Apa yang harus dilakukan?</p>
+      <ol class="rules">
+        <li><span><strong>Jangan memeriksanya di BrixHub.</strong> Gunakan <a href="https://haveibeenpwned.com">haveibeenpwned.com</a> (masukkan e-mailmu, ia memberitahumu di kebocoran-kebocoran dikenal mana ia muncul).</span></li>
+        <li><span><strong>Ganti sandi</strong> akun-akun yang terdampak, dan aktifkan autentikasi dua faktor di mana-mana.</span></li>
+        <li><span><strong>Waspadai penipuan yang menyasar</strong>: dengan data ini, orang bisa menghubungimu dengan menyamar sebagai bankmu atau layanan publik. Kalau ragu, tutup telepon dan hubungi kembali nomor resminya.</span></li>
+        <li><span><strong>Kalau profilmu daring</strong>: simpan tangkapan layar profilmu sendiri saja sebagai bukti, laporkan, dan ajukan ke CNIL jika tidak ada yang berubah. Jangan bayar.</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">Bagikan</p>
+      <p>Banyak orang akan « sekadar memeriksa nama mereka » tanpa tahu bahwa itu ide buruk. Beri tahu mereka.</p>
+      <div class="share"><button type="button" data-share="simple">Bagikan artikel</button><button type="button" class="ghost" data-set-mode="tech" data-jump>Baca versi teknis →</button></div>
+    </div>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li><strong>BrixHub</strong>: mesin pencari data yang berasal dari kebocoran, berbahasa Prancis, mengklaim ~14,5 miliar entri dan menjual penghapusan profil. Perkara dibawa ke jaksa Paris pada 05/10/2026 (art. 40 CPP).</li>
+        <li><strong>Rotasi domain pada selusin TLD</strong> sejak Februari 2026: <code>.fun → .net → .site → .org → .cc → .to → .ru → .st</code>. Tiga aktif per 21/10 (<code>.to</code>, <code>.ru</code>, <code>.st</code>), pasangan NS Cloudflare yang sama.</li>
+        <li><strong>Origin web tak pernah terungkap</strong> (semua di balik Cloudflare). Satu-satunya infra di luar CDN: sebuah <strong>server surel khusus</strong>, <code>195.58.146[.]225</code> (M247), ke mana ketiga domain mendelegasikan surelnya.</li>
+        <li><strong>Ketahanan yang disengaja</strong>: ccTLD dengan kerja sama rendah (.st São Tomé, .to Tonga), proxy privasi, bot Telegram untuk mengumumkan alamat-alamat baru.</li>
+        <li>Investigasi pasif (Bounce + urlscan + pers). <strong>Tidak ada yang dimasukkan, tidak ada permintaan ke layanan itu di luar peramban biasa, tidak ada atribusi.</strong></li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>Konteks dan metode</h2>
+    <p>BrixHub adalah sebuah « mesin pencari kebocoran » (<em>data leak search engine</em>) berbahasa Prancis. Ia mengindeks basis data yang berasal dari kompromi dan menawarkan pencarian berdasarkan nama, plus penghapusan profil berbayar. Ia dibidik di Prancis oleh sebuah laporan pidana sejak 05/10/2026. Pertanyaan awalnya sederhana: bisakah API-nya digunakan? Investigasi ini menjawabnya.</p>
+    <div class="box teal"><p class="t">Aturan keterlibatan</p><p>Sumber publik dan pasif: WHOIS/RDAP dari register, DNS, Certificate Transparency, urlscan.io, VirusTotal, Shodan/InternetDB, DNS pasif, pers. Lintasan pertama dengan agen CTI Bounce, dilengkapi secara manual. <strong>Aku tidak pernah terhubung ke layanan itu, tidak menjalankan pencarian apa pun di sana, dan tidak menembus proteksi apa pun</strong> (halaman itu menjawab dengan tantangan Cloudflare 403 kepada klien tanpa peramban, tidak ditembus). Domain di-defang (<code>[.]</code>).</p></div>
+
+    <h2><span class="n">02</span>Apa yang diklaim layanan ini</h2>
+    <p>Menurut halaman-halamannya sendiri dan pers (angka harus dianggap sebagai klaim, bukan fakta):</p>
+    <div class="stats">
+      <div class="stat"><b>14,5 miliar</b><span>entri yang diklaim (penghitung di halaman beranda)</span></div>
+      <div class="stat"><b>~5 €</b><span>untuk menghapus 10 profil, menurut kesaksian</span></div>
+      <div class="stat"><b>10→90 €</b><span>langganan, « per bulan » hingga « seumur hidup »</span></div>
+      <div class="stat"><b>12+</b><span>domain berturut-turut sejak Februari 2026</span></div>
+    </div>
+    <p>Pencarian berdasarkan nama, e-mail, telepon, pengenal Discord; data yang diklaim hingga NIR dan IBAN; cakupan Prancis, Belgia, Swiss. Sebuah tab « pohon keluarga », sebuah « API terbuka, tanpa kunci, dibatasi per IP » (ini jawaban atas pertanyaan awal: ia menampilkan sebuah API, menggunakannya sama saja dengan sengaja mengekstraksi data curian), sebuah bot Telegram dan sebuah akun X. Keterangan hukum menyebut sebuah « perusahaan yang berbasis di Rusia », tanpa nama. <strong>Tidak satu pun dari klaim-klaim ini bisa diverifikasi dari luar, dan aku tidak menganggapnya sebagai sesuatu yang pasti.</strong></p>
+
+    <h2><span class="n">03</span>Infrastruktur: sebuah fasad, tanpa gedung</h2>
+    <p>Seluruh web berada di balik Cloudflare, pada ketiga domain aktif. Origin-nya tidak pernah bocor. Sidik jari yang dibagi bersama memastikan operator yang sama:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Domain</th><th>Dibuat</th><th>Register</th><th>Status per 21/10</th></tr></thead>
+      <tbody>
+        <tr><td><code>brixhub[.]to</code></td><td>26/06/2026</td><td>Tonic (Tonga)</td><td class="y">aktif</td></tr>
+        <tr><td><code>brixhub[.]ru</code></td><td>27/08/2026</td><td>RU-CENTER, « Private Person », tidak terverifikasi</td><td class="y">aktif</td></tr>
+        <tr><td><code>brixhub[.]st</code></td><td>30/09/2026</td><td>ST Registry (São Tomé), pemilik disamarkan</td><td class="y">aktif (kanonik)</td></tr>
+        <tr><td colspan="4" class="note">+ <code>.fun</code>, <code>.net</code>, <code>.site</code>, <code>.org</code>, <code>.top</code>, <code>.cc</code> (Feb.–Jun. 2026): disuspensi oleh registrar-nya atau dimatikan.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Tiga penanda mengaitkan domain-domain aktif: pasangan name server Cloudflare yang sama (<code>irena</code> / <code>weston</code>), kebijakan SPF yang sama (<code>v=spf1 mx:brixhub[.]to -all</code>) dan judul halaman yang sama. Domain <code>.st</code> lahir pada 30/09, <strong>lima hari sebelum laporan sang menteri</strong>.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/bounce-brixhub.webp" width="1600" height="1170" loading="lazy" alt="Grafik Bounce investigasi brixhub.st: ketiga domain brixhub yang terhubung lewat name server, sertifikat, dan sebuah server surel bersama 195.58.146.225; di kanan, catatan agen."><figcaption><b>Grafik Bounce.</b> Ketiga domain (<code>.st</code>, <code>.to</code>, <code>.ru</code>) menyatu ke pasangan NS Cloudflare yang sama dan server surel yang sama. Di kanan, catatan agen, yang menjinakkan IP Cloudflare (tak berguna sebagai pivot) dan berfokus pada apa yang mencuat.</figcaption></figure>
+
+    <h3>Satu-satunya kebocoran: server surel</h3>
+    <p>Origin web disamarkan, tapi <strong>surelnya</strong> tidak. Ketiga domain mendelegasikan surelnya (MX dan SPF) ke <code>mail.brixhub[.]to</code>, yang resolve ke sebuah IP <strong>di luar Cloudflare</strong>:</p>
+    <div class="req"><b>mail.brixhub[.]to</b> → <span class="t">195.58.146[.]225</span>
+  AS9009 <b>M247</b> · ptr <span class="s">mail.brixhub.to</span>
+  Postfix + OpenSSH 9.6p1 · Ubuntu 24.04
+  sertifikat SMTP tandatangan-sendiri, CN=mail.brixhub.to (04/10/2026, berlaku 10 tahun)
+  tidak ada domain lain yang teramati pada IP ini di DNS pasif</div>
+    <p>Ini satu-satunya titik infrastruktur milik operator yang berhasil diungkap investigasi ini. Ia tidak « membongkar » situs webnya (di-hosting di tempat lain, di balik Cloudflare), tapi ini pivot yang kokoh: sebuah IP khusus, hosting yang bernama, sertifikat bertanggal. Bounce sendiri mencatatnya dalam otokritiknya: IP « mail » ini adalah target pengayaan yang paling menarik, dan titik lemah dari konfigurasi operatornya.</p>
+
+    <h2><span class="n">04</span>Mengapa ia tetap daring</h2>
+    <p>Ketahanan BrixHub sama sekali bukan kebetulan. Ia bersandar pada empat pilihan:</p>
+    <ul>
+      <li><strong>Sebuah front Cloudflare</strong> yang menyamarkan hosting asli dan menyerap laporan penyalahgunaan.</li>
+      <li><strong>Rotasi domain</strong> pada berbagai TLD. gTLD klasik (.fun, .cc, .site, .org) disuspensi oleh registrar-nya antara Juni dan Agustus; operatornya tiap kali bermigrasi ke ccTLD yang lebih kooperatif.</li>
+      <li><strong>Register dengan kerja sama rendah.</strong> Register <code>.st</code> (São Tomé, back-end Swedia) menegaskan dalam kebijakannya bahwa ia « tidak mengawasi konten » dan hanya membatalkan sebuah domain atas putusan pengadilan yang berwenang. Register <code>.to</code> (Tonga, operator Tonic) punya reputasi yang sama, meski ia sudah pernah menyuspensi domain atas perintah pengadilan.</li>
+      <li><strong>Sebuah kanal cadangan.</strong> Sebuah bot Telegram mengumumkan alamat baru di tiap peralihan, dan surelnya tetap tertambat pada <code>.to</code> apa pun yang terjadi. Layanan ini bertahan dari hilangnya salah satu domainnya mana pun.</li>
+    </ul>
+    <p>Dengan kata lain: <strong>bukan penyitaan domain yang menjatuhkan layanan-layanan ini, melainkan penangkapan para operatornya.</strong> Preseden-preseden menunjukkannya: WeLeakInfo (disita pada 2020), RaidForums (2022), para administrator BreachForums (ditangkap di Prancis pada 2025), dan beberapa « lookup » Prancis yang dibongkar pada 2026 disertai penangkapan. Setiap kali, penyelidikan yudisial, bukan pemblokiran teknis.</p>
+
+    <h2><span class="n">05</span>Apakah ini legal? Bisakah API mereka digunakan?</h2>
+    <p>Tidak, dan tidak. Ringkasan hukum (berdasarkan analisis pengacara dan pers; aku bukan ahli hukum):</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Pihak</th><th>Apa yang dipertaruhkan</th></tr></thead>
+      <tbody>
+        <tr><td>Operator</td><td>Akses dan ekstraksi data secara curang (art. 323-1 dst. code pénal), hingga beberapa tahun penjara dan denda besar.</td></tr>
+        <tr><td>Pengguna</td><td>Mengakses bukanlah pelanggaran yang teridentifikasi dengan sendirinya. Tapi mencari pihak ketiga lalu <strong>menyimpan, membagikan, atau menggunakan</strong> hasilnya membuka risiko penadahan (art. 321-1), pengumpulan secara curang (226-18), bahkan perundungan atau pencurian identitas (223-1-1). Membayar atau mengirim kartu identitas memperberat keterpaparan.</td></tr>
+        <tr><td>API</td><td>Akses otomatis ke basis data curian adalah ekstraksi yang disengaja dan dalam skala besar. Dan itu mendanai sebuah layanan pemerasan. Harus dihindari.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Mahkamah Kasasi bahkan mengakui pada Februari 2026 bahwa informasi tak berwujud bisa menjadi objek penadahan. Perkaranya menyangkut rahasia bisnis, bukan kebocoran data, tapi prinsip itu melemahkan anggapan bahwa « menggunakan » data ini tidak berisiko.</p>
+    <div class="box hot"><p class="t">Alternatif yang baik</p><p>Untuk memeriksa kebocoran <strong>milikmu sendiri</strong>, tanpa mendanai atau memperkaya siapa pun: <a href="https://haveibeenpwned.com">Have I Been Pwned</a>. Ia memberitahumu di kebocoran dikenal mana e-mailmu muncul, dan <strong>tidak pernah menampilkan datanya sendiri</strong>. Inilah contoh tandingan yang legal dari BrixHub.</p></div>
+
+    <h2><span class="n">06</span>Apa yang tidak diputuskan investigasi ini</h2>
+    <p>Demi kejujuran, batasan-batasannya:</p>
+    <ul>
+      <li><strong>Hosting asli situs</strong> dan identitas para operator: tersamarkan. Tidak ada yang bisa diatribusikan hanya lewat sumber pasif.</li>
+      <li><strong>Asal-usul data yang sebenarnya</strong>: situs itu menampilkan sumber-sumber bergengsi (lembaga publik), tak satu pun terkonfirmasi. Aku tidak mengulang klaim-klaim itu.</li>
+      <li><strong>Jumlah yang persis</strong> serta keberadaan nyata API dan langganan bertumpu pada kesaksian tangan kedua. Sama halnya dengan profil yang dibayar lalu muncul kembali: itu kesaksian para pengguna internet di X, konsisten dengan cara kerja layanan, tapi yang tidak bisa kuverifikasi satu per satu.</li>
+      <li>Beberapa <strong>artikel pers</strong> (franceinfo, Le Monde, Siècle Digital…) tidak bisa dibaca utuh, hanya lewat judul dan kutipannya.</li>
+    </ul>
+
+    <h2><span class="n">07</span>Indikator (defang)</h2>
+    <div class="box">
+      <p class="t">Untuk dipantau</p>
+      <p class="note"><strong>Domain aktif:</strong> <code>brixhub[.]st</code>, <code>brixhub[.]to</code>, <code>brixhub[.]ru</code>.<br>
+      <strong>Server surel (di luar CDN):</strong> <code>195.58.146[.]225</code> (AS9009 M247), <code>mail.brixhub[.]to</code>.<br>
+      <strong>NS bersama:</strong> <code>irena[.]ns.cloudflare.com</code>, <code>weston[.]ns.cloudflare.com</code>.<br>
+      <strong>SPF yang dibagi:</strong> <code>v=spf1 mx:brixhub[.]to -all</code>.<br>
+      <strong>Riwayat:</strong> <code>brixhub[.]{fun,net,site,org,top,cc}</code> (disuspensi / dimatikan).</p>
+    </div>
+
+    <h2><span class="n">08</span>Sumber</h2>
+    <ol class="sources">
+      <li>AFP / Techniques de l'ingénieur (05/10/2026) — perkara dibawa ke jaksa, art. 40 CPP, « jangan pernah membayar ».</li>
+      <li>franceinfo, Siècle Digital, Senioractu, Next (Okt. 2026) — sifat layanan, kronologi.</li>
+      <li>Zataz — pembongkaran « lookup » Prancis, penangkapan 2026.</li>
+      <li>CNIL — posisi umum tentang layanan pencarian data dan layanan penghapusan palsu.</li>
+      <li>WHOIS / RDAP register, Certificate Transparency, urlscan.io, Shodan, DNS pasif — diakses pada 16 dan 21/10/2026.</li>
+      <li>Kebijakan register <code>.st</code> (nic.st / Bahnhof) dan <code>.to</code> (Tonic).</li>
+    </ol>
+
+    <div class="box"><p class="t">Bagikan</p><div class="share"><button type="button" data-share="tech">Bagikan versi teknis</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← Versi untuk umum</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">Investigasi dilakukan dengan <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, atas sumber publik dan pasif. Tidak ada koneksi ke layanan, tidak ada pencarian yang dijalankan, tidak ada proteksi yang ditembus, tidak ada orang yang disebut namanya. Indikator di-defang (<code>[.]</code>). Jika data Anda telah bocor: <a href="https://haveibeenpwned.com">haveibeenpwned.com</a>, jangan bayar siapa pun.</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Atas">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>

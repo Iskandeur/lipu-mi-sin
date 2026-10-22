@@ -3,6 +3,8 @@
 .post .prose.inv { padding-top: 6.2rem; }
 .prose .kicker { font: 500 .78rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin: 0 0 .9rem; }
 .prose h1 { text-wrap: balance; }
+.prose h1 .qt { color: var(--hot); white-space: nowrap; }
+@media (max-width: 24rem) { .prose h1 .qt { white-space: normal; } }
 .prose .lede { font: 500 clamp(1.2rem, 1.05rem + .7vw, 1.55rem)/1.4 var(--display); letter-spacing: -.01em; color: var(--ink); margin: 0 0 1.6rem; text-wrap: pretty; }
 .prose article { overflow-wrap: break-word; }
 .prose article h2 { font-size: clamp(1.45rem, 1.2rem + 1vw, 1.95rem); letter-spacing: -.02em; margin: 3.4rem 0 1rem; text-wrap: balance; }
@@ -151,3 +153,7 @@ figcaption b { color: var(--ink); font-weight: 600; }
   .steps li svg { width: 3.6rem; height: 3.6rem; }
   .steps li:not(:last-child)::after { left: 2.7rem; }
 }
+
+/* language switcher in the article bar */
+.bar .lang { margin-inline-start: .7rem; display: inline-flex; align-items: center; }
+.bar .lang select { font-size: .8rem; padding: .32rem 1.5rem .32rem .7rem; }
