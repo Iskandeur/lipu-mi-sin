@@ -28,7 +28,7 @@
   <p class="kicker">Enquête · fuites de données · OSINT</p>
   <h1>BrixHub : le moteur de recherche de vos données volées</h1>
   <p class="lede">Un site tape votre nom et recrache votre adresse, votre téléphone, votre numéro de sécu. Il dit indexer 14 milliards de fiches, issues de piratages. Et il vous propose de retirer la vôtre… contre paiement. Il est visé par la justice française, et pourtant il est toujours en ligne. J'ai regardé comment il tient.</p>
-  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>enquête menée avec Bounce, mon agent d'enquête</span></p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>avec l'aide de Bounce</span></p>
 
   <div class="modes">
     <div class="switch" role="group" aria-label="Version de l'article">
@@ -58,7 +58,7 @@
     </div>
 
     <p>BrixHub, c'est un moteur de recherche. Mais au lieu de pages web, il fouille dans des <strong>fuites de données</strong> : les fichiers volés lors de piratages d'entreprises et d'administrations. Vous tapez un nom, un téléphone, un e-mail, et il vous rend une fiche. Il annonce <strong>plus de 14 milliards d'enregistrements</strong>.</p>
-    <p>En octobre 2026, la presse française s'en empare et la ministre du Numérique saisit la justice. Un ami m'a demandé ce que c'était, et s'il pouvait utiliser leur service. J'ai enquêté. La réponse courte : <strong>non, surtout pas</strong>. Voici pourquoi, et comment ce genre de site fonctionne.</p>
+    <p>En octobre 2026, la presse française s'en empare et la ministre du Numérique saisit la justice. Beaucoup se demandent ce que c'est, et si l'on peut s'en servir. La réponse courte : <strong>non, surtout pas</strong>. Voici pourquoi, et comment ce genre de site fonctionne.</p>
 
     <figure class="wide shot"><img src="img/brixhub/brixhub-accueil.webp" width="1400" height="1050" loading="lazy" alt="Page d'accueil de BrixHub : fond sombre, un œil stylisé en circuit imprimé, le slogan « BrixHub reste accessible », un compteur de 14 556 649 351 enregistrements, des boutons « Lancer une recherche » et « Suppression RGPD »."><figcaption><b>La vitrine.</b> Un design soigné, un compteur à 14 milliards, un bouton « Suppression RGPD », et même une bulle « notre bot Telegram t'envoie la nouvelle adresse si le site change ou est bloqué ». Tout est pensé pour rassurer et pour survivre aux blocages.</figcaption></figure>
 
@@ -138,8 +138,8 @@
     </div>
 
     <h2><span class="n">01</span>Contexte et méthode</h2>
-    <p>BrixHub est un « moteur de recherche de fuites » (<em>data leak search engine</em>) en langue française. Il indexe des bases issues de compromissions et propose une recherche nominative, plus une suppression de fiche payante. Il est visé en France par un signalement pénal depuis le 05/10/2026. Un proche m'a demandé si l'on pouvait utiliser son API : cette enquête est la réponse.</p>
-    <div class="box teal"><p class="t">Règles d'engagement</p><p>Sources publiques et passives : WHOIS/RDAP auprès des registres, DNS, Certificate Transparency, urlscan.io, VirusTotal, Shodan/InternetDB, DNS passif, presse. Enquête menée avec Bounce (mon agent CTI) sur une première passe, puis rejouée sur l'instance de production. <strong>Je ne me suis jamais connecté au service, je n'y ai lancé aucune recherche, et je n'ai contourné aucune protection</strong> (la page répond un défi Cloudflare 403 à un client sans navigateur, non contourné). Domaines défangés (<code>[.]</code>).</p></div>
+    <p>BrixHub est un « moteur de recherche de fuites » (<em>data leak search engine</em>) en langue française. Il indexe des bases issues de compromissions et propose une recherche nominative, plus une suppression de fiche payante. Il est visé en France par un signalement pénal depuis le 05/10/2026. La question de départ était simple : peut-on utiliser son API ? Cette enquête y répond.</p>
+    <div class="box teal"><p class="t">Règles d'engagement</p><p>Sources publiques et passives : WHOIS/RDAP auprès des registres, DNS, Certificate Transparency, urlscan.io, VirusTotal, Shodan/InternetDB, DNS passif, presse. Première passe avec l'agent CTI Bounce, complétée à la main. <strong>Je ne me suis jamais connecté au service, je n'y ai lancé aucune recherche, et je n'ai contourné aucune protection</strong> (la page répond un défi Cloudflare 403 à un client sans navigateur, non contourné). Domaines défangés (<code>[.]</code>).</p></div>
 
     <h2><span class="n">02</span>Ce que le service prétend</h2>
     <p>D'après ses propres pages et la presse (chiffres à prendre comme des revendications, pas des faits) :</p>
