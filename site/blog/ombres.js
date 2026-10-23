@@ -3,6 +3,12 @@
 // ombres de plusieurs témoins (sculpture de l'enveloppe visuelle sur une grille de voxels, surface par marching cubes).
 import * as T from './vendor/three-ombres.min.js?v=1';
 
+// Textes que le script affiche lui-même, par langue (le reste est dans la page) : ombres-txt.js. Le français sert de repli.
+const L = window.OMBRES_TXT;
+const LANG = document.documentElement.lang || 'fr';
+const tx = (k) => (L[LANG] || L.fr)[k];
+const fmt = (k, v) => tx(k).replace(/\{(\w)\}/g, (m, x) => v[x]);
+
 const SUN = 0xffc977, TEAL = 0x6fe3cc, HOT = 0xff8f52, CREAM = 0xf1ead9, WALL = 0xc9bfa9;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -13,10 +19,10 @@ function cup() {
   return new T.LatheGeometry(p.map(([x, y]) => new T.Vector2(x, y)), 96);
 }
 const SHAPES = {
-  cylindre: { name: 'un cylindre', geo: () => new T.CylinderGeometry(.63, .63, 1.26, 96, 1), inside: (x, y, z) => x * x + z * z <= .397 && Math.abs(y) <= .63 },
-  cone: { name: 'un cône', geo: () => new T.ConeGeometry(.75, 1.4, 96, 1), inside: (x, y, z) => y >= -.7 && y <= .7 && Math.hypot(x, z) <= .75 * (.7 - y) / 1.4 },
-  tore: { name: 'un tore (un donut)', geo: () => new T.TorusGeometry(.6, .255, 48, 128).rotateX(Math.PI / 2), inside: (x, y, z) => { const q = Math.hypot(x, z) - .6; return q * q + y * y <= .065; } },
-  tasse: { name: 'une tasse', geo: cup, inside: (x, y, z) => { const r = Math.hypot(x, z); return Math.abs(y) <= .62 && r <= .707 && !(r < .51 && y > -.38); } }
+  cylindre: { get name() { return tx('s_cylindre'); }, geo: () => new T.CylinderGeometry(.63, .63, 1.26, 96, 1), inside: (x, y, z) => x * x + z * z <= .397 && Math.abs(y) <= .63 },
+  cone: { get name() { return tx('s_cone'); }, geo: () => new T.ConeGeometry(.75, 1.4, 96, 1), inside: (x, y, z) => y >= -.7 && y <= .7 && Math.hypot(x, z) <= .75 * (.7 - y) / 1.4 },
+  tore: { get name() { return tx('s_tore'); }, geo: () => new T.TorusGeometry(.6, .255, 48, 128).rotateX(Math.PI / 2), inside: (x, y, z) => { const q = Math.hypot(x, z) - .6; return q * q + y * y <= .065; } },
+  tasse: { get name() { return tx('s_tasse'); }, geo: cup, inside: (x, y, z) => { const r = Math.hypot(x, z); return Math.abs(y) <= .62 && r <= .707 && !(r < .51 && y > -.38); } }
 };
 const GEO = {};
 const geo = (n) => GEO[n] || (GEO[n] = SHAPES[n].geo());
@@ -151,10 +157,8 @@ function radial(poly, a) {
 const pathOf = (poly) => 'M' + poly.map((p) => p[0].toFixed(3) + ' ' + p[1].toFixed(3)).join('L') + 'Z';
 const average = (A, B) => Array.from({ length: 180 }, (_, i) => { const a = i / 180 * 2 * Math.PI, r = (radial(A, a) + radial(B, a)) / 2; return [r * Math.cos(a), r * Math.sin(a)]; });
 const PAIRS = {
-  cylindre: { a: circlePoly(.63), b: [[-.63, -.63], [.63, -.63], [.63, .63], [-.63, .63]], la: 'disque', lb: 'carré',
-    v: 'Un <strong>cylindre</strong>. Vu d’en haut : un disque. Vu de face : un carré. Ana et Ben avaient raison tous les deux.' },
-  cone: { a: circlePoly(.75), b: [[0, -.7], [.75, .7], [-.75, .7]], la: 'disque', lb: 'triangle',
-    v: 'Un <strong>cône</strong>. Vu d’en haut : un disque. Vu de face : un triangle. Ana et Ben avaient raison tous les deux.' }
+  cylindre: { a: circlePoly(.63), b: [[-.63, -.63], [.63, -.63], [.63, .63], [-.63, .63]], la: 'a_disque', lb: 'a_carre', v: 'v_cylindre' },
+  cone: { a: circlePoly(.75), b: [[0, -.7], [.75, .7], [-.75, .7]], la: 'a_disque', lb: 'a_triangle', v: 'v_cone' }
 };
 function figDeux(el) {
   const scene = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, .1, 60);
@@ -172,17 +176,13 @@ function figDeux(el) {
   const sb = [...el.querySelectorAll('[data-go]')], pbtn = [...el.querySelectorAll('[data-pair]')];
   const st = { yaw: 0, pitch: 0, vel: 0, held: false };
   let pair = 'cylindre', state = 'ombres', spin = 0;
-  const TXT = {
-    ombres: 'Chacun a la preuve sous les yeux. Qui a raison ?',
-    moyenne: 'Le compromis : la moyenne des deux ombres. Elle a l’air raisonnable, mais aucune lumière ne la projette. <strong>Fausse pour les deux.</strong>'
-  };
   function show() {
     const P = PAIRS[pair];
     pa.setAttribute('d', pathOf(P.a)); pb.setAttribute('d', pathOf(P.b)); pv.setAttribute('d', pathOf(average(P.a, P.b)));
-    la.forEach((e) => { e.textContent = P.la; }); lb.forEach((e) => { e.textContent = P.lb; });
+    la.forEach((e) => { e.textContent = tx(P.la); }); lb.forEach((e) => { e.textContent = tx(P.lb); });
     mesh.geometry = geo(pair);
     el.dataset.state = state;
-    verdict.innerHTML = state === 'objet' ? P.v : TXT[state];
+    verdict.innerHTML = tx(state === 'objet' ? P.v : 't_' + state);
     press(sb, 'data-go', state); press(pbtn, 'data-pair', pair);
   }
   sb.forEach((b) => b.addEventListener('click', () => { state = state === b.dataset.go ? 'ombres' : b.dataset.go; show(); }));
@@ -349,18 +349,18 @@ function figTemoins(el) {
       if (kept[n] && tr.occ[n]) inter++; else if (kept[n]) extra++; else if (tr.occ[n]) lost++;
     }
     fieldFrom = fieldNow; fieldTo = field; tween = animate && !REDUCE ? 0 : 1; dirty = true;
-    out.iou.textContent = Math.round(inter / (inter + extra + lost) * 100) + ' %';
+    out.iou.textContent = Math.round(inter / (inter + extra + lost) * 100) + tx('pct');
     const trop = extra / tr.vol, perdu = lost / tr.vol;
-    out.trop.style.width = Math.min(100, trop * 40) + '%'; out.tropn.textContent = '+' + Math.round(trop * 100) + ' %';
-    out.perdu.style.width = Math.min(100, perdu * 100) + '%'; out.perdun.textContent = '−' + Math.round(perdu * 100) + ' %';
-    out.n.textContent = nv + (nv > 1 ? ' ombres' : ' ombre');
-    out.tolv.textContent = nv ? need + ' sur ' + nv : '–';
+    out.trop.style.width = Math.min(100, trop * 40) + '%'; out.tropn.textContent = '+' + Math.round(trop * 100) + tx('pct');
+    out.perdu.style.width = Math.min(100, perdu * 100) + '%'; out.perdun.textContent = '−' + Math.round(perdu * 100) + tx('pct');
+    out.n.textContent = fmt(nv > 1 ? 'many' : 'one', { n: nv });
+    out.tolv.textContent = nv ? fmt('need', { k: need, n: nv }) : '–';
     dots();
   }
   function dots() {
     let h = '';
     for (const v of views) h += `<circle class="dot ${v.kind}${v.el < 0 ? ' below' : ''}" cx="${v.d.x.toFixed(3)}" cy="${v.d.z.toFixed(3)}" r="${v.kind === 'toi' ? .1 : .07}"/>`;
-    if (toi) h += `<text class="me" x="${toi.d.x.toFixed(3)}" y="${(toi.d.z + .27).toFixed(3)}">toi</text>`;
+    if (toi) h += `<text class="me" x="${toi.d.x.toFixed(3)}" y="${(toi.d.z + .27).toFixed(3)}">${tx('me')}</text>`;
     out.dots.innerHTML = h;
   }
   function reveal(on) {
@@ -369,8 +369,8 @@ function figTemoins(el) {
     hullMat.color.set(on ? HOT : CREAM); hullMat.needsUpdate = true;
     mc.scale.setScalar(F / G * (on ? .975 : 1)); // là où l'enveloppe colle à l'objet, l'objet passe devant mc.castShadow = !on; truthMesh.castShadow = on;
     marks.children.forEach((b) => { if (b.userData.kind === 'menteur') b.material.color.set(on ? HOT : TEAL); });
-    out.name.textContent = on ? 'C’était ' + SHAPES[name].name + '.' : 'Objet mystère';
-    out.reveal.textContent = on ? 'Cacher l’objet' : 'Révéler l’objet';
+    out.name.textContent = on ? fmt('was', { o: SHAPES[name].name }) : tx('mystery');
+    out.reveal.textContent = on ? tx('hide') : tx('reveal');
   }
   function reset(newName) {
     if (newName) { name = newName; tr = truth(name); truthMesh.geometry = maskMesh.geometry = geo(name); }
@@ -410,7 +410,7 @@ function figTemoins(el) {
   on('[data-do="menteur"]', () => add(Math.random() * 2 * Math.PI, Math.asin(Math.random() * 1.1 - .2), 'menteur'));
   on('[data-do="reset"]', () => reset());
   out.reveal.addEventListener('click', () => reveal(!revealed));
-  out.tol.addEventListener('input', () => { tol = out.tol.value / 100; out.tolp.textContent = out.tol.value + ' %'; update(false); });
+  out.tol.addEventListener('input', () => { tol = out.tol.value / 100; out.tolp.textContent = out.tol.value + tx('pct'); update(false); });
   const objBtns = [...el.querySelectorAll('[data-obj]')];
   objBtns.forEach((b) => b.addEventListener('click', () => { press(objBtns, 'data-obj', b.dataset.obj); reset(ORDER[b.dataset.obj]); }));
   reset();

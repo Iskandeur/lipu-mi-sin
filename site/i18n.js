@@ -3,6 +3,10 @@
 (function () {
   var T = {
     en: {
+      /* titres de la liste du blog (index.html) : un par article, dans la langue de l'article */
+      "post_ombres": "Everyone sees only one shadow",
+      "post_vote": "“Vote for Sophie”: anatomy of a WhatsApp scam",
+      "post_brixhub": "BrixHub: the search engine for your stolen data",
       "greet": "hello",
       "skip": "Skip to content",
       "nav1": "Stuff",
@@ -47,6 +51,10 @@
       "see": "See the page"
     },
     fr: {
+      /* titres de la liste du blog (index.html) : un par article, dans la langue de l'article */
+      "post_ombres": "Chacun ne voit qu'une ombre",
+      "post_vote": "« Vote pour Sophie » : autopsie d'une arnaque WhatsApp",
+      "post_brixhub": "BrixHub : le moteur de recherche de vos données volées",
       "greet": "salut",
       "skip": "Aller au contenu",
       "nav1": "Projets",
@@ -91,6 +99,10 @@
       "sndOff": "Activer le son"
     },
     es: {
+      /* titres de la liste du blog (index.html) : un par article, dans la langue de l'article */
+      "post_ombres": "Cada uno solo ve una sombra",
+      "post_vote": "«Vota por Sophie»: autopsia de una estafa de WhatsApp",
+      "post_brixhub": "BrixHub: el buscador de sus datos robados",
       "greet": "hola",
       "skip": "Ir al contenido",
       "nav1": "Proyectos",
@@ -135,6 +147,10 @@
       "see": "Ver la página"
     },
     it: {
+      /* titres de la liste du blog (index.html) : un par article, dans la langue de l'article */
+      "post_ombres": "Ognuno vede una sola ombra",
+      "post_vote": "« Vota per Sophie »: autopsia di una truffa WhatsApp",
+      "post_brixhub": "BrixHub: il motore di ricerca dei vostri dati rubati",
       "greet": "ciao",
       "skip": "Vai al contenuto",
       "nav1": "Cose",
@@ -355,6 +371,10 @@
       "see": "看看页面"
     },
     id: {
+      /* titres de la liste du blog (index.html) : un par article, dans la langue de l'article */
+      "post_ombres": "Setiap orang hanya melihat satu bayangan",
+      "post_vote": "\"Pilih Sophie\" : otopsi sebuah penipuan WhatsApp",
+      "post_brixhub": "BrixHub: mesin pencari data curian Anda",
       "greet": "halo",
       "skip": "Langsung ke isi",
       "nav1": "Proyek",
@@ -477,8 +497,13 @@
       var els = document.querySelectorAll("[data-i]");
       for (var i = 0; i < els.length; i++) {
         var k = els[i].getAttribute("data-i");
-        var v = d[k] !== undefined ? d[k] : T.en[k];
+        var v = d[k] !== undefined ? d[k] : (k.indexOf("post_") === 0 ? T.fr[k] : T.en[k]);
         if (v !== undefined) els[i].textContent = v;
+      }
+      var pl = document.querySelectorAll("a[data-post]");
+      for (var p = 0; p < pl.length; p++) {
+        var sl = pl[p].getAttribute("data-post"), lg = (pl[p].getAttribute("data-langs") || "fr").split(",");
+        pl[p].setAttribute("href", "blog/" + sl + (l !== "fr" && lg.indexOf(l) >= 0 ? "." + l : "") + ".html");
       }
       var ar = document.querySelectorAll("[data-ia]");
       for (var j = 0; j < ar.length; j++) {
