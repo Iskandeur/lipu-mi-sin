@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Everyone sees only one shadow ·Alexandre Pinoteau</title>
+<meta name="description" content="An opinion is the shadow of an object you never see whole. By putting other people's shadows together, you sculpt a truer model. A hands-on essay: three 3D scenes, what holds up in the image, and five places where it breaks.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Everyone sees only one shadow">
+<meta property="og:description" content="An opinion is the shadow of an object you never see whole. A hands-on essay, with its strengths and its flaws.">
+<meta property="og:locale" content="en_US">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=1">
+<script>window.__ARTICLE={slug:"ombres",lang:"en",langs:["fr","en","es","it","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+<style>
+  /* scènes de cet essai uniquement */
+  .fig { margin: 2rem 0; border: 1px solid var(--line); border-radius: 18px; padding: .7rem; background: radial-gradient(120% 90% at 70% 15%, #1b2440, var(--bg2) 70%); }
+  .fig .stage { position: relative; border-radius: 12px; overflow: hidden; }
+  .fig canvas.gl { display: block; width: 100%; touch-action: pan-y; cursor: grab; -webkit-tap-highlight-color: transparent; }
+  .fig canvas.gl:active { cursor: grabbing; }
+  .fig .swipe { position: absolute; left: 50%; bottom: .5rem; transform: translateX(-50%); margin: 0; font: 400 .7rem/1 var(--mono); color: var(--mute); background: rgba(14,18,28,.6); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; white-space: nowrap; }
+  .fig.nogl .stage::after { content: "3D (WebGL) is not available in this browser."; position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; text-align: center; font: 400 .85rem/1.4 var(--mono); color: var(--mute); }
+  .fig figcaption { margin-top: .8rem; }
+  .ctl { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .7rem 0 0; }
+  .ctl .lbl { font: 400 .74rem/1.2 var(--mono); color: var(--mute); margin-inline-end: .1rem; }
+  .ctl button { font: 600 .86rem/1 var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 .95rem; min-height: 2.6rem; cursor: pointer; transition: border-color .2s, color .2s, background .2s; touch-action: manipulation; }
+  .ctl button:hover { border-color: var(--hot); color: var(--hot); }
+  .ctl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ctl button.hot { border-color: color-mix(in srgb, var(--hot) 60%, var(--line)); }
+  .ctl button.go { background: var(--hot); color: var(--bg); border-color: var(--hot); }
+  .ctl button.go:hover { background: var(--sun); border-color: var(--sun); color: var(--bg); }
+
+  /* 1 */
+  #fig-ombre canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-ombre .inset { position: absolute; border: 1px solid rgba(241,234,217,.35); border-radius: 8px; pointer-events: none; }
+  #fig-ombre .inset span { position: absolute; top: 100%; left: 0; right: 0; margin-top: .3rem; font: 400 .66rem/1.2 var(--mono); color: var(--mute); text-align: center; }
+
+  /* 2 */
+  #fig-deux canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-deux .tag { position: absolute; left: 0; top: 0; font: 400 .74rem/1.2 var(--mono); color: var(--ink); background: rgba(14,18,28,.72); padding: .35rem .55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  #fig-deux .tag b { color: var(--sun); font-weight: 700; }
+  #fig-deux .sum { position: absolute; left: .6rem; top: .6rem; display: flex; align-items: center; gap: .35rem; background: rgba(14,18,28,.82); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem;
+    font: 600 1rem/1 var(--mono); color: var(--mute); transition: opacity .35s var(--ease), transform .35s var(--ease); }
+  #fig-deux .sum svg { width: 2.6rem; height: 2.6rem; }
+  #fig-deux .sum .s path { fill: #07090e; stroke: rgba(241,234,217,.4); stroke-width: .03; }
+  #fig-deux .sum .m { width: 3.6rem; height: 3.6rem; }
+  #fig-deux .sum .m path { fill: color-mix(in srgb, var(--hot) 25%, transparent); stroke: var(--hot); stroke-width: .03; stroke-dasharray: .08 .05; }
+  #fig-deux:not([data-state="moyenne"]) .sum { opacity: 0; transform: translateY(-.4rem); }
+  #fig-deux .verdict { text-align: center; margin: .9rem auto 0; max-width: 32rem; font-size: 1rem; line-height: 1.5; min-height: 3em; }
+  #fig-deux .ctl { justify-content: center; }
+
+  /* 3 */
+  #fig-temoins .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center; }
+  #fig-temoins canvas.gl { aspect-ratio: 1; }
+  #fig-temoins .name { position: absolute; top: .6rem; left: 0; right: 0; margin: 0; font: 600 .9rem/1.3 var(--mono); color: var(--sun); text-align: center; pointer-events: none; }
+  #fig-temoins .panel { display: grid; gap: .8rem; }
+  #fig-temoins .ring { display: block; width: 100%; max-width: 14rem; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+  #fig-temoins .ring .rim { fill: rgba(241,234,217,.04); stroke: var(--line); stroke-width: .02; }
+  #fig-temoins .ring .mid { fill: none; stroke: var(--line); stroke-width: .012; stroke-dasharray: .04 .04; }
+  #fig-temoins .ring .obj { fill: rgba(241,234,217,.14); stroke: rgba(241,234,217,.4); stroke-width: .015; }
+  #fig-temoins .ring text { font: 400 .12px var(--mono); fill: var(--mute); text-anchor: middle; }
+  #fig-temoins .ring text.me { fill: var(--sun); font-weight: 700; }
+  #fig-temoins .dot { fill: var(--teal); }
+  #fig-temoins .dot.toi { fill: var(--sun); }
+  #fig-temoins .dot.voisin { fill: #b9c2d6; }
+  #fig-temoins .dot.below { fill: none; stroke: var(--teal); stroke-width: .025; }
+  #fig-temoins.revealed .dot.menteur { fill: var(--hot); }
+  #fig-temoins .hint { font: 400 .7rem/1.45 var(--mono); color: var(--mute); text-align: center; margin: .3rem 0 0; }
+  #fig-temoins .score b { display: block; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 3rem)/1 var(--display); letter-spacing: -.03em; color: var(--sun); }
+  #fig-temoins .score span { font: 400 .76rem/1.3 var(--mono); color: var(--mute); }
+  #fig-temoins .g { display: grid; grid-template-columns: 6.6rem 1fr 3rem; gap: .5rem; align-items: center; margin-top: .5rem; font: 400 .72rem/1.2 var(--mono); color: var(--mute); }
+  #fig-temoins .g i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  #fig-temoins .g u { display: block; height: 100%; width: 0; transition: width .4s var(--ease); }
+  #fig-temoins .g.trop u { background: var(--hot); } #fig-temoins .g.perdu u { background: var(--teal); }
+  #fig-temoins .g em { font-style: normal; color: var(--ink); text-align: end; }
+  #fig-temoins .thumbs { display: flex; gap: .35rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+  #fig-temoins .th { width: 2.8rem; height: 2.8rem; flex: none; border-radius: 6px; border: 1px solid var(--line); }
+  #fig-temoins .th.me { border-color: var(--sun); }
+  #fig-temoins.revealed .th.liar { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot); }
+  #fig-temoins .conf { font: 400 .78rem/1.4 var(--mono); color: var(--mute); }
+  #fig-temoins .conf input { width: 9rem; accent-color: var(--hot); vertical-align: middle; height: 2rem; }
+  #fig-temoins .conf b { color: var(--ink); }
+  #fig-temoins .legend { display: none; font: 400 .72rem/1.4 var(--mono); color: var(--mute); margin: 0; }
+  #fig-temoins.revealed .legend { display: block; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
+  .legend i:first-child { margin-inline-start: 0; }
+  @media (max-width: 40rem) {
+    .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
+    #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
+    #fig-temoins .grid { grid-template-columns: 1fr; }
+    #fig-temoins .panel { grid-template-columns: 9.5rem 1fr; align-items: center; gap: .6rem; }
+    #fig-temoins .g { grid-template-columns: 1fr 2.6rem; }
+    #fig-temoins .g i { grid-column: 1 / -1; grid-row: 2; }
+    #fig-temoins .acts { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← blog</a></nav>
+  <label class="lang"><span class="sr">Language</span><select id="blog-lang" aria-label="Language"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Essay · hands-on</p>
+  <h1>Everyone sees only <span class="qt">one shadow</span></h1>
+  <p class="lede">An opinion on a subject is the shadow of an object you never see whole: flat, partial, and drawn by the spot where you happen to stand. Other people see other shadows. Putting them together is how you guess the object. An idea to play with rather than believe, with what makes it solid and the places where it breaks.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>3 interactive scenes</span></p>
+
+  <article>
+
+    <h2><span class="n">01</span>A shadow doesn't lie, but it doesn't tell everything</h2>
+    <p>An object, a lamp, a wall. The shadow invents nothing: every dark area matches a real piece of the object. But it has lost an entire dimension, and its shape depends as much on the angle of the light as on the object itself.</p>
+
+    <figure class="fig" id="fig-ombre">
+      <div class="stage">
+        <canvas class="gl" aria-label="A 3D object lit by a lamp, and its shadow cast on a wall. Drag to rotate it."></canvas>
+        <div class="inset" aria-hidden="true"><span>the wall, seen head-on</span></div>
+        <p class="swipe">↔ drag to rotate the object</p>
+      </div>
+      <div class="ctl"><span class="lbl">object</span>
+        <button type="button" data-shape="cylindre" aria-pressed="true">cylinder</button>
+        <button type="button" data-shape="cone" aria-pressed="false">cone</button>
+        <button type="button" data-shape="tore" aria-pressed="false">donut</button>
+        <button type="button" data-shape="tasse" aria-pressed="false">mug</button>
+      </div>
+      <figcaption><b>The object doesn't change, its shadow does.</b> The inset shows everything that someone who only sees the wall can know.</figcaption>
+    </figure>
+
+    <p>An opinion works the same way. On any subject (work, money, love, life in general), everyone sees the projection of an object bigger than themselves. The angle is what you've lived through: a country, a job, a family, wounds, books. It's not a flaw in reasoning, it's geometry. <strong>Nobody looks from nowhere.</strong></p>
+
+    <h2><span class="n">02</span>Two shadows that contradict each other</h2>
+    <p>Ana looks at the floor and sees a disk. Ben looks at the wall and sees a square. Each has proof right in front of their eyes, and each can call the other blind for years.</p>
+
+    <figure class="fig" id="fig-deux" data-state="ombres">
+      <div class="stage">
+        <canvas class="gl" aria-label="A corner of a room: a shadow on the floor, a shadow on the wall, and the object casting them, invisible at first. Drag to look around."></canvas>
+        <span class="tag a">Ana sees a <b data-la>disk</b></span>
+        <span class="tag b">Ben sees a <b data-lb>square</b></span>
+        <div class="sum" aria-hidden="true">
+          <svg class="s" viewBox="-1 -1 2 2"><path data-a/></svg>+<svg class="s" viewBox="-1 -1 2 2"><path data-b/></svg>=<svg class="m" viewBox="-1 -1 2 2"><path data-avg/></svg>
+        </div>
+      </div>
+      <p class="verdict" data-v aria-live="polite"></p>
+      <div class="ctl">
+        <button type="button" data-go="moyenne" aria-pressed="false">Split the difference</button>
+        <button type="button" data-go="objet" aria-pressed="false" class="hot">Look for the object</button>
+      </div>
+      <div class="ctl"><span class="lbl">another dispute</span>
+        <button type="button" data-pair="cylindre" aria-pressed="true">disk / square</button>
+        <button type="button" data-pair="cone" aria-pressed="false">disk / triangle</button>
+      </div>
+    </figure>
+
+    <p>Two reflexes are tempting, and a third one works. The first: decide who's right. The second: split the difference, which gives a limp, reasonable-looking shape that neither Ana nor Ben sees and that is wrong for both. The third: look for <strong>which object could cast both shadows at once</strong>. They were both right, and their contradiction was precisely the missing information: the trace of a depth that neither could see alone.</p>
+
+    <h2><span class="n">03</span>Sculpting by subtraction</h2>
+    <p>A shadow mostly tells you what the object <em>is not</em>: anything that would stick out of the shadow is ruled out. So you start from a block, each witness carves away what doesn't fit what they see, and what's left comes close to the object. In computer vision, this carved block is called the <em>visual hull</em>. A medical scanner does the same thing in finer detail, with X-rays taken all around the patient.</p>
+
+    <div class="box teal">
+      <p class="t">Your turn</p>
+      <p>The object is hidden. All you have is your own shadow (the yellow dot). Add witnesses by touching the ring: the rim is eye level, the center is a view from above. Try to guess the object before revealing it.</p>
+    </div>
+
+    <figure class="fig wide" id="fig-temoins">
+      <div class="grid">
+        <div class="stage">
+          <canvas class="gl" aria-label="What's left of the block after each witness has removed whatever sticks out of their shadow. Drag to rotate."></canvas>
+          <p class="name" data-o="name">Mystery object</p>
+          <p class="swipe">↔ drag to rotate</p>
+        </div>
+        <div class="panel">
+          <div>
+            <svg class="ring" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="The witnesses, seen from above. Touch to place one.">
+              <circle class="rim" r="1"/><circle class="mid" r=".5"/><circle class="obj" r=".15"/>
+              <text y="1.21">eye level</text><text y=".38">from above</text>
+              <g data-o="dots"></g>
+            </svg>
+            <p class="hint">Touch the ring to place a witness.</p>
+          </div>
+          <div>
+            <div class="score"><b data-o="iou">–</b><span>similarity, with <span data-o="n">0 shadows</span></span></div>
+            <div class="g trop"><span>excess material</span><i><u data-o="trop"></u></i><em data-o="tropn"></em></div>
+            <div class="g perdu"><span>lost material</span><i><u data-o="perdu"></u></i><em data-o="perdun"></em></div>
+            <p class="legend"><i style="background:var(--teal)"></i>the object<i style="background:color-mix(in srgb, var(--hot) 45%, transparent)"></i>excess</p>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs" data-o="thumbs" aria-label="The shadows collected"></div>
+      <div class="ctl acts">
+        <button type="button" data-do="voisin">+ a neighbor</button>
+        <button type="button" data-do="inconnu">+ a stranger</button>
+        <button type="button" data-do="menteur" class="hot">+ a liar</button>
+        <button type="button" data-do="reset">start over</button>
+      </div>
+      <div class="ctl conf">
+        <label>confidence <input type="range" min="50" max="100" value="100" data-o="tol"></label>
+        <span>we keep what <b data-o="tolp">100%</b> of the shadows confirm (<span data-o="tolv">–</span>)</span>
+      </div>
+      <div class="ctl"><span class="lbl">object</span>
+        <button type="button" data-obj="1" aria-pressed="true">1</button>
+        <button type="button" data-obj="2" aria-pressed="false">2</button>
+        <button type="button" data-obj="3" aria-pressed="false">3</button>
+        <button type="button" data-o="reveal" class="go">Reveal the object</button>
+      </div>
+      <figcaption><b>A neighbor</b> looks from almost the same spot as you. <b>A stranger</b> looks from anywhere. <b>A liar</b> shows a false shadow (whether mistaken or deceiving), and nothing tells them apart before the reveal. Once the object is revealed, the turquoise that sticks out from under the orange veil is the lost material.</figcaption>
+    </figure>
+
+    <p>This isn't an average. A shadow doesn't vote, it <strong>constrains</strong>: it adds nothing, it eliminates possibilities.</p>
+
+    <div class="box">
+      <p class="t">Why the image holds up</p>
+      <ul class="tldr">
+        <li><strong>The math is on its side.</strong> In 1917, Johann Radon showed that an object is entirely determined by its X-ray projections taken from every angle. That's the result CT scanners rest on (Nobel Prize 1979, Cormack and Hounsfield).</li>
+        <li><strong>An X-ray beats a shadow.</strong> A shadow is binary; an X-ray tells you <em>how much</em> material the light went through. A nuanced opinion ("mostly", "rather", "except when") carries more information than a yes or a no, and helps more with reconstruction.</li>
+        <li><strong>Diversity matters more than numbers.</strong> For a crowd estimating a figure, the collective error equals the average error of the individuals minus the diversity of their estimates (Scott Page's "diversity prediction theorem"). Distant angles are worth more than numerous ones.</li>
+        <li><strong>It explains disagreement without calling anyone an idiot.</strong> Two honest, clear-headed people can contradict each other without either being wrong. That's a more charitable hypothesis than "the other one is stupid or acting in bad faith", and more often right.</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">04</span>Where the image breaks</h2>
+    <p>A metaphor you don't know how to attack isn't worth much. This one cracks in five places. The first three can be tested in the scene above.</p>
+
+    <h3>1. A thousand neighbors are worth one witness</h3>
+    <p>Ten neighbors gain you a few points of similarity. A single stranger often does better than all ten. What reconstructs isn't the number of opinions, it's the gap between the angles. A news feed, a circle of friends, a team often hand back the same shadow a hundred times. A hundred copies of the same shadow make you more sure of yourself, not more right.</p>
+
+    <h3>2. Hollows cast no shadow</h3>
+    <p>With object 3, similarity plateaus, however many witnesses you add. It's a mug, and its hollow sticks out of no silhouette, from any angle. Worse: a solid cylinder casts exactly the same shadows. You can gather every outside viewpoint and conclude, very confidently, that the object is something it isn't. Some things can only be seen from the inside: what it is to be poor, sick, exiled, a parent. Outside witnesses, however many, don't reconstruct them. You have to listen to the ones who are inside.</p>
+
+    <h3>3. One liar is enough</h3>
+    <p>Since we only keep what <em>all</em> the shadows allow, a liar carves into what's true, and nothing glues back what he removed. If you lower the confidence, you only keep what a majority confirms: the liar no longer weighs anything, but the object gets thicker, because you also throw away part of what the honest witnesses were teaching you. There's no universally good setting: between gullibility and deafness, everyone picks the price they pay.</p>
+
+    <h3>4. You don't know where others are looking from, or where you are</h3>
+    <p>In the scene, each witness's position is known to the degree. In life, you have to guess where the other is speaking from, and everyone knows their own angle poorly. Cryo-electron microscopy runs into the same problem: it reconstructs molecules from thousands of noisy images taken from unknown angles. It works, with a famous trap, "Einstein from noise": align images of pure noise on a portrait of Einstein, average them, and Einstein appears. Whoever reads other people's shadows through their own model reconstructs… their own model.</p>
+
+    <h3>5. What if there were no object?</h3>
+    <p>The whole image assumes an object out there, the same for everyone, that doesn't move while you look at it. For a question of fact (the climate, an accident, a disease), that's reasonable. For "life in general", it's a bet. Meaning, taste, the value of a life may not be objects we project, but things that gazes partly make. And a society changes when you look at it. Even the final reconstruction lives in a head, which has its own angle: there is no "view from nowhere". The image then holds as a discipline rather than a truth: act as if there were an object, so as to keep looking for it, without claiming to hold it.</p>
+
+    <h2><span class="n">05</span>What you can keep from it</h2>
+    <ol class="rules">
+      <li><span>Look for the angle that's <strong>farthest away</strong>, not the most common.</span></li>
+      <li><span>Faced with a contradiction, ask "<strong>which object would make these two shadows?</strong>" before "who's wrong?".</span></li>
+      <li><span>Ask where the other person is looking from, and where you are looking from.</span></li>
+      <li><span>Give your reasons, not only your conclusion: <strong>an X-ray rather than a shadow</strong>.</span></li>
+      <li><span>Tune your confidence: enough for every witness to teach you something, not so much that a single liar sculpts the whole thing.</span></li>
+      <li><span>Remember the hollows: <strong>listen to those who see from the inside</strong>.</span></li>
+    </ol>
+
+    <div class="box">
+      <p class="t">Already said, differently</p>
+      <ul class="tldr">
+        <li><strong>Plato, the cave</strong> (<em>The Republic</em>, book VII): prisoners see only shadows. In Plato, salvation is getting out to see the object. Here, nobody gets out: there are only shadows, and we compare them.</li>
+        <li><strong>The blind men and the elephant</strong>, an Indian parable: each touches one part and takes it for the whole. The Jains drew a doctrine from it, <em>anekāntavāda</em>, "non-one-sidedness".</li>
+        <li><strong>The cover of <em>Gödel, Escher, Bach</em></strong> (Hofstadter, 1979): a carved block whose shadows spell out a G, an E and a B.</li>
+        <li><strong>Thomas Nagel</strong>, <em>The View from Nowhere</em> (1986): objectivity as an effort to detach from your own point of view, an effort that never reaches the end.</li>
+      </ul>
+    </div>
+
+    <p>A sixth flaw? <a href="../#hello">It's welcome</a>: it's exactly the kind of shadow this text is missing.</p>
+
+    <hr>
+    <h3>Sources</h3>
+    <ol class="sources">
+      <li>J. Radon, « Über die Bestimmung von Funktionen durch ihre Integralwerte längs gewisser Mannigfaltigkeiten », 1917.</li>
+      <li>A. Laurentini, « The visual hull concept for silhouette-based image understanding », <em>IEEE PAMI</em>, 1994.</li>
+      <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
+      <li>R. Henderson, « Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise », <em>PNAS</em>, 2013.</li>
+      <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+    </ol>
+    <p class="note">The scenes are computed in the browser with three.js, served from this site: real cast shadows, reconstruction by carving the visual hull on a 48 × 48 × 48 voxel grid, surface smoothed with <em>marching cubes</em>.</p>
+  </article>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Top">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+<script src="ombres-txt.js?v=1"></script>
+<script type="module" src="ombres.js?v=3"></script>
+</body>
+</html>
