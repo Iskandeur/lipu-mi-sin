@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chacun ne voit qu'une ombre · Alexandre Pinoteau</title>
+<meta name="description" content="Un avis, c'est l'ombre d'un objet qu'on ne voit jamais en entier. En assemblant les ombres des autres, on sculpte un modèle plus juste. Un essai à manipuler : trois scènes 3D, ce qui tient dans l'image, et cinq endroits où elle casse.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chacun ne voit qu'une ombre">
+<meta property="og:description" content="Un avis, c'est l'ombre d'un objet qu'on ne voit jamais en entier. Un essai à manipuler, avec ses forces et ses failles.">
+<meta property="og:locale" content="fr_FR">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=1">
+<script>window.__ARTICLE={slug:"ombres",lang:"fr",langs:["fr"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+<style>
+  /* scènes de cet essai uniquement */
+  .fig { margin: 2rem 0; border: 1px solid var(--line); border-radius: 18px; padding: .7rem; background: radial-gradient(120% 90% at 70% 15%, #1b2440, var(--bg2) 70%); }
+  .fig .stage { position: relative; border-radius: 12px; overflow: hidden; }
+  .fig canvas.gl { display: block; width: 100%; touch-action: pan-y; cursor: grab; -webkit-tap-highlight-color: transparent; }
+  .fig canvas.gl:active { cursor: grabbing; }
+  .fig .swipe { position: absolute; left: 50%; bottom: .5rem; transform: translateX(-50%); margin: 0; font: 400 .7rem/1 var(--mono); color: var(--mute); background: rgba(14,18,28,.6); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; white-space: nowrap; }
+  .fig.nogl .stage::after { content: "La 3D (WebGL) n'est pas disponible dans ce navigateur."; position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; text-align: center; font: 400 .85rem/1.4 var(--mono); color: var(--mute); }
+  .fig figcaption { margin-top: .8rem; }
+  .ctl { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .7rem 0 0; }
+  .ctl .lbl { font: 400 .74rem/1.2 var(--mono); color: var(--mute); margin-inline-end: .1rem; }
+  .ctl button { font: 600 .86rem/1 var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 .95rem; min-height: 2.6rem; cursor: pointer; transition: border-color .2s, color .2s, background .2s; touch-action: manipulation; }
+  .ctl button:hover { border-color: var(--hot); color: var(--hot); }
+  .ctl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ctl button.hot { border-color: color-mix(in srgb, var(--hot) 60%, var(--line)); }
+  .ctl button.go { background: var(--hot); color: var(--bg); border-color: var(--hot); }
+  .ctl button.go:hover { background: var(--sun); border-color: var(--sun); color: var(--bg); }
+
+  /* 1 */
+  #fig-ombre canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-ombre .inset { position: absolute; border: 1px solid rgba(241,234,217,.35); border-radius: 8px; pointer-events: none; }
+  #fig-ombre .inset span { position: absolute; top: 100%; left: 0; right: 0; margin-top: .3rem; font: 400 .66rem/1.2 var(--mono); color: var(--mute); text-align: center; }
+
+  /* 2 */
+  #fig-deux canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-deux .tag { position: absolute; left: 0; top: 0; font: 400 .74rem/1.2 var(--mono); color: var(--ink); background: rgba(14,18,28,.72); padding: .35rem .55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  #fig-deux .tag b { color: var(--sun); font-weight: 700; }
+  #fig-deux .sum { position: absolute; left: .6rem; top: .6rem; display: flex; align-items: center; gap: .35rem; background: rgba(14,18,28,.82); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem;
+    font: 600 1rem/1 var(--mono); color: var(--mute); transition: opacity .35s var(--ease), transform .35s var(--ease); }
+  #fig-deux .sum svg { width: 2.6rem; height: 2.6rem; }
+  #fig-deux .sum .s path { fill: #07090e; stroke: rgba(241,234,217,.4); stroke-width: .03; }
+  #fig-deux .sum .m { width: 3.6rem; height: 3.6rem; }
+  #fig-deux .sum .m path { fill: color-mix(in srgb, var(--hot) 25%, transparent); stroke: var(--hot); stroke-width: .03; stroke-dasharray: .08 .05; }
+  #fig-deux:not([data-state="moyenne"]) .sum { opacity: 0; transform: translateY(-.4rem); }
+  #fig-deux .verdict { text-align: center; margin: .9rem auto 0; max-width: 32rem; font-size: 1rem; line-height: 1.5; min-height: 3em; }
+  #fig-deux .ctl { justify-content: center; }
+
+  /* 3 */
+  #fig-temoins .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center; }
+  #fig-temoins canvas.gl { aspect-ratio: 1; }
+  #fig-temoins .name { position: absolute; top: .6rem; left: 0; right: 0; margin: 0; font: 600 .9rem/1.3 var(--mono); color: var(--sun); text-align: center; pointer-events: none; }
+  #fig-temoins .panel { display: grid; gap: .8rem; }
+  #fig-temoins .ring { display: block; width: 100%; max-width: 14rem; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+  #fig-temoins .ring .rim { fill: rgba(241,234,217,.04); stroke: var(--line); stroke-width: .02; }
+  #fig-temoins .ring .mid { fill: none; stroke: var(--line); stroke-width: .012; stroke-dasharray: .04 .04; }
+  #fig-temoins .ring .obj { fill: rgba(241,234,217,.14); stroke: rgba(241,234,217,.4); stroke-width: .015; }
+  #fig-temoins .ring text { font: 400 .12px var(--mono); fill: var(--mute); text-anchor: middle; }
+  #fig-temoins .ring text.me { fill: var(--sun); font-weight: 700; }
+  #fig-temoins .dot { fill: var(--teal); }
+  #fig-temoins .dot.toi { fill: var(--sun); }
+  #fig-temoins .dot.voisin { fill: #b9c2d6; }
+  #fig-temoins .dot.below { fill: none; stroke: var(--teal); stroke-width: .025; }
+  #fig-temoins.revealed .dot.menteur { fill: var(--hot); }
+  #fig-temoins .hint { font: 400 .7rem/1.45 var(--mono); color: var(--mute); text-align: center; margin: .3rem 0 0; }
+  #fig-temoins .score b { display: block; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 3rem)/1 var(--display); letter-spacing: -.03em; color: var(--sun); }
+  #fig-temoins .score span { font: 400 .76rem/1.3 var(--mono); color: var(--mute); }
+  #fig-temoins .g { display: grid; grid-template-columns: 6.6rem 1fr 3rem; gap: .5rem; align-items: center; margin-top: .5rem; font: 400 .72rem/1.2 var(--mono); color: var(--mute); }
+  #fig-temoins .g i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  #fig-temoins .g u { display: block; height: 100%; width: 0; transition: width .4s var(--ease); }
+  #fig-temoins .g.trop u { background: var(--hot); } #fig-temoins .g.perdu u { background: var(--teal); }
+  #fig-temoins .g em { font-style: normal; color: var(--ink); text-align: end; }
+  #fig-temoins .thumbs { display: flex; gap: .35rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+  #fig-temoins .th { width: 2.8rem; height: 2.8rem; flex: none; border-radius: 6px; border: 1px solid var(--line); }
+  #fig-temoins .th.me { border-color: var(--sun); }
+  #fig-temoins.revealed .th.liar { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot); }
+  #fig-temoins .conf { font: 400 .78rem/1.4 var(--mono); color: var(--mute); }
+  #fig-temoins .conf input { width: 9rem; accent-color: var(--hot); vertical-align: middle; height: 2rem; }
+  #fig-temoins .conf b { color: var(--ink); }
+  #fig-temoins .legend { display: none; font: 400 .72rem/1.4 var(--mono); color: var(--mute); margin: 0; }
+  #fig-temoins.revealed .legend { display: block; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
+  .legend i:first-child { margin-inline-start: 0; }
+  @media (max-width: 40rem) {
+    .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
+    #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
+    #fig-temoins .grid { grid-template-columns: 1fr; }
+    #fig-temoins .panel { grid-template-columns: 9.5rem 1fr; align-items: center; gap: .6rem; }
+    #fig-temoins .g { grid-template-columns: 1fr 2.6rem; }
+    #fig-temoins .g i { grid-column: 1 / -1; grid-row: 2; }
+    #fig-temoins .acts { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← blog</a></nav>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Essai · à manipuler</p>
+  <h1>Chacun ne voit qu'<span class="qt">une ombre</span></h1>
+  <p class="lede">Un avis sur un sujet, c'est l'ombre d'un objet qu'on ne voit jamais en entier : plate, partielle, et dessinée par l'endroit où l'on se tient. Les autres voient d'autres ombres. C'est en les assemblant qu'on devine l'objet. Une idée à manipuler plutôt qu'à croire, avec ce qui la rend solide et les endroits où elle casse.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>3 scènes à manipuler</span></p>
+
+  <article>
+
+    <h2><span class="n">01</span>Une ombre ne ment pas, mais elle ne dit pas tout</h2>
+    <p>Un objet, une lampe, un mur. L'ombre n'invente rien : chaque zone sombre correspond à un vrai morceau de l'objet. Mais elle a perdu une dimension entière, et sa forme dépend autant de l'angle de la lumière que de l'objet lui-même.</p>
+
+    <figure class="fig" id="fig-ombre">
+      <div class="stage">
+        <canvas class="gl" aria-label="Un objet en 3D éclairé par une lampe, et son ombre projetée sur un mur. Glisse pour le faire tourner."></canvas>
+        <div class="inset" aria-hidden="true"><span>le mur, vu de face</span></div>
+        <p class="swipe">↔ glisse pour tourner l'objet</p>
+      </div>
+      <div class="ctl"><span class="lbl">objet</span>
+        <button type="button" data-shape="cylindre" aria-pressed="true">cylindre</button>
+        <button type="button" data-shape="cone" aria-pressed="false">cône</button>
+        <button type="button" data-shape="tore" aria-pressed="false">donut</button>
+        <button type="button" data-shape="tasse" aria-pressed="false">tasse</button>
+      </div>
+      <figcaption><b>L'objet ne change pas, son ombre si.</b> L'encart montre tout ce que sait quelqu'un qui ne voit que le mur.</figcaption>
+    </figure>
+
+    <p>Une opinion fonctionne pareil. Sur n'importe quel sujet (le travail, l'argent, l'amour, la vie en général), chacun voit la projection d'un objet plus grand que lui. L'angle, c'est ce qu'on a vécu : un pays, un métier, une famille, des blessures, des lectures. Ce n'est pas un défaut de raisonnement, c'est de la géométrie. <strong>Personne ne regarde de nulle part.</strong></p>
+
+    <h2><span class="n">02</span>Deux ombres qui se contredisent</h2>
+    <p>Ana regarde le sol et voit un disque. Ben regarde le mur et voit un carré. Chacun a la preuve sous les yeux, et chacun peut traiter l'autre d'aveugle pendant des années.</p>
+
+    <figure class="fig" id="fig-deux" data-state="ombres">
+      <div class="stage">
+        <canvas class="gl" aria-label="Un coin de pièce : une ombre au sol, une ombre au mur, et l'objet qui les projette, d'abord invisible. Glisse pour tourner autour."></canvas>
+        <span class="tag a">Ana voit un <b data-la>disque</b></span>
+        <span class="tag b">Ben voit un <b data-lb>carré</b></span>
+        <div class="sum" aria-hidden="true">
+          <svg class="s" viewBox="-1 -1 2 2"><path data-a/></svg>+<svg class="s" viewBox="-1 -1 2 2"><path data-b/></svg>=<svg class="m" viewBox="-1 -1 2 2"><path data-avg/></svg>
+        </div>
+      </div>
+      <p class="verdict" data-v aria-live="polite"></p>
+      <div class="ctl">
+        <button type="button" data-go="moyenne" aria-pressed="false">Couper la poire en deux</button>
+        <button type="button" data-go="objet" aria-pressed="false" class="hot">Chercher l'objet</button>
+      </div>
+      <div class="ctl"><span class="lbl">autre dispute</span>
+        <button type="button" data-pair="cylindre" aria-pressed="true">disque / carré</button>
+        <button type="button" data-pair="cone" aria-pressed="false">disque / triangle</button>
+      </div>
+    </figure>
+
+    <p>Deux réflexes sont tentants, un troisième marche. Le premier : décider qui a raison. Le deuxième : couper la poire en deux, ce qui donne une forme molle, d'apparence raisonnable, que ni Ana ni Ben ne voient et qui est fausse pour les deux. Le troisième : chercher <strong>quel objet pourrait projeter les deux ombres à la fois</strong>. Ils avaient raison tous les deux, et leur contradiction était justement l'information qui manquait : la trace d'une profondeur que ni l'un ni l'autre ne pouvait voir seul.</p>
+
+    <h2><span class="n">03</span>Sculpter par soustraction</h2>
+    <p>Une ombre dit surtout ce que l'objet <em>n'est pas</em> : tout ce qui déborderait de l'ombre est exclu. On part donc d'un bloc, chaque témoin y taille ce qui ne colle pas avec ce qu'il voit, et ce qui reste s'approche de l'objet. En vision par ordinateur, ce bloc sculpté s'appelle l'<em>enveloppe visuelle</em> (<em>visual hull</em>). Un scanner médical fait la même chose en plus fin, avec des radios prises tout autour du patient.</p>
+
+    <div class="box teal">
+      <p class="t">À toi</p>
+      <p>L'objet est caché. Tu n'as que ton ombre (le point jaune). Ajoute des témoins en touchant l'anneau : le bord, c'est à hauteur d'yeux, le centre, c'est vu d'en haut. Essaie de deviner l'objet avant de le révéler.</p>
+    </div>
+
+    <figure class="fig wide" id="fig-temoins">
+      <div class="grid">
+        <div class="stage">
+          <canvas class="gl" aria-label="Ce qui reste du bloc après que chaque témoin a retiré ce qui sort de son ombre. Glisse pour tourner."></canvas>
+          <p class="name" data-o="name">Objet mystère</p>
+          <p class="swipe">↔ glisse pour tourner</p>
+        </div>
+        <div class="panel">
+          <div>
+            <svg class="ring" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="Les témoins, vus du dessus. Touche pour en placer un.">
+              <circle class="rim" r="1"/><circle class="mid" r=".5"/><circle class="obj" r=".15"/>
+              <text y="1.21">à hauteur d'yeux</text><text y=".38">d'en haut</text>
+              <g data-o="dots"></g>
+            </svg>
+            <p class="hint">Touche l'anneau pour placer un témoin.</p>
+          </div>
+          <div>
+            <div class="score"><b data-o="iou">–</b><span>de ressemblance, avec <span data-o="n">0 ombre</span></span></div>
+            <div class="g trop"><span>matière en trop</span><i><u data-o="trop"></u></i><em data-o="tropn"></em></div>
+            <div class="g perdu"><span>matière perdue</span><i><u data-o="perdu"></u></i><em data-o="perdun"></em></div>
+            <p class="legend"><i style="background:var(--teal)"></i>l'objet<i style="background:color-mix(in srgb, var(--hot) 45%, transparent)"></i>en trop</p>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs" data-o="thumbs" aria-label="Les ombres recueillies"></div>
+      <div class="ctl acts">
+        <button type="button" data-do="voisin">+ un voisin</button>
+        <button type="button" data-do="inconnu">+ un inconnu</button>
+        <button type="button" data-do="menteur" class="hot">+ un menteur</button>
+        <button type="button" data-do="reset">recommencer</button>
+      </div>
+      <div class="ctl conf">
+        <label>confiance <input type="range" min="50" max="100" value="100" data-o="tol"></label>
+        <span>on garde ce que confirment <b data-o="tolp">100 %</b> des ombres (<span data-o="tolv">–</span>)</span>
+      </div>
+      <div class="ctl"><span class="lbl">objet</span>
+        <button type="button" data-obj="1" aria-pressed="true">1</button>
+        <button type="button" data-obj="2" aria-pressed="false">2</button>
+        <button type="button" data-obj="3" aria-pressed="false">3</button>
+        <button type="button" data-o="reveal" class="go">Révéler l'objet</button>
+      </div>
+      <figcaption><b>Un voisin</b> regarde presque du même endroit que toi. <b>Un inconnu</b> regarde de n'importe où. <b>Un menteur</b> montre une ombre fausse (qu'il se trompe ou qu'il trompe), et rien ne le distingue avant la révélation. Une fois l'objet révélé, le turquoise qui dépasse du voile orange, c'est la matière perdue.</figcaption>
+    </figure>
+
+    <p>Ce n'est pas une moyenne. Une ombre ne vote pas, elle <strong>contraint</strong> : elle n'ajoute rien, elle élimine des possibles.</p>
+
+    <div class="box">
+      <p class="t">Pourquoi l'image tient debout</p>
+      <ul class="tldr">
+        <li><strong>Les mathématiques sont de son côté.</strong> En 1917, Johann Radon a montré qu'un objet est entièrement déterminé par ses radiographies prises sous tous les angles. C'est le résultat sur lequel reposent les scanners (prix Nobel 1979, Cormack et Hounsfield).</li>
+        <li><strong>Une radio vaut mieux qu'une ombre.</strong> Une ombre est binaire ; une radio dit <em>combien</em> de matière la lumière a traversée. Un avis nuancé (« surtout », « plutôt », « sauf quand ») porte plus d'information qu'un oui ou un non, et aide davantage à reconstruire.</li>
+        <li><strong>La diversité compte plus que le nombre.</strong> Pour une foule qui estime un chiffre, l'erreur collective est égale à l'erreur moyenne des individus moins la diversité de leurs estimations (le « théorème de la diversité » de Scott Page). Les angles éloignés valent plus que les angles nombreux.</li>
+        <li><strong>Elle explique le désaccord sans traiter personne d'idiot.</strong> Deux personnes honnêtes et lucides peuvent se contredire sans qu'aucune ne se trompe. C'est une hypothèse plus charitable que « l'autre est bête ou de mauvaise foi », et plus souvent juste.</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">04</span>Là où l'image casse</h2>
+    <p>Une métaphore qu'on ne sait pas attaquer ne vaut pas grand-chose. Celle-ci craque à cinq endroits. Les trois premiers se testent dans la scène du dessus.</p>
+
+    <h3>1. Mille voisins valent un témoin</h3>
+    <p>Dix voisins font gagner quelques points de ressemblance. Un seul inconnu fait souvent mieux que les dix. Ce qui reconstruit, ce n'est pas le nombre d'avis, c'est l'écart entre les angles. Un fil d'actualité, un cercle d'amis, une équipe renvoient souvent cent fois la même ombre. Cent fois la même ombre rend plus sûr de soi, pas plus juste.</p>
+
+    <h3>2. Les creux ne font pas d'ombre</h3>
+    <p>Avec l'objet 3, la ressemblance plafonne, quel que soit le nombre de témoins. C'est une tasse, et son creux ne dépasse d'aucune silhouette, sous aucun angle. Pire : un cylindre plein projette exactement les mêmes ombres. On peut réunir tous les points de vue extérieurs et conclure, très sûr de soi, à un objet faux. Certaines choses ne se voient que de l'intérieur : ce que c'est d'être pauvre, malade, exilé, parent. Les témoins extérieurs, si nombreux soient-ils, ne les reconstruisent pas. Il faut écouter ceux qui sont dedans.</p>
+
+    <h3>3. Un seul menteur suffit</h3>
+    <p>Comme on ne garde que ce que <em>toutes</em> les ombres autorisent, un menteur taille dans le vrai, et rien ne recolle ce qu'il a retiré. En baissant la confiance, on ne garde plus que ce que confirme une majorité : le menteur ne pèse plus, mais l'objet s'épaissit, parce qu'on jette aussi une partie de ce que les témoins honnêtes apprenaient. Il n'y a pas de bon réglage universel : entre la crédulité et la surdité, chacun choisit le prix qu'il paie.</p>
+
+    <h3>4. On ne sait pas d'où regardent les autres, ni soi-même</h3>
+    <p>Dans la scène, la position de chaque témoin est connue au degré près. Dans la vie, il faut deviner d'où l'autre parle, et chacun connaît mal son propre angle. La cryo-microscopie électronique bute sur le même problème : elle reconstruit des molécules à partir de milliers d'images bruitées prises sous des angles inconnus. Ça marche, avec un piège célèbre, « Einstein from noise » : alignez des images de pur bruit sur un portrait d'Einstein, faites la moyenne, et Einstein apparaît. Qui lit les ombres des autres à travers son propre modèle reconstruit… son propre modèle.</p>
+
+    <h3>5. Et s'il n'y avait pas d'objet ?</h3>
+    <p>Toute l'image suppose un objet là-dehors, le même pour tous, qui ne bouge pas pendant qu'on le regarde. Pour une question de faits (le climat, un accident, une maladie), c'est raisonnable. Pour « la vie en général », c'est un pari. Le sens, le goût, la valeur d'une vie ne sont peut-être pas des objets qu'on projette, mais des choses que les regards fabriquent en partie. Et une société change quand on la regarde. Même la reconstruction finale vit dans une tête, qui a son propre angle : il n'y a pas de « point de vue de nulle part ». L'image tient alors comme une discipline plutôt que comme une vérité : faire comme s'il y avait un objet, pour continuer à le chercher, sans prétendre le tenir.</p>
+
+    <h2><span class="n">05</span>Ce qu'on peut en garder</h2>
+    <ol class="rules">
+      <li><span>Chercher l'angle <strong>le plus éloigné</strong>, pas le plus nombreux.</span></li>
+      <li><span>Devant une contradiction, demander « <strong>quel objet ferait ces deux ombres ?</strong> » avant « qui a tort ? ».</span></li>
+      <li><span>Demander d'où l'autre regarde, et d'où l'on regarde soi-même.</span></li>
+      <li><span>Donner ses raisons, pas seulement sa conclusion : <strong>une radio plutôt qu'une ombre</strong>.</span></li>
+      <li><span>Régler sa confiance : assez pour que chaque témoin apprenne quelque chose, pas au point qu'un seul menteur sculpte le tout.</span></li>
+      <li><span>Se souvenir des creux : <strong>écouter ceux qui voient de l'intérieur</strong>.</span></li>
+    </ol>
+
+    <div class="box">
+      <p class="t">Déjà dit, autrement</p>
+      <ul class="tldr">
+        <li><strong>Platon, la caverne</strong> (<em>La République</em>, livre VII) : des prisonniers ne voient que des ombres. Chez Platon, le salut est de sortir voir l'objet. Ici, personne ne sort : il n'y a que des ombres, et on les compare.</li>
+        <li><strong>Les aveugles et l'éléphant</strong>, parabole indienne : chacun touche une partie et la prend pour le tout. Les jaïns en ont tiré une doctrine, l'<em>anekāntavāda</em>, la « non-unilatéralité ».</li>
+        <li><strong>La couverture de <em>Gödel, Escher, Bach</em></strong> (Hofstadter, 1979) : un bloc sculpté dont les ombres dessinent un G, un E et un B.</li>
+        <li><strong>Thomas Nagel</strong>, <em>The View from Nowhere</em> (1986) : l'objectivité comme effort pour se détacher de son point de vue, effort qui n'arrive jamais au bout.</li>
+      </ul>
+    </div>
+
+    <p>Une sixième faille ? <a href="../#hello">Elle est bienvenue</a> : c'est exactement le genre d'ombre qui manque à ce texte.</p>
+
+    <hr>
+    <h3>Sources</h3>
+    <ol class="sources">
+      <li>J. Radon, « Über die Bestimmung von Funktionen durch ihre Integralwerte längs gewisser Mannigfaltigkeiten », 1917.</li>
+      <li>A. Laurentini, « The visual hull concept for silhouette-based image understanding », <em>IEEE PAMI</em>, 1994.</li>
+      <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
+      <li>R. Henderson, « Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise », <em>PNAS</em>, 2013.</li>
+      <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+    </ol>
+    <p class="note">Les scènes sont calculées dans le navigateur avec three.js, servi depuis ce site : ombres portées réelles, reconstruction par sculpture de l'enveloppe visuelle sur une grille de 48 × 48 × 48 voxels, surface lissée par <em>marching cubes</em>. Aucune requête tierce, aucun traceur.</p>
+  </article>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Haut">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+<script type="module" src="ombres.js?v=2"></script>
+</body>
+</html>
