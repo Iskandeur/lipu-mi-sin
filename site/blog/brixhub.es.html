@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="es" dir="ltr" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrixHub: el buscador de sus datos robados · Alexandre Pinoteau</title>
+<meta name="description" content="BrixHub afirma indexar 14 000 millones de datos personales robados y ofrece retirar su ficha a cambio de pago. Quién, qué, cómo, ¿es legal?, ¿por qué sigue en línea? La investigación, en versión para todos los públicos y en versión técnica.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BrixHub: el buscador de sus datos robados">
+<meta property="og:description" content="Afirma indexar 14 000 millones de fichas y vende la retirada de la suya. En el punto de mira de la justicia, sigue en línea. Cómo se sostiene, y qué dice el derecho.">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/brixhub/brixhub-accueil.webp">
+<meta property="og:locale" content="es_ES">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"brixhub",lang:"es",langs:["fr","en","es","it","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← blog</a></nav>
+  <label class="lang"><span class="sr">Idioma</span><select id="blog-lang" aria-label="Idioma"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Investigación · filtraciones de datos · OSINT</p>
+  <h1>BrixHub: el buscador de sus datos robados</h1>
+  <p class="lede">Un sitio en el que teclea su nombre y escupe su dirección, su teléfono, su número de la seguridad social. Dice indexar 14 000 millones de fichas, procedentes de pirateos. Y le propone retirar la suya… a cambio de pago. Está en el punto de mira de la justicia francesa y, sin embargo, sigue en línea. He mirado cómo se sostiene.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>con la ayuda de Bounce</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="Versión del artículo">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>Para todos<small>entender y protegerse</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>Técnica<small>infra, rotación, derecho</small></span></button>
+    </div>
+    <p class="hint2">Dos artículos, una misma investigación. Puedes pasar de uno a otro en cualquier momento.</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <div class="box hot">
+      <p class="t">Si solo lees esto</p>
+      <ol class="rules">
+        <li><span><strong>No lo uses</strong>, ni por curiosidad, ni siquiera para buscar tu propio nombre. Buscar a otra persona puede exponerte a acciones judiciales, y la justicia francesa ha presentado el caso ante un fiscal por este sitio.</span></li>
+        <li><span><strong>Nunca pagues</strong> para que retiren tu ficha, y <strong>nunca envíes tu documento de identidad</strong>. Estarías pagando a la gente que tiene tus datos robados, y les darías uno más.</span></li>
+        <li><span><strong>Puedes comprobar tus filtraciones gratis y sin peligro</strong> en <a href="https://haveibeenpwned.com">haveibeenpwned.com</a>, un servicio legítimo que no muestra ningún dato.</span></li>
+        <li><span><strong>Si tus datos andan por ahí</strong>: cambia tus contraseñas importantes, activa la doble autenticación, y vigila tus cuentas bancarias.</span></li>
+      </ol>
+    </div>
+
+    <p>BrixHub es un buscador. Pero en lugar de páginas web, rebusca en <strong>filtraciones de datos</strong>: los archivos robados en pirateos de empresas y administraciones. Usted teclea un nombre, un teléfono, un correo electrónico, y le devuelve una ficha. Anuncia <strong>más de 14 000 millones de registros</strong>.</p>
+    <p>En octubre de 2026, la prensa francesa se hace eco y la ministra de lo Digital acude a la justicia. Mucha gente se pregunta qué es, y si se puede utilizar. La respuesta corta: <strong>no, de ninguna manera</strong>. Esto es por qué, y cómo funciona este tipo de sitio.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/brixhub-accueil.webp" width="1400" height="1050" loading="lazy" alt="Página de inicio de BrixHub: fondo oscuro, un ojo estilizado en circuito impreso, el eslogan «BrixHub sigue accesible», un contador de 14 556 649 351 registros, botones «Iniciar una búsqueda» y «Supresión RGPD»."><figcaption><b>El escaparate.</b> Un diseño cuidado, un contador de 14 000 millones, un botón «Supresión RGPD», e incluso un bocadillo «nuestro bot de Telegram te envía la nueva dirección si el sitio cambia o es bloqueado». Todo está pensado para tranquilizar y para sobrevivir a los bloqueos.</figcaption></figure>
+
+    <h2><span class="n">01</span>¿De dónde vienen estos datos?</h2>
+    <p>De filtraciones reales. En los últimos años, cantidad de empresas y organismos franceses sufrieron el robo de sus ficheros de clientes: operadores de telecomunicaciones, mutuas, sitios de comercio, servicios públicos. Cada filtración son millones de personas cuyo nombre, dirección, teléfono o algo peor acaban sueltos por ahí.</p>
+    <p>Un sitio como BrixHub no piratea nada por sí mismo. <strong>Recoge</strong> esos archivos dispersos, los cruza, y los vuelve <strong>consultables con un solo clic</strong>. Ahí está todo el problema: una filtración aislada es engorrosa de explotar, pero un buscador que vincula su nombre, su dirección, su teléfono y su número de la seguridad social en una sola ficha es un arma para el acoso, la usurpación de identidad y la estafa.</p>
+    <div class="box"><p class="t">A tener en cuenta</p><p>BrixHub exhibe con orgullo nombres de organismos públicos como fuentes. Ninguno lo ha confirmado, y no recojo esas afirmaciones: son sus dichos, no hechos establecidos.</p></div>
+
+    <h2><span class="n">02</span>El verdadero negocio: venderte tu propia tranquilidad</h2>
+    <p>Lo más perverso no es la búsqueda. Es la opción <strong>«Supresión RGPD»</strong>. El sitio le propone, a cambio de pago, retirar su ficha. En torno a unos pocos euros por un puñado de fichas, según los testimonios. A veces, una supresión «gratis»… a cambio de una foto de su documento de identidad.</p>
+    <div class="box hot">
+      <p class="t">Es la trampa dentro de la trampa</p>
+      <p>Estaría pagando a la gente que posee sus datos robados, para que prometan borrarlos. Nada garantiza que lo hagan. Y si envía su documento de identidad, les da un dato más, perfectamente auténtico esta vez. La ministra delegada de lo Digital lo dijo públicamente el 5 de octubre: «no pague nunca para que retiren sus datos» (<a href="https://www.techniques-ingenieur.fr/actualite/breves-afp/donnees-personnelles-la-ministre-du-numerique-saisit-la-justice-contre-brixhub-164449/">AFP</a>). Así que: <strong>no pague, no envíe nada</strong>.</p>
+    </div>
+    <p>Y no es solo una advertencia teórica. En X (antes Twitter), varios internautas cuentan haber pagado para que retiraran su ficha: desapareció, sí… unos días, antes de <strong>reaparecer</strong>. Normal: borrar una línea de una pantalla no hace desaparecer el dato del fichero robado, que el operador conserva. Puede volver a ponerlo en línea, revenderlo, o hacerle pagar otra vez.</p>
+
+    <figure class="shot"><img src="img/brixhub/brixhub-recherche.webp" width="1400" height="1050" loading="lazy" alt="Página de búsqueda de BrixHub: campos «Apellido», «Nombre», «Apellido de nacimiento», «Nombre mostrado», y secciones plegadas «Nacimiento», «Contacto», «Localización»."><figcaption>El formulario de búsqueda. Se introduce un apellido, un nombre, una fecha de nacimiento. La promesa mostrada: «Un criterio. Todo lo que se filtró.»</figcaption></figure>
+
+    <h2><span class="n">03</span>¿Por qué no lo han cerrado?</h2>
+    <p>Porque cerrar un sitio como este es mucho más difícil de lo que parece. BrixHub juega a tres bandas:</p>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 18l22 10v16c0 14-9 22-22 26-13-4-22-12-22-26V28z" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linejoin="round"/><path d="M34 44l7 7 13-14" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><h3>Un biombo</h3><p>El sitio se esconde tras un intermediario técnico (Cloudflare) que oculta la dirección de su servidor real. Se ve la fachada, no el edificio.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M26 34h36M26 44h36M26 54h36" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="34" r="3" fill="#ffc977"/><circle cx="20" cy="44" r="3" fill="#ffc977"/><circle cx="20" cy="54" r="3" fill="#ffc977"/></svg>
+        <div><h3>Direcciones desechables</h3><p>Cambia de nombre de dominio en cuanto se bloquea uno: .fun, .net, .site, .org, .cc, luego .to, .ru, .st… Cuando una puerta se cierra, otra ya está abierta.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M28 44a16 16 0 0 1 32 0" fill="none" stroke="#ff8f52" stroke-width="3"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/><path d="M44 50v12M34 62h20" stroke="#ff8f52" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>Países complacientes</h3><p>Elige extensiones gestionadas por países pequeños (Santo Tomé para .st, Tonga para .to) que no vigilan los contenidos y solo actúan por orden judicial.</p></div>
+      </li>
+    </ol>
+    <p>Resultado: no se puede tumbar con un clic. Lo que tumba estos sitios, en general, no es el cierre del dominio, es <strong>la detención de las personas que los hacen funcionar</strong>. Y eso lleva tiempo.</p>
+
+    <h2><span class="n">04</span>Lo que dice la ley</h2>
+    <p>No soy jurista, pero esto es lo que se desprende de las fuentes:</p>
+    <ul>
+      <li><strong>Mirar el sitio</strong> no es, en sí, una infracción identificada.</li>
+      <li><strong>Buscar a otra persona</strong>, y luego guardar, compartir o utilizar el resultado, sí lo expone a riesgos reales: receptación, recogida desleal de datos, incluso acoso o usurpación si apunta a una persona.</li>
+      <li><strong>Explotar el sitio</strong> (quienes lo hacen funcionar) corresponde al acceso y a la extracción fraudulenta de datos: varios años de cárcel y fuertes multas.</li>
+    </ul>
+    <p>El 5 de octubre de 2026, la ministra delegada de lo Digital acudió a la fiscal de París. Su consejo, repetido por todas partes: «no pague nunca para que retiren sus datos».</p>
+
+    <div class="box teal">
+      <p class="t">Puede que estés en sus ficheros. ¿Qué hacer?</p>
+      <ol class="rules">
+        <li><span><strong>No vayas a comprobarlo en BrixHub.</strong> Usa <a href="https://haveibeenpwned.com">haveibeenpwned.com</a> (introduce tu correo electrónico y te dice en qué filtraciones conocidas aparece).</span></li>
+        <li><span><strong>Cambia las contraseñas</strong> de las cuentas afectadas, y activa en todas partes la doble autenticación.</span></li>
+        <li><span><strong>Desconfía de las estafas dirigidas</strong>: con esos datos, pueden contactarte haciéndose pasar por tu banco o un servicio público. En caso de duda, cuelga y llama al número oficial.</span></li>
+        <li><span><strong>Si tu ficha está en línea</strong>: guarda una captura solo de tu ficha como prueba, denúnciala, y acude a la CNIL si nada se mueve. No pagues.</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">Compártelo</p>
+      <p>Mucha gente va a «solo comprobar su nombre» sin saber que es mala idea. Avísales.</p>
+      <div class="share"><button type="button" data-share="simple">Compartir el artículo</button><button type="button" class="ghost" data-set-mode="tech" data-jump>Leer la versión técnica →</button></div>
+    </div>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li><strong>BrixHub</strong>: buscador de datos procedentes de filtraciones, francófono, que reivindica ~14 500 millones de registros y vende la retirada de ficha. Caso presentado ante el fiscal de París el 05/10/2026 (art. 40 CPP).</li>
+        <li><strong>Rotación de dominios sobre una docena de TLD</strong> desde febrero de 2026: <code>.fun → .net → .site → .org → .cc → .to → .ru → .st</code>. Tres activos a 21/10 (<code>.to</code>, <code>.ru</code>, <code>.st</code>), misma pareja de NS Cloudflare.</li>
+        <li><strong>Origen web nunca desenmascarado</strong> (todo tras Cloudflare). La única infra fuera de CDN: un <strong>servidor de correo dedicado</strong>, <code>195.58.146[.]225</code> (M247), al que los tres dominios delegan su correo.</li>
+        <li><strong>Resiliencia deliberada</strong>: ccTLD de baja cooperación (.st Santo Tomé, .to Tonga), proxy de privacidad, bot de Telegram para anunciar las nuevas direcciones.</li>
+        <li>Investigación pasiva (Bounce + urlscan + prensa). <strong>Nada introducido, ninguna petición al servicio más allá de un navegador corriente, ninguna atribución.</strong></li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>Contexto y método</h2>
+    <p>BrixHub es un «buscador de filtraciones» (<em>data leak search engine</em>) en lengua francesa. Indexa bases procedentes de compromisos y ofrece una búsqueda nominal, además de una supresión de ficha de pago. En Francia está en el punto de mira de una denuncia penal desde el 05/10/2026. La pregunta de partida era simple: ¿se puede usar su API? Esta investigación responde a ello.</p>
+    <div class="box teal"><p class="t">Reglas de enfrentamiento</p><p>Fuentes públicas y pasivas: WHOIS/RDAP ante los registros, DNS, Certificate Transparency, urlscan.io, VirusTotal, Shodan/InternetDB, DNS pasivo, prensa. Primera pasada con el agente CTI Bounce, completada a mano. <strong>Nunca me conecté al servicio, no lancé ninguna búsqueda en él, y no eludí ninguna protección</strong> (la página responde un desafío Cloudflare 403 a un cliente sin navegador, no eludido). Dominios neutralizados (<code>[.]</code>).</p></div>
+
+    <h2><span class="n">02</span>Lo que el servicio afirma</h2>
+    <p>Según sus propias páginas y la prensa (cifras que deben tomarse como reivindicaciones, no como hechos):</p>
+    <div class="stats">
+      <div class="stat"><b>14 500 M</b><span>de registros reivindicados (contador en la página de inicio)</span></div>
+      <div class="stat"><b>~5 €</b><span>para retirar 10 fichas, según los testimonios</span></div>
+      <div class="stat"><b>10→90 €</b><span>suscripciones, de «al mes» a «de por vida»</span></div>
+      <div class="stat"><b>12+</b><span>dominios sucesivos desde febrero de 2026</span></div>
+    </div>
+    <p>Búsqueda por apellido, correo electrónico, teléfono, identificador de Discord; datos anunciados hasta el NIR y el IBAN; cobertura Francia, Bélgica, Suiza. Una pestaña «árbol genealógico», una «API abierta, sin clave, limitada por IP» (es la respuesta a la pregunta inicial: muestra una API, usarla equivale a extraer a sabiendas datos robados), un bot de Telegram y una cuenta de X. Un aviso legal que menciona una «sociedad con sede en Rusia», sin nombre. <strong>Ninguna de estas reivindicaciones es verificable desde el exterior, y no las doy por ciertas.</strong></p>
+
+    <h2><span class="n">03</span>Infraestructura: una fachada, sin edificio</h2>
+    <p>Toda la web está tras Cloudflare, en los tres dominios activos. El origen nunca se filtró. Las huellas compartidas confirman un mismo operador:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Dominio</th><th>Creado</th><th>Registro</th><th>Estado a 21/10</th></tr></thead>
+      <tbody>
+        <tr><td><code>brixhub[.]to</code></td><td>26/06/2026</td><td>Tonic (Tonga)</td><td class="y">activo</td></tr>
+        <tr><td><code>brixhub[.]ru</code></td><td>27/08/2026</td><td>RU-CENTER, «Private Person», no verificado</td><td class="y">activo</td></tr>
+        <tr><td><code>brixhub[.]st</code></td><td>30/09/2026</td><td>ST Registry (Santo Tomé), titular oculto</td><td class="y">activo (canónico)</td></tr>
+        <tr><td colspan="4" class="note">+ <code>.fun</code>, <code>.net</code>, <code>.site</code>, <code>.org</code>, <code>.top</code>, <code>.cc</code> (feb.–jun. 2026): suspendidos por sus registradores o apagados.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Tres marcadores vinculan los dominios activos: la misma pareja de servidores de nombres Cloudflare (<code>irena</code> / <code>weston</code>), la misma política SPF (<code>v=spf1 mx:brixhub[.]to -all</code>) y el mismo título de página. El <code>.st</code> nació el 30/09, <strong>cinco días antes de la denuncia de la ministra</strong>.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/bounce-brixhub.webp" width="1600" height="1170" loading="lazy" alt="Grafo Bounce de la investigación brixhub.st: los tres dominios brixhub conectados por sus servidores de nombres, sus certificados y un servidor de correo común 195.58.146.225; a la derecha, el registro del agente."><figcaption><b>El grafo Bounce.</b> Los tres dominios (<code>.st</code>, <code>.to</code>, <code>.ru</code>) convergen hacia la misma pareja de NS Cloudflare y el mismo servidor de correo. A la derecha, el registro del agente, que desactiva las IP Cloudflare (inútiles como pivotes) y se concentra en lo que asoma.</figcaption></figure>
+
+    <h3>La única filtración: el servidor de correo</h3>
+    <p>El origen web está enmascarado, pero el <strong>correo</strong> no lo está. Los tres dominios delegan su correo (MX y SPF) a <code>mail.brixhub[.]to</code>, que resuelve hacia una IP <strong>fuera de Cloudflare</strong>:</p>
+    <div class="req"><b>mail.brixhub[.]to</b> → <span class="t">195.58.146[.]225</span>
+  AS9009 <b>M247</b> · ptr <span class="s">mail.brixhub.to</span>
+  Postfix + OpenSSH 9.6p1 · Ubuntu 24.04
+  cert SMTP autofirmado, CN=mail.brixhub.to (04/10/2026, válido 10 años)
+  ningún otro dominio observado en esta IP en DNS pasivo</div>
+    <p>Es el único punto de infraestructura propio del operador que la investigación ha expuesto. No «desenmascara» el sitio web (alojado en otra parte, tras Cloudflare), pero es un pivote sólido: una IP dedicada, un alojamiento nombrado, un certificado fechado. El propio Bounce lo señaló en su autocrítica: esta IP «de correo» era el objetivo de enriquecimiento más interesante, y el punto débil de la configuración del operador.</p>
+
+    <h2><span class="n">04</span>Por qué sigue en línea</h2>
+    <p>La resiliencia de BrixHub no tiene nada de accidental. Se apoya en cuatro decisiones:</p>
+    <ul>
+      <li><strong>Un front Cloudflare</strong> que oculta el alojamiento real y absorbe las denuncias de abuso.</li>
+      <li><strong>Una rotación de dominios</strong> sobre TLD variados. Los gTLD clásicos (.fun, .cc, .site, .org) fueron suspendidos por sus registradores entre junio y agosto; el operador migró cada vez hacia un ccTLD más cooperante.</li>
+      <li><strong>Registros de baja cooperación.</strong> El registro del <code>.st</code> (Santo Tomé, back-end sueco) precisa en su política que «no vigila los contenidos» y solo anula un dominio por decisión de un tribunal competente. El <code>.to</code> (Tonga, operador Tonic) tiene la misma reputación, aunque ya ha suspendido dominios por orden judicial.</li>
+      <li><strong>Un canal de repliegue.</strong> Un bot de Telegram anuncia la nueva dirección en cada cambio, y el correo permanece anclado en <code>.to</code> pase lo que pase. El servicio sobrevive a la pérdida de cualquiera de sus dominios.</li>
+    </ul>
+    <p>Dicho de otro modo: <strong>no es la incautación de un dominio lo que tumba estos servicios, es la detención de los operadores.</strong> Los precedentes lo demuestran: WeLeakInfo (incautado en 2020), RaidForums (2022), los administradores de BreachForums (detenidos en Francia en 2025), y varios «lookups» franceses desmantelados en 2026 con detenciones. Cada vez, la investigación judicial, no el bloqueo técnico.</p>
+
+    <h2><span class="n">05</span>¿Es legal? ¿Se puede usar su API?</h2>
+    <p>No, y no. Síntesis jurídica (según análisis de abogados y la prensa; no soy jurista):</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Parte</th><th>Lo que está en juego</th></tr></thead>
+      <tbody>
+        <tr><td>Operador</td><td>Acceso y extracción fraudulenta de datos (art. 323-1 y ss. del código penal), hasta varios años de cárcel y fuertes multas.</td></tr>
+        <tr><td>Usuario</td><td>Consultar no es una infracción identificada en sí. Pero buscar a un tercero y luego <strong>poseer, compartir o utilizar</strong> el resultado expone a la receptación (art. 321-1), a la recogida desleal (226-18), incluso al acoso o a la usurpación (223-1-1). Pagar o enviar el documento de identidad agrava la exposición.</td></tr>
+        <tr><td>API</td><td>Un acceso automatizado a una base de datos robados es extracción deliberada y a gran escala. Y financia un servicio de extorsión. A proscribir.</td></tr>
+      </tbody>
+    </table></div>
+    <p>La Cour de cassation admitió además en febrero de 2026 que la información inmaterial puede ser objeto de receptación. El caso versaba sobre secretos comerciales, no sobre filtraciones de datos, pero el principio debilita la idea de que «utilizar» esos datos sería sin riesgo.</p>
+    <div class="box hot"><p class="t">La buena alternativa</p><p>Para comprobar <strong>tus propias</strong> filtraciones, sin financiar ni enriquecer a nadie: <a href="https://haveibeenpwned.com">Have I Been Pwned</a>. Te indica en qué filtraciones conocidas aparece tu correo electrónico, y <strong>nunca muestra los datos en sí</strong>. Es el contraejemplo legal de BrixHub.</p></div>
+
+    <h2><span class="n">06</span>Lo que la investigación no zanja</h2>
+    <p>Por honestidad, los límites:</p>
+    <ul>
+      <li><strong>El alojamiento real del sitio</strong> y la identidad de los operadores: ocultos. Nada atribuible solo con fuentes pasivas.</li>
+      <li><strong>El origen real de los datos</strong>: el sitio exhibe fuentes prestigiosas (organismos públicos), ninguna confirmada. No recojo esas afirmaciones.</li>
+      <li><strong>Los importes exactos</strong> y la existencia real de la API y de las suscripciones se basan en testimonios de segunda mano. Lo mismo para las fichas pagadas y luego reaparecidas: son testimonios de internautas en X, coherentes con el funcionamiento del servicio, pero que no he podido verificar uno por uno.</li>
+      <li>Varios <strong>artículos de prensa</strong> (franceinfo, Le Monde, Siècle Digital…) no se pudieron leer enteros, solo por sus titulares y extractos.</li>
+    </ul>
+
+    <h2><span class="n">07</span>Indicadores (neutralizados)</h2>
+    <div class="box">
+      <p class="t">A vigilar</p>
+      <p class="note"><strong>Dominios activos:</strong> <code>brixhub[.]st</code>, <code>brixhub[.]to</code>, <code>brixhub[.]ru</code>.<br>
+      <strong>Servidor de correo (fuera de CDN):</strong> <code>195.58.146[.]225</code> (AS9009 M247), <code>mail.brixhub[.]to</code>.<br>
+      <strong>NS comunes:</strong> <code>irena[.]ns.cloudflare.com</code>, <code>weston[.]ns.cloudflare.com</code>.<br>
+      <strong>SPF compartido:</strong> <code>v=spf1 mx:brixhub[.]to -all</code>.<br>
+      <strong>Histórico:</strong> <code>brixhub[.]{fun,net,site,org,top,cc}</code> (suspendidos / apagados).</p>
+    </div>
+
+    <h2><span class="n">08</span>Fuentes</h2>
+    <ol class="sources">
+      <li>AFP / Techniques de l'ingénieur (05/10/2026) — caso presentado ante el fiscal, art. 40 CPP, «no pague nunca».</li>
+      <li>franceinfo, Siècle Digital, Senioractu, Next (oct. 2026) — naturaleza del servicio, cronología.</li>
+      <li>Zataz — desmantelamiento de «lookups» franceses, detenciones 2026.</li>
+      <li>CNIL — posición general sobre los servicios de búsqueda de datos y los falsos servicios de borrado.</li>
+      <li>WHOIS / RDAP de los registros, Certificate Transparency, urlscan.io, Shodan, DNS pasivo — consultados el 16 y el 21/10/2026.</li>
+      <li>Políticas de los registros <code>.st</code> (nic.st / Bahnhof) y <code>.to</code> (Tonic).</li>
+    </ol>
+
+    <div class="box"><p class="t">Compartir</p><div class="share"><button type="button" data-share="tech">Compartir la versión técnica</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← Versión para todos los públicos</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">Investigación realizada con <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, sobre fuentes públicas y pasivas. Ninguna conexión al servicio, ninguna búsqueda lanzada, ninguna elusión de protección, ninguna persona nombrada. Indicadores neutralizados (<code>[.]</code>). Si sus datos se han filtrado: <a href="https://haveibeenpwned.com">haveibeenpwned.com</a>, no pague a nadie.</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Arriba">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>
