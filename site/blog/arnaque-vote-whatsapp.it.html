@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="it" dir="ltr" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>« Vota per Sophie »: autopsia di una truffa WhatsApp · Alexandre Pinoteau</title>
+<meta name="description" content="Un messaggio WhatsApp chiede di votare per la figlia di amici a un concorso di danza. Dietro: un kit per rubare account WhatsApp, 46 domini, due server nascosti e sette mesi di attività. L'inchiesta, in versione per tutti e in versione tecnica.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="« Vota per Sophie »: autopsia di una truffa WhatsApp">
+<meta property="og:description" content="Non votare. E soprattutto, non digitare mai un codice WhatsApp su un sito. Come funziona la truffa, e come l'ho ricostruita.">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/vote/page-fr.webp">
+<meta property="og:locale" content="it_IT">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"it",langs:["fr","en","es","it","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← blog</a></nav>
+  <label class="lang"><span class="sr">Lingua</span><select id="blog-lang" aria-label="Lingua"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Inchiesta · truffa WhatsApp · threat intel</p>
+  <h1><span class="qt">« Vota per Sophie »</span>: autopsia di una truffa WhatsApp</h1>
+  <p class="lede">A mezzogiorno, un messaggio mi chiede di votare per la figlia di amici a un concorso di balletto. La sera, due parenti ricevono quasi lo stesso. Dietro questo piccolo favore: una macchina per rubare account WhatsApp, che gira da mesi.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>con l'aiuto di Bounce</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="Versione dell'articolo">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>Per tutti<small>capire e proteggersi</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>Tecnica<small>kit, infrastruttura, pivot, IOC</small></span></button>
+    </div>
+    <p class="hint2">Due articoli, una sola inchiesta. Puoi passare dall'uno all'altro in qualsiasi momento.</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <figure class="chat" aria-label="Il messaggio ricevuto su WhatsApp">
+      <p class="who"><i>?</i> Un contatto</p>
+      <div class="bubble">Ciao 👋, vorrei chiederti un favore! Potresti dare il tuo voto a Sophie, la figlia dei miei amici? Partecipa a un concorso dove può ottenere una borsa di studio e la possibilità di esibirsi sul palco.<br><br><span class="lnk">https://balletday[.]click/l/fibs2026e10</span><time>12:44</time></div>
+      <figcaption class="note">Il messaggio ricevuto il 21 ottobre 2026. Il link è volutamente rotto.</figcaption>
+    </figure>
+
+    <div class="box hot">
+      <p class="t">Se leggi solo questo</p>
+      <ol class="rules">
+        <li><span><strong>Non cliccare.</strong> Un vero concorso non ha mai bisogno che tu ti colleghi con WhatsApp per votare.</span></li>
+        <li><span><strong>Non digitare mai il tuo numero e poi un codice WhatsApp su un sito.</strong> Quel codice è la chiave del tuo account. Chi lo riceve legge le tue conversazioni e parla a tuo nome.</span></li>
+        <li><span><strong>Controlla subito</strong> in WhatsApp → <em>Impostazioni</em> → <em>Dispositivi collegati</em>. Non riconosci un dispositivo? Disconnettilo.</span></li>
+        <li><span><strong>Attiva la verifica in due passaggi</strong> (<em>Impostazioni</em> → <em>Account</em>). Impedisce che ti rubino l'account con il codice ricevuto via SMS. Non basta contro l'aggiunta di un dispositivo: da qui la regola n. 2.</span></li>
+      </ol>
+    </div>
+
+    <p>Il messaggio sembra banale. Arriva da un contatto, è educato, chiede un gesto che non costa nulla. Ed è proprio per questo che funziona. L'ho ricevuto il 21 ottobre. La sera stessa, due persone della mia famiglia me ne hanno inoltrato quasi lo stesso, stavolta per « Eliška » e « un corso di danza gratuito ».</p>
+    <p>Invece di limitarmi a cancellarlo, ho voluto capire cosa ci fosse dietro. Ecco cosa si trova.</p>
+
+    <h2><span class="n">01</span>Come funziona la truffa, in cinque passaggi</h2>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><circle cx="44" cy="35" r="12" fill="none" stroke="#f1ead9" stroke-width="3"/><path d="M22 66c3-11 12-16 22-16s19 5 22 16" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round"/><rect x="52" y="48" width="20" height="16" rx="3" fill="#ff8f52"/><path d="M56 48v-5a6 6 0 0 1 12 0" fill="none" stroke="#ff8f52" stroke-width="3"/></svg>
+        <div><h3>Una persona vicina ci è già cascata</h3><p>Il messaggio arriva dal vero account WhatsApp di un contatto. Ma non è più lui a scrivere: il suo account è stato rubato nello stesso modo, qualche giorno prima.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M20 28h48a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H40l-12 9v-9h-8a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4z" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linejoin="round"/><path d="M28 39h32M28 47h20" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>Una richiesta tutta gentile</h3><p>« Vota per la figlia dei miei amici, è importante per lei. » Un bambino, un sogno, un clic: nessuno ha voglia di dire di no.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><rect x="26" y="16" width="36" height="58" rx="6" fill="none" stroke="#f1ead9" stroke-width="3"/><circle cx="44" cy="36" r="8" fill="#ffc977"/><path d="M34 52h20M36 60h16" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>Una bella pagina di concorso</h3><p>Un sito elegante, due piccole ballerine, un contatore di voti serrato (497 contro 492). Tutto è falso: la scuola, le foto, i numeri.</p></div>
+      </li>
+      <li class="trap">
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#2a1a12" stroke="#ff8f52" stroke-width="2"/><circle cx="34" cy="44" r="11" fill="none" stroke="#ff8f52" stroke-width="3.5"/><path d="M45 44h24M60 44v8M67 44v6" stroke="#ff8f52" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><h3>La trappola: « conferma il tuo voto con WhatsApp »</h3><p>Per « evitare i brogli », la pagina imita WhatsApp e chiede il tuo numero, poi un codice. Quel codice è WhatsApp che ti chiede il permesso di aprire il tuo account <strong>sul computer del pirata</strong>.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 22a22 22 0 1 1-20 13" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round"/><path d="M18 27l6 9 9-5" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/></svg>
+        <div><h3>E ricomincia, con i tuoi contatti</h3><p>Il pirata legge le tue conversazioni e scrive a tutta la tua rubrica con il tuo nome e la tua foto: « vota per Sophie ». A volte chiede anche soldi « con urgenza ».</p></div>
+      </li>
+    </ol>
+
+    <figure class="wide diagram" aria-label="Schema: il ciclo della truffa">
+      <svg viewBox="-40 0 980 700" role="img" aria-labelledby="loop-t">
+        <title id="loop-t">Il ciclo della truffa: una persona vicina violata invia il messaggio, la vittima vota, dà il suo numero e un codice, il suo account si apre dal pirata, che scrive ai suoi contatti.</title>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a3abbd"/></marker></defs>
+        <g fill="none" stroke="#a3abbd" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" marker-end="url(#ah)">
+          <path d="M512 155A200 200 0 0 1 612 227"/><path d="M650 345A200 200 0 0 1 612 463"/><path d="M512 535A200 200 0 0 1 388 535"/><path d="M288 463A200 200 0 0 1 250 345"/><path d="M288 227A200 200 0 0 1 388 155"/>
+        </g>
+        <g stroke-width="3"><circle cx="450" cy="145" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="640" cy="283" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="568" cy="507" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="332" cy="507" r="60" fill="#2a1a12" stroke="#ff8f52" stroke-width="4"/><circle cx="260" cy="283" r="60" fill="#141a28" stroke="#6fe3cc"/></g>
+        <g font-size="46" text-anchor="middle" dominant-baseline="central"><text x="450" y="147">🔓</text><text x="640" y="285">💬</text><text x="568" y="509">🩰</text><text x="332" y="509">🔑</text><text x="260" y="285">💻</text></g>
+        <g font-size="26" font-weight="600">
+          <text x="450" y="50" text-anchor="middle">Una persona cara</text><text x="450" y="80" text-anchor="middle" class="mute">già violata</text>
+          <text x="716" y="272">« Vota per</text><text x="716" y="302">Sophie! »</text>
+          <text x="640" y="590">Una bella pagina</text><text x="640" y="620" class="mute">di concorso</text>
+          <text x="262" y="590" text-anchor="end" class="hot">Il tuo numero</text><text x="262" y="620" text-anchor="end" class="hot">+ un codice</text>
+          <text x="184" y="272" text-anchor="end">Il tuo account</text><text x="184" y="302" text-anchor="end" class="mute">dal pirata</text>
+        </g>
+        <g text-anchor="middle"><text x="450" y="322" font-size="28" font-weight="800">Ricomincia</text><text x="450" y="356" font-size="22" class="mute">con tutti i tuoi contatti</text></g>
+      </svg>
+      <figcaption>Perché ricevi questo messaggio da un « amico »: ogni vittima diventa il mittente successivo. È una truffa che si ricopia da sola.</figcaption>
+    </figure>
+
+    <h2><span class="n">02</span>Il codice è la chiave di casa tua</h2>
+    <p>WhatsApp permette di usare il tuo account su un computer (WhatsApp Web) o un tablet. Per collegare un nuovo dispositivo ci sono due modi: scansionare un QR code, oppure ricevere un <strong>codice da digitare sul telefono</strong>. È pensato per te, per poter leggere i tuoi messaggi sul PC.</p>
+    <p>La trappola dirotta esattamente questo meccanismo. Quando digiti il tuo numero sulla pagina falsa, è il server del pirata a chiedere a WhatsApp: « vorrei collegare un dispositivo all'account di questo numero ». WhatsApp, prudente, invia una richiesta di conferma <em>sul tuo telefono</em>. La pagina falsa ti dice allora: « digita questo codice per confermare il tuo voto ». Lo fai. Hai appena aperto la porta.</p>
+
+    <figure class="wide diagram" aria-label="Schema: quello che credi di fare, quello che fai davvero">
+      <svg viewBox="0 0 960 470" role="img" aria-labelledby="code-t">
+        <title id="code-t">A sinistra, quello che la vittima crede di fare: confermare un voto. A destra, quello che succede: autorizza il computer del pirata a collegarsi al suo account WhatsApp.</title>
+        <rect x="10" y="10" width="440" height="450" rx="22" fill="#10141f" stroke="#262f42" stroke-width="2"/>
+        <rect x="510" y="10" width="440" height="450" rx="22" fill="#1d130e" stroke="#ff8f52" stroke-width="2"/>
+        <text x="230" y="58" text-anchor="middle" font-size="26" font-weight="800">Quello che credi di fare</text>
+        <text x="730" y="58" text-anchor="middle" font-size="26" font-weight="800" class="hot">Quello che fai davvero</text>
+        <rect x="140" y="88" width="180" height="300" rx="22" fill="#0b141a" stroke="#a3abbd" stroke-width="3"/>
+        <text x="230" y="140" text-anchor="middle" font-size="18" class="mute">Conferma del voto</text>
+        <rect x="160" y="160" width="140" height="44" rx="8" fill="#202c33"/><text x="230" y="189" text-anchor="middle" font-size="18" class="mono">+33 6 •• ••</text>
+        <text x="230" y="240" text-anchor="middle" font-size="17" class="mute">Il tuo codice di voto:</text>
+        <text x="230" y="280" text-anchor="middle" font-size="30" font-weight="800" class="sun mono">K7QD-2XMB</text>
+        <rect x="165" y="315" width="130" height="44" rx="22" fill="#25d366"/><text x="230" y="344" text-anchor="middle" font-size="19" font-weight="700" fill="#0b141a">Vota ✓</text>
+        <text x="230" y="425" text-anchor="middle" font-size="20">« Confermo il mio voto. »</text>
+        <rect x="560" y="105" width="150" height="110" rx="10" fill="none" stroke="#f1ead9" stroke-width="3"/><path d="M540 235h190l-20-20h-150z" fill="#f1ead9"/>
+        <text x="635" y="160" text-anchor="middle" font-size="40">🕵️</text>
+        <text x="635" y="200" text-anchor="middle" font-size="15" class="mute">computer del pirata</text>
+        <rect x="800" y="88" width="110" height="190" rx="18" fill="#0b141a" stroke="#a3abbd" stroke-width="3"/>
+        <text x="855" y="140" text-anchor="middle" font-size="15" class="mute">il tuo telefono</text>
+        <rect x="810" y="160" width="90" height="62" rx="8" fill="#202c33"/><text x="855" y="186" text-anchor="middle" font-size="13">Collegare un</text><text x="855" y="204" text-anchor="middle" font-size="13">dispositivo?</text>
+        <path d="M730 160c25-30 45-30 70-10" fill="none" stroke="#ff8f52" stroke-width="3" stroke-dasharray="6 6"/>
+        <text x="730" y="318" text-anchor="middle" font-size="21">WhatsApp ti chiede:</text>
+        <text x="730" y="348" text-anchor="middle" font-size="21">« vuoi aprire il tuo account</text>
+        <text x="730" y="378" text-anchor="middle" font-size="21">su questo computer? »</text>
+        <text x="730" y="425" text-anchor="middle" font-size="21" font-weight="800" class="hot">Il codice risponde « sì ».</text>
+      </svg>
+      <figcaption>Il codice non è un codice di voto. È il tuo permesso. Una volta collegato il dispositivo del pirata, lui vede i tuoi nuovi messaggi e ne invia a tuo nome, senza che il tuo telefono si spenga o cambi nulla.</figcaption>
+    </figure>
+
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-telephone.webp" width="1000" height="619" loading="lazy" alt="Schermata della pagina falsa: « Enter your phone for verification », un menu dei paesi (Francia), un campo per il numero di telefono, un pulsante verde « Continue » e un link « Verify by QR code »."><figcaption>Passo 1. La pagina imita WhatsApp e ti chiede il numero. (Numero di prova, sfocato.)</figcaption></figure>
+      <figure class="shot"><img src="img/vote/code-faux-whatsapp.webp" width="1100" height="629" loading="lazy" alt="Schermata della pagina falsa « Confirm verification »: un codice di 8 caratteri in due blocchi da 4, GANR-KPGE, poi quattro passaggi per aprire WhatsApp, andare su « Dispositivi collegati » e scegliere « Collega con numero di telefono »."><figcaption>Passo 2. La pagina mostra un codice e ti spiega dove digitarlo in WhatsApp. Non è un codice di voto.</figcaption></figure>
+    </div>
+    <p class="note">Schermate reali, ottenute in una sandbox (any.run) con un numero falso. Qui la pagina è in inglese; si adatta alla lingua del visitatore. Ti manda proprio in <em>Dispositivi collegati</em>: è esattamente il percorso che il pirata segue per invitarsi nel tuo account.</p>
+
+    <div class="box teal">
+      <p class="t">L'immagine da ricordare</p>
+      <p>Il codice che ti viene chiesto non ha nulla a che vedere con un voto: è un <strong>duplicato delle tue chiavi</strong>. Non daresti mai il duplicato delle tue chiavi a uno sconosciuto per « confermare la tua partecipazione » a un concorso. Qui è lo stesso. Con quel duplicato, lui entra in casa tua quando vuole, legge la tua posta e parla ai tuoi cari spacciandosi per te. E siccome tu hai conservato le tue chiavi, non ti accorgi di nulla.</p>
+    </div>
+
+    <h2><span class="n">03</span>Perché sempre delle ballerine?</h2>
+    <p>Ad aprile avevo già ricevuto questa truffa: « potresti votare per Francesca? È la figlia dei miei amici, il primo premio è un corso di danza gratuito ». A ottobre, la mia famiglia riceve lo stesso testo, parola per parola, per « Eliška ». E io, una variante per « Sophie ». Il tema non cambia, perché è scelto in modo tremendamente efficace:</p>
+    <ul>
+      <li><strong>Un bambino</strong>: si abbassa la guardia, e rifiutare sembra meschino.</li>
+      <li><strong>Un voto</strong>: un gesto gratuito, rapido, che si fa senza pensarci. Niente da pagare, quindi niente di sospetto.</li>
+      <li><strong>Un amico che chiede</strong>: il messaggio arriva da un account che conosciamo. Non si diffida delle persone care.</li>
+      <li><strong>« Evitare i brogli »</strong>: la scusa perfetta per chiedere un accesso con WhatsApp. Sembra persino una cosa seria.</li>
+    </ul>
+    <p>Il balletto aggiunge un tocco chic e internazionale: « la Prima Scuola Internazionale di Balletto di Praga ». Questa scuola esiste davvero, e non c'entra nulla con tutto questo: i truffatori ne rubano il nome per sembrare credibili. La pagina falsa, invece, esiste in almeno dodici lingue.</p>
+
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="La pagina di voto falsa in francese: « Vota per i giovani talenti dell'accademia di balletto », pulsanti dorati, contatore di 989 voti."><figcaption>La pagina falsa, in francese.</figcaption></figure>
+      <figure class="shot"><img src="img/vote/page-de.webp" width="1200" height="750" loading="lazy" alt="La stessa pagina in tedesco: « Abstimmung der jungen Talente der Ballettakademie »."><figcaption>La stessa, in tedesco. Il sito si adatta al paese del visitatore.</figcaption></figure>
+    </div>
+    <p class="note">Screenshot pubblici presi da urlscan.io, un servizio che « visita » i siti sospetti al posto nostro. Non ho inserito nulla su queste pagine.</p>
+
+    <h2><span class="n">04</span>Come si indaga su una truffa come questa</h2>
+    <p>Un sito internet è un po' come un negozio. Ha un'<strong>insegna</strong> (il nome, <code>balletday.click</code>), un <strong>indirizzo</strong> (il server dove è ospitato), una <strong>carta d'identità</strong> (il suo certificato di sicurezza, il piccolo lucchetto) e un <strong>registro delle imprese</strong> (chi ha comprato il nome, e quando). I truffatori nascondono tutto questo. Ma c'è quasi sempre una traccia che sporge.</p>
+    <p>Indagare significa tirare queste tracce, una per una. Per questa ho usato <strong>Bounce</strong>, uno strumento d'indagine automatizzato che sto sviluppando: gli si dà un link sospetto, lui segue le piste una a una e disegna la mappa di ciò che trova. Quello che riporta va poi riletto e verificato, pista per pista.</p>
+
+    <figure class="wide diagram" aria-label="Schema: tirare il filo di un'indagine">
+      <svg viewBox="0 0 980 300" role="img" aria-labelledby="fil-t">
+        <title id="fil-t">Le tappe dell'indagine: un link, un sito nuovo, una maschera Cloudflare, una fuga del vero indirizzo, e 46 siti gemelli.</title>
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff8f52"/></marker></defs>
+        <g stroke="#ff8f52" stroke-width="3" marker-end="url(#ah2)"><path d="M168 120h30"/><path d="M362 120h30"/><path d="M556 120h30"/><path d="M750 120h30"/></g>
+        <g fill="#141a28" stroke="#262f42" stroke-width="2"><rect x="8" y="40" width="156" height="160" rx="16"/><rect x="202" y="40" width="156" height="160" rx="16"/><rect x="396" y="40" width="156" height="160" rx="16"/><rect x="590" y="40" width="156" height="160" rx="16" stroke="#ff8f52"/><rect x="784" y="40" width="188" height="160" rx="16" stroke="#6fe3cc"/></g>
+        <g font-size="42" text-anchor="middle"><text x="86" y="100">🔗</text><text x="280" y="100">🐣</text><text x="474" y="100">🎭</text><text x="668" y="100">💧</text><text x="878" y="100">🕸️</text></g>
+        <g font-size="19" font-weight="700" text-anchor="middle"><text x="86" y="140">1 link</text><text x="280" y="140">un sito nato</text><text x="474" y="140">una maschera</text><text x="668" y="140" class="hot">una fuga</text><text x="878" y="140" class="teal">46 siti</text></g>
+        <g font-size="16" text-anchor="middle" class="mute"><text x="86" y="166">ricevuto su</text><text x="86" y="186">WhatsApp</text><text x="280" y="166">appena</text><text x="280" y="186">un'ora fa</text><text x="474" y="166">Cloudflare nasconde</text><text x="474" y="186">il vero server</text><text x="668" y="166">un sito gemello</text><text x="668" y="186">mal nascosto</text><text x="878" y="166">stesso kit, stessi</text><text x="878" y="186">server, stessa squadra</text></g>
+        <text x="490" y="260" text-anchor="middle" font-size="18" class="mute">Ogni tappa è una « pista » (un pivot): un'informazione che ne rivela un'altra.</text>
+      </svg>
+    </figure>
+
+    <p>In concreto, ecco cosa è successo il 21 ottobre:</p>
+    <ol class="tl">
+      <li><time>12:44</time><p>Ricevo il messaggio. Il nome di dominio <code>balletday.click</code> è stato comprato <strong>un'ora prima</strong>. I truffatori buttano via i loro siti come fazzoletti: un sito nuovo non ha ancora nessuna cattiva reputazione, quindi nessun antivirus lo blocca.</p></li>
+      <li><time>primo pomeriggio</time><p>Apro il link in un computer usa e getta e sorvegliato (una « sandbox », any.run). Si vede la pagina caricare una copia dell'interfaccia di WhatsApp Web, poi tentare di collegarsi a WhatsApp con un numero. Il meccanismo è confermato.</p></li>
+      <li class="k"><time>pomeriggio</time><p>Bounce parte dal link e trova <strong>27, poi 32 siti gemelli</strong>: stessa pagina, stesso percorso nascosto, stessi titoli tradotti. E soprattutto <strong>un server che non era nascosto</strong> dietro la maschera, in Germania, che ospita una decina di questi siti.</p></li>
+      <li><time>19:54</time><p>La mia famiglia mi inoltra i due messaggi « Eliška ». Nuovo link, <code>1forit21.shop</code>. Nuova indagine Bounce.</p></li>
+      <li class="k"><time>20:50</time><p>Verdetto: <strong>stessa campagna</strong>. Stessa pagina, stesso link nascosto, e un secondo server che è trapelato, dallo stesso hoster. Il suo certificato porta un nome rivelatore: <code>fws2panel</code>, con ogni probabilità il <strong>pannello di controllo</strong> dei truffatori.</p></li>
+    </ol>
+
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="Screenshot di Bounce: il grafo dell'indagine, con balletday.click al centro, i suoi siti gemelli intorno e, in basso, il server 85.239.144.247 collegato a una decina di domini. A destra, il registro di ragionamento dell'agente."><figcaption><b>Bounce in azione.</b> Ogni cerchio è un sito, ogni quadrato arancione un indirizzo di server. In basso, la stella di domini attorno a un solo server: è la fuga che collega una decina di siti tra loro. A destra, l'agente annota ciò che fa e perché.</figcaption></figure>
+
+    <h2><span class="n">05</span>Cosa abbiamo trovato, in cifre</h2>
+    <div class="stats">
+      <div class="stat"><b>46</b><span>nomi di dominio collegati a questa campagna</span></div>
+      <div class="stat"><b>1 h</b><span>l'età del sito quando il messaggio mi è arrivato</span></div>
+      <div class="stat"><b>12</b><span>lingue almeno per la stessa pagina falsa</span></div>
+      <div class="stat"><b>2</b><span>server nascosti, ritrovati dallo stesso hoster</span></div>
+      <div class="stat"><b>6 mesi</b><span>tra il messaggio di aprile e quello di ottobre, parola per parola</span></div>
+      <div class="stat"><b>n. 181</b><span>il numero di « campagna » scritto nella pagina. Non è un lavoro artigianale.</span></div>
+    </div>
+    <p>Quest'ultima cifra mi ha colpito. Nel codice della pagina c'è un numero di campagna (181), un numero di modello (27), un contatore di visite e dei tracker pubblicitari. È una <strong>fabbrica</strong>: qualcuno ha costruito un kit pronto all'uso, con statistiche, che si declina in decine di siti usa e getta. Ci sono persino dei « procacciatori », siti intermedi pagati per portare vittime.</p>
+
+    <h2><span class="n">06</span>Già visto ad aprile</h2>
+    <p>Non è la prima volta che ci incappo. Ad aprile 2026 avevo già indagato con Bounce su un messaggio quasi identico, ricevuto da me e poi da una persona vicina. All'epoca avevamo risalito <strong>una ventina di siti</strong> e un server ospitato presso un hoster noto per chiudere un occhio, in Russia. Ne avevo fatto <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">uno studio di caso</a>.</p>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/avril-message.webp" width="527" height="292" loading="lazy" alt="Il messaggio di aprile: « Ciao, potresti votare per Francesca? È la figlia dei miei amici, il primo premio è un corso di danza gratuito, ed è molto importante per lei! »"><figcaption>Aprile 2026: « Francesca ».</figcaption></figure>
+      <figure class="chat" style="margin:0"><p class="who"><i>?</i> Un contatto (ottobre)</p><div class="bubble">Ciao, potresti votare per Eliška? È la figlia dei miei amici. Il primo premio è un corso di danza gratuito, ed è molto importante per lei!<br><span class="lnk">https://1forit21[.]shop/</span><time>19:41</time></div><figcaption class="note">Ottobre 2026: « Eliška ». Stesso testo.</figcaption></figure>
+    </div>
+    <p>Stessa storia, stessa frase, sei mesi dopo. Ma i siti, i server e la tecnica sono cambiati. È la stessa squadra? Forse. Oppure il « kit » si affitta, e più squadre lo usano. Approfondisco le due ipotesi nella versione tecnica. Ciò che è certo: <strong>non si ferma</strong>, e tornerà con un altro nome.</p>
+
+    <h2><span class="n">07</span>Hai cliccato, o digitato un codice?</h2>
+    <div class="box hot">
+      <p class="t">Le mosse giuste, nell'ordine</p>
+      <ol class="rules">
+        <li><span>Apri WhatsApp → <em>Impostazioni</em> → <em>Dispositivi collegati</em>. Disconnetti ogni dispositivo che non riconosci.</span></li>
+        <li><span>Attiva la <em>verifica in due passaggi</em> (<em>Impostazioni</em> → <em>Account</em>) con una password che non darai a nessuno.</span></li>
+        <li><span>Avvisa i tuoi contatti, con un altro mezzo (SMS, chiamata, stato): « se avete ricevuto un messaggio di voto da parte mia, non sono io, non cliccate ».</span></li>
+        <li><span>Se non riesci più a entrare nel tuo account: reinstalla WhatsApp e registra di nuovo il tuo numero, il codice SMS ti torna. Questo disconnette l'intruso.</span></li>
+        <li><span>Segnala il messaggio in WhatsApp (pressione prolungata → <em>Segnala</em>). Se hai inviato dei soldi: chiama subito la tua banca, poi sporgi denuncia. Lo sportello unico per farsi aiutare: <a href="https://17cyber.gouv.fr">17cyber.gouv.fr</a> (con <a href="https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/piratage-de-compte">la scheda « violazione dell'account »</a> di Cybermalveillance).</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">Condividilo</p>
+      <p>Il miglior antivirus contro questa truffa è che le persone a te care la conoscano prima di riceverla.</p>
+      <div class="share"><button type="button" data-share="simple">Condividi l'articolo</button><button type="button" class="ghost" data-set-mode="tech" data-jump>Leggi la versione tecnica →</button></div>
+    </div>
+
+
+    <h2><span class="n">08</span>Cosa ne dicono gli altri</h2>
+    <p>Non sono l'unico ad averla vista passare, tutt'altro. Questa truffa circola in Europa almeno dall'inizio del 2025, ogni volta con un nome diverso:</p>
+    <ol class="tl">
+      <li><time>gennaio 2025 · Romania</time><p>L'agenzia nazionale di cybersicurezza mette in guardia su « vota per Adeline », con in palio « una borsa di studio gratuita in Francia ». Poi i pirati chiedono soldi ai contatti della vittima.</p></li>
+      <li><time>maggio 2025 · Repubblica Ceca</time><p>La polizia segnala « vota per Anna, mia cugina ». Almeno cinque vittime in pochi giorni in un solo distretto, che hanno inviato ciascuna l'equivalente di più di 1 000 € a una « persona cara ».</p></li>
+      <li><time>settembre-ottobre 2025 · Kaspersky, Bitdefender</time><p>Le aziende di antivirus descrivono la stessa trappola. Bitdefender conta 177 siti falsi in due mesi, soprattutto in Polonia, Romania e Germania.</p></li>
+      <li><time>inizio 2026 · Italia</time><p>La stampa la chiama la « truffa della ballerina ». Molti abitanti della provincia di Reggio Emilia perdono il loro account WhatsApp, tra cui due sindaci.</p></li>
+      <li><time>marzo-maggio 2026 · Repubblica Ceca, Svizzera</time><p>L'azienda Whalebone censisce più di 200 domini in più di 15 paesi. Il centro nazionale svizzero per la cybersicurezza riporta l'esempio di « Sofia ».</p></li>
+      <li class="k"><time>agosto-ottobre 2026 · Austria, Spagna</time><p>Il sito austriaco Mimikama descrive la falsa « scuola di balletto di Praga » già ad agosto. E il 21 ottobre, il giorno in cui ricevo il mio messaggio, la Spagna lancia un'allerta nazionale su… Eliska e Sofie.</p></li>
+    </ol>
+    <p><strong>Ciò che questa inchiesta aggiunge</strong>: il legame con l'ondata di aprile, i due server nascosti dietro i siti e la pista del loro « pannello di controllo », e i siti procacciatori. E una versione in francese: non ho trovato nessuna allerta dedicata a questa truffa presso le autorità francesi.</p>
+    <p class="note">Le fonti dettagliate sono elencate in fondo alla versione tecnica.</p>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li>Campagna di falsi voti diffusa su WhatsApp, a tema balletto, a nome di una vera scuola di Praga. Ciò che vive la vittima è spiegato nella versione per tutti; questa versione riguarda <strong>l'infrastruttura e l'attribuzione</strong>.</li>
+        <li>Seed <code>balletday[.]click</code>, registrato circa un'ora prima della ricezione. Pivot su fonti passive, con l'agente CTI Bounce: <strong>46 domini</strong> collegati, kit battezzato « FIBS Prague Ballet Vote ».</li>
+        <li><strong>Due origini fuori CDN</strong>, entrambe in intervalli attribuiti a Dedik.io: <code>85.239.144[.]247</code> (AS207043) e <code>87.58.197[.]45</code> (AS62164). Il certificato della seconda nomina <code>fws2panel[.]sbs</code>.</li>
+        <li>Campagna industrializzata: numero di campagna, numero di template, statistiche per visitatore, build anteriore ai domini, distributori di traffico con parametri di affiliazione.</li>
+        <li>Legame con <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">l'ondata di aprile 2026</a>: stesso testo dell'esca parola per parola, ma <strong>nessuna infrastruttura in comune</strong>. Restano aperte due ipotesi: un operatore unico, oppure un kit affittato a più squadre.</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>Contesto e metodo</h2>
+    <p>Il 21/10/2026 ricevo l'esca. La stessa sera, due parenti ricevono una variante che punta a <code>1forit21[.]shop</code>. L'indagine si basa su <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">codice</a>), un agente di threat intelligence: parte da un osservabile, sceglie i suoi pivot, costruisce il grafo dell'infrastruttura e redige un rapporto con la sua ipotesi di lavoro, le sue prove e la sua autocritica. I suoi pivot sono stati orientati a mano, incrociati con l'ondata di aprile e riletti uno a uno prima di essere accettati.</p>
+    <div class="box teal"><p class="t">Regole d'ingaggio</p><p>Fonti passive e pubbliche: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, DNS passivo. Una detonazione in sandbox (any.run), in cui è stato inserito solo un numero di prova inventato: nessun numero reale, nessun codice digitato. Nessun aggiramento di protezioni, nessuna persona fisica nominata. Indicatori « defanged » (<code>[.]</code>). Gli elementi provenienti da rapporti di terzi non pubblici non sono riportati qui.</p></div>
+
+    <h3>Cronologia dell'indagine (21/10/2026, ora di Parigi)</h3>
+    <ol class="tl">
+      <li><time>12:44</time><p>Ricezione di <code>balletday[.]click/l/fibs2026e10</code>. RDAP: creato alle 11:43 presso Dynadot, dietro un proxy di privacy; certificato Let's Encrypt dello stesso giorno.</p></li>
+      <li><time>13:07</time><p>Prima passata passiva: front Cloudflare, titolo della pagina in russo, identificatori di campagna nella pagina.</p></li>
+      <li><time>13:12</time><p>Confronto con l'ondata di aprile (favicon, hash del titolo, hash JS, certificati, NS, IP): nessuna impronta in comune.</p></li>
+      <li class="k"><time>13:22</time><p>Run Bounce sull'URL completo. Il primo passaggio si blocca sul CDN; lo rilancio con istruzioni di pivot mirati alle 14:55 e poi alle 15:55.</p></li>
+      <li class="k"><time>15:38</time><p>27 domini, una prima origine fuori CDN, due distributori di traffico.</p></li>
+      <li class="k"><time>16:38</time><p>32 domini, un dominio « àncora » (<code>wafisher[.]xyz</code>), una cronologia del kit su più mesi.</p></li>
+      <li><time>19:54</time><p>Variante « Eliška » ricevuta nella mia famiglia: nuovo run Bounce su <code>1forit21[.]shop</code>.</p></li>
+      <li class="k"><time>20:50</time><p>Stesso kit, stesso token, seconda origine e certificato <code>fws2panel[.]sbs</code>.</p></li>
+    </ol>
+
+    <h3>Detonazione in una sandbox (any.run, 22/10/2026)</h3>
+    <p>Ho aperto <code>1forit21[.]shop</code> in un browser usa e getta (Edge su Windows 10) tramite <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">any.run</a>, inserendo un <strong>numero di prova</strong> (+33 6 67 67 67 67), mai un account reale. any.run classifica il task come « Malicious activity » con le etichette <code>phishing</code>, <code>ip-check</code> e <code>websocket</code>. La catena osservata:</p>
+    <ol>
+      <li><code>https://1forit21[.]shop/</code>: pagina « Audience voting — First International Ballet School in Prague ».</li>
+      <li>Un iframe <strong>Cloudflare Turnstile</strong> (<code>challenges.cloudflare[.]com/cdn-cgi/challenge-platform/…/turnstile/…</code>). Qui la sfida anti-robot fa da paravento: uno scanner automatico non passa, un umano sì.</li>
+      <li><code>https://1forit21[.]shop/cdn-cgi/phish-bypass?atok=…&amp;original_path=%2F&amp;cf-turnstile-response=…</code>: il token Turnstile viene restituito al server, che allora lascia passare. Il percorso <code>/cdn-cgi/</code> imita il prefisso riservato di Cloudflare; il suo nome (<code>phish-bypass</code>) è quello del kit, non una funzione di Cloudflare per quanto ne so.</li>
+      <li><code>https://1forit21[.]shop/auth?return=%2F%3Fvoted%3D1&amp;lang=en</code>: pagina « Vote verification — FIBS Prague ».</li>
+      <li>Un iframe <code>https://1forit21[.]shop/assets/autraizaion/?mode=phone&amp;lng=en&amp;return=…</code> (grafia così come la mostra any.run): è lui che porta il modulo del numero, poi la schermata « Confirm verification ».</li>
+    </ol>
+    <figure class="wide shot"><img src="img/vote/anyrun-chaine.webp" width="1547" height="584" loading="lazy" alt="Albero delle richieste di any.run per 1forit21.shop: verdetto Malicious activity, etichette phishing, ip-check, websocket, poi la sequenza di pagine e iframe descritta sopra."><figcaption><b>L'albero « Browser Data » di any.run.</b> Dall'alto in basso: la home page, la sfida Turnstile, il reindirizzamento <code>phish-bypass</code>, la pagina di autenticazione e il suo iframe <code>mode=phone</code>.</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/anyrun-navigateur.webp" width="1200" height="637" loading="lazy" alt="Il browser della sandbox su https://1forit21.shop/auth: la schermata « Confirm verification » con il codice GANR-KPGE."><figcaption>Lo stesso momento, lato browser: l'URL <code>1forit21[.]shop/auth</code> mostra il codice di abbinamento. Il numero di prova è sfocato.</figcaption></figure>
+    <p><strong>La lunghezza del codice è stabilita: 8 caratteri, in due blocchi da 4</strong> (<code>XXXX-XXXX</code>, qui <code>GANR-KPGE</code>), lettere maiuscole in questa schermata. È il formato del codice di abbinamento che WhatsApp genera per « Collega con numero di telefono »: la pagina non fabbrica un codice di voto, mostra un codice di abbinamento e ricopia i passaggi di WhatsApp (Dispositivi collegati → Collega un dispositivo → Collega con numero di telefono). Limite: con un numero falso non posso dire se questo codice preciso sarebbe stato accettato da WhatsApp, e non ho digitato alcun codice. any.run etichetta inoltre il task <code>websocket</code>: è coerente con un server che dialoga in diretta con WhatsApp mentre la vittima è sulla pagina, senza che io ne abbia il contenuto.</p>
+
+    <h2><span class="n">02</span>Precedenti: l'ondata di aprile 2026</h2>
+    <p>Ad aprile, due esche quasi identiche (« votare per Francesca ») mi erano già servite da seed: <code>konkurzfrance[.]click/home/votenam</code>, poi <code>francevoice29[.]click/home/voteng</code>. Ciò che diceva lo <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">studio di caso pubblicato</a>:</p>
+    <ul>
+      <li>Un kit « School votingFR » su percorsi <code>/home/vote*</code>. Domini in <code>.click</code>, <code>.cfd</code>, <code>.shop</code> e <code>.club</code>, registrati tra il 02/04 e il 24/05/2026, soprattutto presso Dynadot (Global Domain Group) e Spaceship.</li>
+      <li>Un'origine smascherata, <code>217.145.226[.]186</code>, presso AS205775 (Neon Core Network), un hosting di tipo bulletproof.</li>
+      <li>La prova di raggruppamento più forte era un <strong>certificato d'origine</strong> (CN <code>voteingmap[.]click</code>) i cui SAN collegavano tre domini di campagna. Il JARM, invece, era il JARM generico di Cloudflare e non provava nulla.</li>
+      <li>Circa due dozzine di domini in tre lingue (FR, DE, IT), diversi dei quali a 0/94 su VirusTotal al momento della scansione.</li>
+    </ul>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/avril-graphe.webp" width="1600" height="997" loading="lazy" alt="Grafo Bounce di aprile 2026 attorno a konkurzfrance.click e alla sua origine."><figcaption>Aprile: il grafo Bounce dopo il primo run.</figcaption></figure>
+      <figure class="shot"><img src="img/vote/avril-certificat.webp" width="453" height="622" loading="lazy" alt="Dettaglio del certificato d'origine voteingmap.click e della sua lista SAN."><figcaption>Aprile: il certificato d'origine e i suoi SAN.</figcaption></figure>
+    </div>
+
+    <h2><span class="n">03</span>Cosa la pagina dice dei suoi autori</h2>
+    <p>Senza inserire nulla, la pagina stessa è già una miniera di impronte:</p>
+    <ul>
+      <li><strong>Una piattaforma, non un sito.</strong> La pagina incorpora un numero di campagna (<code>181</code>), un numero di template (<code>/p/27/</code>), un identificatore per destinatario nell'URL (<code>/l/&lt;jeton&gt;</code>) e un identificatore di visitatore per statistiche per evento. Si declina uno stesso modello in campagne, e si misura ogni campagna.</li>
+      <li><strong>Costruito prima dei domini.</strong> Il parametro di versione dei file di traduzione data il build al 19/10 alle 04:09, due giorni prima della registrazione di <code>balletday[.]click</code>. Il kit è stabile; i domini sono consumabili.</li>
+      <li><strong>Pensato per l'intera Europa.</strong> Il pacchetto di traduzione copre 42 lingue. Le scansioni pubbliche urlscan mostrano titoli in almeno 12 lingue (FR, DE, EN, ES, IT, NL, PT, FI, PL, NO, IS, TR). Il titolo predefinito è in russo, il che coincide con l'analisi di Whalebone su un kit scritto da russofoni. È un indizio, non un'attribuzione.</li>
+      <li><strong>Traffico comprato oltre al passaparola.</strong> Pixel Meta e TikTok, e distributori di traffico (<code>schoolbalet[.]club</code>, <code>kiddancebattle[.]web[.]id</code>, <code>baletkids[.]com</code>) che rimandano alle pagine con parametri <code>sub_id_16</code>/<code>sub_id_17</code>, la convenzione di denominazione del tracker Keitaro. È la firma di una rete di affiliati.</li>
+      <li><strong>Un falso pivot scartato.</strong> La pagina carica anche un tracker pubblicitario da <code>tk.mowell[.]tech</code>. Una ricerca urlscan lo trova su quasi 2 900 pagine senza alcun rapporto, soprattutto negozi online: è un servizio pubblicitario condiviso, non un legame tra campagne. È stato escluso dal grafo.</li>
+    </ul>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="La pagina di voto in francese."><figcaption>Il template 27, in francese (scansione pubblica urlscan).</figcaption></figure>
+      <figure class="shot"><img src="img/vote/page-de.webp" width="1200" height="750" loading="lazy" alt="La stessa pagina in tedesco."><figcaption>Lo stesso, in tedesco.</figcaption></figure>
+    </div>
+
+    <h2><span class="n">04</span>Infrastruttura: dal link alle due origini</h2>
+    <p>Tutto il front è dietro Cloudflare: IP anycast, server dei nomi <code>*.ns.cloudflare.com</code>, e un JARM generico condiviso da più di un milione di host, quindi privo di valore di raggruppamento. Bounce « disinnesca » questi nodi per non pivotare su di essi, e cerca ciò che sporge: un dominio mal configurato che rivela il suo vero indirizzo, un certificato condiviso, uno storico di DNS passivo.</p>
+    <p>Due origini sono infine apparse, ed è lì che il lotto si ricongiunge:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Origine</th><th>AS / rete</th><th>Paese</th><th>Cosa serve</th></tr></thead>
+      <tbody>
+        <tr><td><code>85.239.144[.]247</code></td><td>AS207043 — DEDIK-IO</td><td>DE (Francoforte)</td><td>Una decina di siti fratelli in <code>.sbs</code>, <code>.homes</code>, <code>.top</code></td></tr>
+        <tr><td><code>87.58.197[.]45</code></td><td>AS62164 — Heymman, intervallo Dedik.io</td><td>blocco « USA »</td><td>Sei siti del kit; certificato a nome di <code>fws2panel[.]sbs</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>Le due IP sono in intervalli registrati a nome dello stesso hoster, <strong>Dedik.io</strong>, secondo il registro europeo degli indirizzi (RIPE). Il certificato della seconda nomina <code>fws2panel[.]sbs</code> (« panel »), con ogni probabilità l'interfaccia di amministrazione degli operatori; sei domini del kit vi hanno risolto nello storico DNS passivo. Un dominio « àncora », <code>wafisher[.]xyz</code>, collega un sottodominio alla prima origine; i suoi log di certificati espongono sottodomini nominati per modulo (<code>wa</code>, <code>fb</code>) e per operatore, coerente con un pannello multi-cliente. Queste letture dei nomi (<code>fws2panel</code>, <code>wafisher</code>) sono <em>interpretazioni</em>, non fatti confermati da una fonte pubblica.</p>
+
+    <figure class="wide shot"><img src="img/vote/bounce-1forit21.webp" width="1600" height="1168" loading="lazy" alt="Grafo Bounce dell'indagine 1forit21.shop: il seed al centro, il grappolo di titoli identici, e l'origine 87.58.197.45 collegata a più domini e a un certificato fws2panel.sbs."><figcaption><b>L'indagine su <code>1forit21[.]shop</code>.</b> Al centro, il dominio ricevuto; intorno, i siti che condividono il titolo esatto e il percorso del kit; in basso, l'origine <code>87.58.197[.]45</code> che collega diversi di essi e porta il certificato <code>fws2panel[.]sbs</code>.</figcaption></figure>
+
+    <h3>Indizi di anti-analisi</h3>
+    <p>Senza entrare nel dettaglio, due cose rendono la campagna difficile da bloccare a monte:</p>
+    <ul>
+      <li><strong>Domini usa e getta.</strong> <code>balletday[.]click</code> è stato registrato un'ora prima che il messaggio arrivasse; <code>1forit21[.]shop</code> il giorno prima. I nomi sono prodotti in serie (<code>1forit21</code>/<code>2forit21</code>, <code>fsk19hon2</code>/<code>fsk19hon3</code>), e VirusTotal ne etichetta del resto uno con <code>dga</code>. Qualsiasi filtro basato sulla reputazione arriva dopo la prima ondata.</li>
+      <li><strong>Una pagina che tace a seconda del visitatore.</strong> La radice dei domini serve un guscio vuoto ai robot; il kit appare solo sul percorso giusto con token. L'ecosistema reagisce comunque: Cloudflare ha messo il suo interstiziale « Suspected Phishing » su una parte dei domini nel corso della giornata, e alcuni non risolvono già più. La rotazione continua su nomi nuovi.</li>
+    </ul>
+    <figure class="shot"><img src="img/vote/cloudflare-phishing.webp" width="1200" height="712" loading="lazy" alt="Interstiziale Cloudflare « Suspected Phishing » su balletday.click."><figcaption>Qualche ora dopo la ricezione, Cloudflare segnala <code>balletday[.]click</code>. Il dominio successivo è già pronto.</figcaption></figure>
+
+    <h2><span class="n">05</span>Stessa ondata, due indagini: il riscontro incrociato</h2>
+    <p>I due messaggi, ricevuti a orari e da persone diverse, portano alla <strong>stessa campagna</strong>. Prove, dalla più forte alla più debole:</p>
+    <ul>
+      <li><strong>Stessa pagina, stesso token.</strong> <code>1forit21[.]shop</code> serve il titolo esatto « Vote du public — Première École Internationale de Danse de Prague » e lo stesso percorso <code>/l/fibs2026e10</code> di <code>balletday[.]click</code>.</li>
+      <li><strong>Domini comuni alle due indagini</strong>: <code>balletday[.]click</code>, <code>balethdancing[.]art</code>, <code>dancefibs[.]site</code>, <code>ihonajjdi[.]shop</code>, <code>softfranpro[.]cloud</code>.</li>
+      <li><strong>Stesso hoster d'origine</strong> (Dedik.io) per le due IP smascherate, e un certificato che punta a un pannello comune.</li>
+      <li><strong>Più debole</strong>: un JARM Cloudflare comune ma banale, e un contatto di registrazione che è con ogni probabilità un prestanome.</li>
+    </ul>
+
+    <h2><span class="n">06</span>Aprile contro ottobre: stesso attore?</h2>
+    <p>È la domanda più interessante, e la risposta onesta è: <em>indecidibile allo stato attuale</em>. Ho confrontato termine a termine l'ondata di aprile e quella di ottobre.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Impronta</th><th>Aprile (School votingFR)</th><th>Ottobre (FIBS)</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>Tema dell'esca</td><td>voto, danza, bambino</td><td>voto, balletto, bambino</td><td class="y">identico</td></tr>
+        <tr><td>Testo del messaggio</td><td>« votare per Francesca… corso di danza gratuito »</td><td>« votare per Eliška… corso di danza gratuito »</td><td class="y">parola per parola</td></tr>
+        <tr><td>Registrar</td><td>Dynadot / Global Domain Group</td><td>Dynadot, e altri</td><td class="m">comune ma diffuso</td></tr>
+        <tr><td>Percorso del kit</td><td><code>/home/vote*</code></td><td><code>/l/&lt;jeton&gt;</code> poi <code>/p/27/</code></td><td class="n">diverso</td></tr>
+        <tr><td>Titolo, favicon, JS, certificati</td><td>impronte « votingFR »</td><td>impronte « FIBS »</td><td class="n">niente in comune</td></tr>
+        <tr><td>Origine / hoster</td><td>AS205775 (RU)</td><td>Dedik.io (AS207043, AS62164)</td><td class="n">diverso</td></tr>
+      </tbody>
+    </table></div>
+    <p>Il tema e il testo sono identici; <strong>nessuna impronta tecnica lo è</strong>. Tra le due si osserva un'evoluzione continua dei percorsi del kit (da <code>/home/vote</code> fino a <code>/l/&lt;jeton&gt;</code>) su più mesi. Due letture reggono:</p>
+    <div class="pair">
+      <div class="box"><p class="t">Ipotesi A — operatore unico <span class="conf c2" aria-label="confidenza bassa"><i></i><i></i><i></i><i></i></span></p><p>Uno stesso gruppo che fa evolvere il suo kit e cambia hoster nel corso dei mesi. Pro: la continuità di tema, di testo e di registrar. Contro: nessuna infrastruttura condivisa.</p></div>
+      <div class="box"><p class="t">Ipotesi B — kit affittato (PhaaS) <span class="conf c3" aria-label="confidenza media"><i></i><i></i><i></i><i></i></span></p><p>Uno stesso « kit » di phishing venduto o affittato a più squadre, che se lo spartiscono con i propri domini e server. Pro: i distributori ad affiliazione, l'industrializzazione, l'etichetta « phaas » che avevo già apposto ad aprile.</p></div>
+    </div>
+    <p>Propendo per la B, senza concludere. Ciò che farebbe pendere la bilancia: un'IP d'origine comune alle due ondate, un certificato condiviso, o il vero server d'origine dell'ondata di ottobre. Niente di tutto ciò è accessibile con le sole fonti passive.</p>
+
+    <h2><span class="n">07</span>Note di metodo</h2>
+    <p>Tre punti che hanno contato in questa indagine:</p>
+    <ul>
+      <li><strong>Disinnescare prima di pivotare.</strong> Pivotare su un JARM o un'IP Cloudflare condivisi fa « trovare » migliaia di legami immaginari. Buona parte del lavoro consiste nell'<em>escludere</em>: il JARM generico, il pixel pubblicitario condiviso, il registrar a basso costo.</li>
+      <li><strong>Basta una sola fuga.</strong> Tutto il front è mascherato; è bastato un dominio fratello mal configurato per rivelare un'origine, e da lì tutto il resto.</li>
+      <li><strong>Dichiarare il proprio livello di confidenza.</strong> « Stesso attore » non è un fatto, è un'ipotesi, più o meno probabile. Bisogna dirlo come tale.</li>
+    </ul>
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="Grafo Bounce dell'indagine balletday.click e il suo registro di ragionamento."><figcaption><b>L'indagine <code>balletday[.]click</code>.</b> A destra, il registro: Bounce spiega ogni pivot, ciò che disinnesca e perché. È questo ragionamento scritto, più del grafo, a permettere di verificare le conclusioni.</figcaption></figure>
+
+    <h2><span class="n">08</span>Indicatori (defanged)</h2>
+    <div class="box">
+      <p class="t">Da bloccare / sorvegliare</p>
+      <p class="note"><strong>Origini:</strong> <code>85.239.144[.]247</code> (AS207043), <code>87.58.197[.]45</code> (AS62164) — intervalli Dedik.io.<br>
+      <strong>Pannello probabile:</strong> <code>fws2panel[.]sbs</code>, <code>wafisher[.]xyz</code>.<br>
+      <strong>Marcatori di kit:</strong> percorso <code>/l/&lt;jeton&gt;</code> e <code>/p/27/</code>; titolo « First International Ballet School in Prague » e le sue traduzioni.<br>
+      <strong>Percorsi della catena (any.run, <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">task 7fba8fa0</a>):</strong> <code>/cdn-cgi/phish-bypass?atok=…&amp;cf-turnstile-response=…</code>, <code>/auth?return=…voted…</code>, <code>/assets/autraizaion/?mode=phone</code>; una sfida Cloudflare Turnstile a monte, usata come paravento anti-robot.<br>
+      <strong>Pagina di abbinamento:</strong> titolo « Vote verification — FIBS Prague », schermata « Confirm verification », codice <code>XXXX-XXXX</code> (8 caratteri).<br>
+      <strong>Alcuni domini</strong> (elenco parziale, rotazione rapida): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>, <code>fundisk235[.]lat</code>, <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code>, <code>1foooodvvtr[.]homes</code>.<br>
+      <strong>Aggiornamento del 23/10:</strong> lo stesso messaggio « Eliška » ricevuto con un nuovo link, <code>fundisk235[.]lat</code>. Dominio registrato lo stesso giorno (04:34 UTC) presso NameSilo, dietro Cloudflare, e stesso kit dei precedenti (stessi file <code>fibs-lang.js</code> e <code>i18n-pack.js</code>, stesso guscio con titolo vuoto). Né il suo nome né la sua origine sono collegati agli altri domini: la rotazione continua su nomi nuovi.<br>
+      <strong>Domini fratelli del 22/10:</strong> <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code> e <code>1foooodvvtr[.]homes</code> avevano lo stesso titolo di pagina. <code>1foooodvvtr[.]homes</code> è servito da <code>87.58.197[.]247</code> (AS62164), nello stesso blocco di indirizzi dell'origine <code>87.58.197[.]45</code> citata per <code>1forit21[.]shop</code>: stesso blocco di indirizzi, indizio di infrastruttura comune, senza prova.<br>
+      <strong>Ondata di aprile:</strong> <code>konkurzfrance[.]click</code>, <code>francevoice29[.]click</code>, origine <code>217.145.226[.]186</code> (AS205775).</p>
+    </div>
+
+    <h2><span class="n">09</span>Fonti</h2>
+    <ol class="sources">
+      <li>Il mio studio di caso di aprile 2026 — <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">bounce.alexandre-pinoteau.fr</a></li>
+      <li>Bitdefender, « Vote-for-my-child scams spreading across Europe » (08/10/2025) — 177 domini in due mesi.</li>
+      <li>Whalebone, « Inside a WhatsApp account hijacking campaign » (04/03/2026) — 200+ domini, 15+ paesi.</li>
+      <li>Kaspersky, « weaponizing user engagement » (set.–ott. 2025).</li>
+      <li>NCSC/BACS svizzero, rassegna della settimana 21 (26/05/2026).</li>
+      <li>DNSC Romania (15/01/2025); polizia ceca (maggio 2025); Mimikama Austria (20/08/2026); INCIBE Spagna (21/10/2026).</li>
+      <li>RDAP / registri, Certificate Transparency, urlscan.io, VirusTotal, Censys, RIPEstat — consultati il 21/10/2026.</li>
+    </ol>
+
+    <div class="box"><p class="t">Condivisione</p><div class="share"><button type="button" data-share="tech">Condividi la versione tecnica</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← Versione per tutti</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">Inchiesta condotta con <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, su fonti pubbliche e passive. Nulla di reale è stato inserito nelle pagine della truffa (solo un numero di prova in una sandbox), nessuna persona fisica è nominata, gli indicatori sono volutamente spezzati (<code>[.]</code>). Se ricevi questo tipo di messaggio: non cliccare, e avvisa la persona il cui account è servito a inviartelo.</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Su">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>

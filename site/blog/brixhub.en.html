@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrixHub: the search engine for your stolen data · Alexandre Pinoteau</title>
+<meta name="description" content="BrixHub claims to index 14 billion stolen personal records and offers to remove your file for a fee. Who, what, how, is it legal, why is it still online? The investigation, in a general-audience version and a technical version.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BrixHub: the search engine for your stolen data">
+<meta property="og:description" content="It claims to index 14 billion records and sells the removal of yours. Targeted by the justice system, still online. How it holds up, and what the law says.">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/brixhub/brixhub-accueil.webp">
+<meta property="og:locale" content="en_US">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"brixhub",lang:"en",langs:["fr","en","es","it","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← blog</a></nav>
+  <label class="lang"><span class="sr">Language</span><select id="blog-lang" aria-label="Language"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Investigation · data leaks · OSINT</p>
+  <h1>BrixHub: the search engine for your stolen data</h1>
+  <p class="lede">A site takes your name and spits back your address, your phone number, your social security number. It says it indexes 14 billion records, taken from breaches. And it offers to remove yours… for a fee. It's targeted by the French justice system, and yet it's still online. I looked at how it holds up.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>with help from Bounce</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="Article version">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>General audience<small>understand it and stay safe</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>Technical<small>infra, rotation, law</small></span></button>
+    </div>
+    <p class="hint2">Two articles, one investigation. You can switch between them at any time.</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <div class="box hot">
+      <p class="t">If you only read this</p>
+      <ol class="rules">
+        <li><span><strong>Don't use it</strong>, not even out of curiosity, not even to look up your own name. Searching for someone else can expose you to prosecution, and the French justice system has referred this site to a prosecutor.</span></li>
+        <li><span><strong>Never pay</strong> to have your file removed, and <strong>never send your ID document</strong>. You'd be paying the people who hold your stolen data, and handing them one more piece.</span></li>
+        <li><span><strong>You can check your leaks for free and safely</strong> on <a href="https://haveibeenpwned.com">haveibeenpwned.com</a>, a legitimate service that displays no data.</span></li>
+        <li><span><strong>If your data is out there</strong>: change your important passwords, turn on two-factor authentication, and keep an eye on your bank accounts.</span></li>
+      </ol>
+    </div>
+
+    <p>BrixHub is a search engine. But instead of web pages, it searches through <strong>data leaks</strong>: the files stolen during breaches of companies and government bodies. You type a name, a phone number, an email, and it returns a file on you. It claims <strong>more than 14 billion records</strong>.</p>
+    <p>In October 2026, the French press picks up on it and the Digital Affairs minister refers the matter to the justice system. Many people wonder what it is, and whether they can use it. The short answer: <strong>no, definitely not</strong>. Here's why, and how this kind of site works.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/brixhub-accueil.webp" width="1400" height="1050" loading="lazy" alt="BrixHub home page: a dark background, a stylised eye made of circuitry, the slogan “BrixHub stays accessible”, a counter of 14,556,649,351 records, and “Start a search” and “GDPR removal” buttons."><figcaption><b>The shopfront.</b> A polished design, a counter at 14 billion, a “GDPR removal” button, and even a bubble saying “our Telegram bot sends you the new address if the site changes or gets blocked”. Everything is designed to reassure and to survive takedowns.</figcaption></figure>
+
+    <h2><span class="n">01</span>Where does this data come from?</h2>
+    <p>From real leaks. In recent years, plenty of French companies and bodies have had their customer files stolen: telecom operators, health insurers, retail sites, public services. Each leak means millions of people whose name, address, phone number or worse end up in the wild.</p>
+    <p>A site like BrixHub doesn't hack anything itself. It <strong>collects</strong> these scattered files, cross-references them, and makes them <strong>searchable with a single click</strong>. That's the whole problem: an isolated leak is a pain to exploit, but a search engine that links your name, your address, your phone number and your social security number on a single file is a weapon for harassment, identity theft and fraud.</p>
+    <div class="box"><p class="t">Worth noting</p><p>BrixHub proudly displays the names of public bodies as sources. None has confirmed it, and I don't repeat these claims: they are its assertions, not established facts.</p></div>
+
+    <h2><span class="n">02</span>The real business: selling you your own peace of mind</h2>
+    <p>The most perverse part isn't the search. It's the <strong>“GDPR removal”</strong> option. The site offers, for a fee, to remove your file. Around a few euros for a handful of files, according to accounts. Sometimes, a “free” removal… in exchange for a photo of your ID document.</p>
+    <div class="box hot">
+      <p class="t">This is the trap within the trap</p>
+      <p>You'd be paying the people who hold your stolen data, so they'll promise to erase it. Nothing guarantees they do. And if you send your ID document, you give them one more piece of data, perfectly genuine this time. The deputy minister for Digital Affairs said so publicly on 5 October: “never pay to have your data removed” (<a href="https://www.techniques-ingenieur.fr/actualite/breves-afp/donnees-personnelles-la-ministre-du-numerique-saisit-la-justice-contre-brixhub-164449/">AFP</a>). So: <strong>don't pay, send nothing</strong>.</p>
+    </div>
+    <p>And this isn't just a theoretical warning. On X (formerly Twitter), users describe having paid to have their file removed: it did disappear… for a few days, before <strong>reappearing</strong>. No surprise: erasing a line from a display doesn't make the data vanish from the stolen file, which the operator keeps. They can put it back online, resell it, or make you pay again.</p>
+
+    <figure class="shot"><img src="img/brixhub/brixhub-recherche.webp" width="1400" height="1050" loading="lazy" alt="BrixHub search page: fields “Surname”, “First name”, “Birth name”, “Display name”, and collapsed sections “Birth”, “Contact”, “Location”."><figcaption>The search form. You enter a surname, a first name, a date of birth. The promise on display: “One criterion. Everything that leaked.”</figcaption></figure>
+
+    <h2><span class="n">03</span>Why isn't it shut down?</h2>
+    <p>Because shutting down a site like this is far harder than it looks. BrixHub plays on three fronts:</p>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 18l22 10v16c0 14-9 22-22 26-13-4-22-12-22-26V28z" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linejoin="round"/><path d="M34 44l7 7 13-14" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><h3>A screen</h3><p>The site hides behind a technical intermediary (Cloudflare) that masks the address of its real server. You see the façade, not the building.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M26 34h36M26 44h36M26 54h36" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="34" r="3" fill="#ffc977"/><circle cx="20" cy="44" r="3" fill="#ffc977"/><circle cx="20" cy="54" r="3" fill="#ffc977"/></svg>
+        <div><h3>Disposable addresses</h3><p>It changes domain name as soon as one gets blocked: .fun, .net, .site, .org, .cc, then .to, .ru, .st… When one door closes, another is already open.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M28 44a16 16 0 0 1 32 0" fill="none" stroke="#ff8f52" stroke-width="3"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/><path d="M44 50v12M34 62h20" stroke="#ff8f52" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>Lenient countries</h3><p>It picks extensions run by small countries (São Tomé for .st, Tonga for .to) that don't monitor content and only act on a court order.</p></div>
+      </li>
+    </ol>
+    <p>The result: you can't take it down with one click. What brings these sites down, as a rule, isn't closing the domain, it's <strong>arresting the people who run them</strong>. And that takes time.</p>
+
+    <h2><span class="n">04</span>What the law says</h2>
+    <p>I'm not a lawyer, but here's what comes out of the sources:</p>
+    <ul>
+      <li><strong>Looking at the site</strong> is not, in itself, an identified offence.</li>
+      <li><strong>Searching for someone else</strong>, then keeping, sharing or using the result, does on the other hand expose you to real risks: receiving stolen goods, unfair collection of data, even harassment or impersonation if you target a person.</li>
+      <li><strong>Running the site</strong> (those who operate it) amounts to fraudulent access to and extraction of data: several years in prison and heavy fines.</li>
+    </ul>
+    <p>On 5 October 2026, the deputy minister for Digital Affairs referred the matter to the Paris prosecutor. Her advice, picked up everywhere: “never pay to have your data removed”.</p>
+
+    <div class="box teal">
+      <p class="t">You may be in their files. What to do?</p>
+      <ol class="rules">
+        <li><span><strong>Don't go check on BrixHub.</strong> Use <a href="https://haveibeenpwned.com">haveibeenpwned.com</a> (enter your email, it tells you which known leaks it appears in).</span></li>
+        <li><span><strong>Change the passwords</strong> of the accounts concerned, and turn on two-factor authentication everywhere.</span></li>
+        <li><span><strong>Watch out for targeted scams</strong>: with this data, someone can reach you pretending to be your bank or a public service. When in doubt, hang up and call back the official number.</span></li>
+        <li><span><strong>If your file is online</strong>: keep a screenshot of your own file only as evidence, report it, and refer the matter to the CNIL if nothing happens. Don't pay.</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">Share it</p>
+      <p>Lots of people are going to “just check their name” without knowing it's a bad idea. Warn them.</p>
+      <div class="share"><button type="button" data-share="simple">Share the article</button><button type="button" class="ghost" data-set-mode="tech" data-jump>Read the technical version →</button></div>
+    </div>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li><strong>BrixHub</strong>: a search engine for data from leaks, French-speaking, claiming ~14.5 billion records and selling file removal. Referral to the Paris prosecutor on 05/10/2026 (art. 40 CPP).</li>
+        <li><strong>Domain rotation across a dozen TLDs</strong> since February 2026: <code>.fun → .net → .site → .org → .cc → .to → .ru → .st</code>. Three active as of 21/10 (<code>.to</code>, <code>.ru</code>, <code>.st</code>), same pair of Cloudflare NS.</li>
+        <li><strong>Web origin never unmasked</strong> (everything behind Cloudflare). The only off-CDN infra: a <strong>dedicated mail server</strong>, <code>195.58.146[.]225</code> (M247), to which the three domains delegate their mail.</li>
+        <li><strong>Deliberate resilience</strong>: low-cooperation ccTLDs (.st São Tomé, .to Tonga), privacy proxy, Telegram bot to announce new addresses.</li>
+        <li>Passive investigation (Bounce + urlscan + press). <strong>Nothing entered, no request to the service beyond an ordinary browser, no attribution.</strong></li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>Context and method</h2>
+    <p>BrixHub is a “data leak search engine” in French. It indexes databases from compromises and offers a name-based search, plus a paid file removal. It has been targeted in France by a criminal referral since 05/10/2026. The starting question was simple: can you use its API? This investigation answers it.</p>
+    <div class="box teal"><p class="t">Rules of engagement</p><p>Public and passive sources: WHOIS/RDAP from the registries, DNS, Certificate Transparency, urlscan.io, VirusTotal, Shodan/InternetDB, passive DNS, press. First pass with the CTI agent Bounce, completed by hand. <strong>I never connected to the service, I ran no search on it, and I bypassed no protection</strong> (the page returns a Cloudflare 403 challenge to a client without a browser, not bypassed). Defanged domains (<code>[.]</code>).</p></div>
+
+    <h2><span class="n">02</span>What the service claims</h2>
+    <p>According to its own pages and the press (figures to be taken as claims, not facts):</p>
+    <div class="stats">
+      <div class="stat"><b>14.5 bn</b><span>records claimed (counter on the home page)</span></div>
+      <div class="stat"><b>~€5</b><span>to remove 10 files, according to accounts</span></div>
+      <div class="stat"><b>€10→90</b><span>subscriptions, from “per month” to “lifetime”</span></div>
+      <div class="stat"><b>12+</b><span>successive domains since February 2026</span></div>
+    </div>
+    <p>Search by name, email, phone number, Discord identifier; data advertised up to the French social security number (NIR) and IBAN; coverage of France, Belgium, Switzerland. A “family tree” tab, an “open API, no key, rate-limited by IP” (this is the answer to the original question: it advertises an API, and using it amounts to knowingly extracting stolen data), a Telegram bot and an X account. Legal notices mentioning a “company based in Russia”, with no name. <strong>None of these claims is verifiable from the outside, and I don't take them as given.</strong></p>
+
+    <h2><span class="n">03</span>Infrastructure: a façade, no building</h2>
+    <p>The whole web side is behind Cloudflare, on the three active domains. The origin has never leaked. The shared fingerprints confirm a single operator:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Domain</th><th>Created</th><th>Registry</th><th>Status as of 21/10</th></tr></thead>
+      <tbody>
+        <tr><td><code>brixhub[.]to</code></td><td>26/06/2026</td><td>Tonic (Tonga)</td><td class="y">active</td></tr>
+        <tr><td><code>brixhub[.]ru</code></td><td>27/08/2026</td><td>RU-CENTER, “Private Person”, unverified</td><td class="y">active</td></tr>
+        <tr><td><code>brixhub[.]st</code></td><td>30/09/2026</td><td>ST Registry (São Tomé), holder masked</td><td class="y">active (canonical)</td></tr>
+        <tr><td colspan="4" class="note">+ <code>.fun</code>, <code>.net</code>, <code>.site</code>, <code>.org</code>, <code>.top</code>, <code>.cc</code> (Feb.–June 2026): suspended by their registrars or extinct.</td></tr>
+      </tbody>
+    </table></div>
+    <p>Three markers link the active domains: the same pair of Cloudflare name servers (<code>irena</code> / <code>weston</code>), the same SPF policy (<code>v=spf1 mx:brixhub[.]to -all</code>) and the same page title. The <code>.st</code> was born on 30/09, <strong>five days before the minister's referral</strong>.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/bounce-brixhub.webp" width="1600" height="1170" loading="lazy" alt="Bounce graph of the brixhub.st investigation: the three brixhub domains linked by their name servers, their certificates and a common mail server 195.58.146.225; on the right, the agent's log."><figcaption><b>The Bounce graph.</b> The three domains (<code>.st</code>, <code>.to</code>, <code>.ru</code>) converge on the same pair of Cloudflare NS and the same mail server. On the right, the agent's log, which defuses the Cloudflare IPs (useless as pivots) and focuses on what sticks out.</figcaption></figure>
+
+    <h3>The only leak: the mail server</h3>
+    <p>The web origin is masked, but the <strong>mail</strong> isn't. The three domains delegate their mail (MX and SPF) to <code>mail.brixhub[.]to</code>, which resolves to an IP <strong>outside Cloudflare</strong>:</p>
+    <div class="req"><b>mail.brixhub[.]to</b> → <span class="t">195.58.146[.]225</span>
+  AS9009 <b>M247</b> · ptr <span class="s">mail.brixhub.to</span>
+  Postfix + OpenSSH 9.6p1 · Ubuntu 24.04
+  self-signed SMTP cert, CN=mail.brixhub.to (04/10/2026, valid 10 years)
+  no other domain observed on this IP in passive DNS</div>
+    <p>It's the only piece of infrastructure proper to the operator that the investigation exposed. It doesn't “unmask” the website (hosted elsewhere, behind Cloudflare), but it's a solid pivot: a dedicated IP, a named host, a dated certificate. Bounce itself flagged it in its self-criticism: this “mail” IP was the most interesting enrichment target, and the weak point of the operator's configuration.</p>
+
+    <h2><span class="n">04</span>Why it stays online</h2>
+    <p>BrixHub's resilience is no accident. It rests on four choices:</p>
+    <ul>
+      <li><strong>A Cloudflare front</strong> that masks the real host and absorbs abuse reports.</li>
+      <li><strong>A domain rotation</strong> across varied TLDs. The classic gTLDs (.fun, .cc, .site, .org) were suspended by their registrars between June and August; the operator migrated each time to a more cooperative ccTLD.</li>
+      <li><strong>Low-cooperation registries.</strong> The <code>.st</code> registry (São Tomé, Swedish back-end) states in its policy that it “does not monitor content” and only cancels a domain on the decision of a competent court. The <code>.to</code> (Tonga, Tonic operator) has the same reputation, even though it has already suspended domains on a court order.</li>
+      <li><strong>A fallback channel.</strong> A Telegram bot announces the new address at each switch, and the mail stays anchored on <code>.to</code> whatever happens. The service survives the loss of any one of its domains.</li>
+    </ul>
+    <p>In other words: <strong>it's not the seizure of a domain that brings these services down, it's the apprehension of the operators.</strong> The precedents show it: WeLeakInfo (seized in 2020), RaidForums (2022), the BreachForums administrators (arrested in France in 2025), and several French “lookups” dismantled in 2026 with arrests. Every time, the judicial investigation, not the technical blocking.</p>
+
+    <h2><span class="n">05</span>Is it legal? Can you use their API?</h2>
+    <p>No, and no. Legal summary (based on lawyers' analyses and the press; I'm not a lawyer):</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Side</th><th>What's at stake</th></tr></thead>
+      <tbody>
+        <tr><td>Operator</td><td>Fraudulent access to and extraction of data (art. 323-1 et seq. of the penal code), up to several years in prison and heavy fines.</td></tr>
+        <tr><td>User</td><td>Consulting is not an identified offence in itself. But searching for a third party and then <strong>holding, sharing or using</strong> the result exposes you to receiving stolen goods (art. 321-1), unfair collection (226-18), even harassment or impersonation (223-1-1). Paying or sending your ID document aggravates the exposure.</td></tr>
+        <tr><td>API</td><td>Automated access to a database of stolen data is deliberate extraction at scale. And it funds an extortion service. To be avoided.</td></tr>
+      </tbody>
+    </table></div>
+    <p>The Court of Cassation did in fact rule in February 2026 that intangible information can be the object of receiving stolen goods. The case concerned trade secrets, not data leaks, but the principle undermines the idea that “using” this data would be risk-free.</p>
+    <div class="box hot"><p class="t">The right alternative</p><p>To check <strong>your own</strong> leaks, without funding or enriching anyone: <a href="https://haveibeenpwned.com">Have I Been Pwned</a>. It tells you which known leaks your email appears in, and <strong>never displays the data itself</strong>. It's the legal counter-example to BrixHub.</p></div>
+
+    <h2><span class="n">06</span>What the investigation does not settle</h2>
+    <p>For the sake of honesty, the limits:</p>
+    <ul>
+      <li><strong>The site's real host</strong> and the identity of the operators: masked. Nothing attributable through passive sources alone.</li>
+      <li><strong>The real origin of the data</strong>: the site displays prestigious sources (public bodies), none confirmed. I don't repeat these claims.</li>
+      <li><strong>The exact amounts</strong> and the real existence of the API and the subscriptions rest on second-hand accounts. Same for the files paid for then reappeared: these are accounts from users on X, consistent with how the service works, but which I couldn't verify one by one.</li>
+      <li>Several <strong>press articles</strong> (franceinfo, Le Monde, Siècle Digital…) could not be read in full, only through their titles and excerpts.</li>
+    </ul>
+
+    <h2><span class="n">07</span>Indicators (defanged)</h2>
+    <div class="box">
+      <p class="t">To monitor</p>
+      <p class="note"><strong>Active domains:</strong> <code>brixhub[.]st</code>, <code>brixhub[.]to</code>, <code>brixhub[.]ru</code>.<br>
+      <strong>Mail server (off-CDN):</strong> <code>195.58.146[.]225</code> (AS9009 M247), <code>mail.brixhub[.]to</code>.<br>
+      <strong>Common NS:</strong> <code>irena[.]ns.cloudflare.com</code>, <code>weston[.]ns.cloudflare.com</code>.<br>
+      <strong>Shared SPF:</strong> <code>v=spf1 mx:brixhub[.]to -all</code>.<br>
+      <strong>History:</strong> <code>brixhub[.]{fun,net,site,org,top,cc}</code> (suspended / extinct).</p>
+    </div>
+
+    <h2><span class="n">08</span>Sources</h2>
+    <ol class="sources">
+      <li>AFP / Techniques de l'ingénieur (05/10/2026) — referral to the prosecutor, art. 40 CPP, “never pay”.</li>
+      <li>franceinfo, Siècle Digital, Senioractu, Next (Oct. 2026) — nature of the service, timeline.</li>
+      <li>Zataz — dismantling of French “lookups”, 2026 arrests.</li>
+      <li>CNIL — general position on data search services and fake erasure services.</li>
+      <li>WHOIS / RDAP of the registries, Certificate Transparency, urlscan.io, Shodan, passive DNS — consulted on 16 and 21/10/2026.</li>
+      <li>Policies of the <code>.st</code> (nic.st / Bahnhof) and <code>.to</code> (Tonic) registries.</li>
+    </ol>
+
+    <div class="box"><p class="t">Share</p><div class="share"><button type="button" data-share="tech">Share the technical version</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← General-audience version</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">Investigation conducted with <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, on public and passive sources. No connection to the service, no search launched, no protection bypassed, no one named. Defanged indicators (<code>[.]</code>). If your data has leaked: <a href="https://haveibeenpwned.com">haveibeenpwned.com</a>, pay no one.</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Top">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>
