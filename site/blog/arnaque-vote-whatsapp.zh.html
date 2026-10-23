@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh" dir="ltr" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>“给 Sophie 投一票”：一起 WhatsApp 骗局的解剖 · Alexandre Pinoteau</title>
+<meta name="description" content="一条 WhatsApp 消息请你在舞蹈比赛中给朋友的女儿投票。背后是一套窃取 WhatsApp 账号的工具包、46 个域名、两台隐藏的服务器，以及七个月的活动。调查分为大众版和技术版。">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="“给 Sophie 投一票”：一起 WhatsApp 骗局的解剖">
+<meta property="og:description" content="别投票。更重要的是，永远不要在网站上输入 WhatsApp 验证码。骗局如何运作，以及我是如何追查它的。">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/vote/page-fr.webp">
+<meta property="og:locale" content="zh_CN">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"zh",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← 博客</a></nav>
+  <label class="lang"><span class="sr">语言</span><select id="blog-lang" aria-label="语言"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">调查 · WhatsApp 骗局 · 威胁情报</p>
+  <h1><span class="qt">“给 Sophie 投一票”</span>：一起 WhatsApp 骗局的解剖</h1>
+  <p class="lede">一天中午，一条消息请我在芭蕾比赛中给朋友的女儿投票。晚上，我家里的两个人收到了几乎一模一样的消息。这个小小的人情背后，是一台窃取 WhatsApp 账号的机器，已经运转了好几个月。</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>由 Bounce 协助</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="文章版本">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>大众版<small>看懂并保护自己</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>技术版<small>工具包、基础设施、枢轴、IOC</small></span></button>
+    </div>
+    <p class="hint2">两篇文章，同一场调查。你可以随时在两者之间切换。</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <figure class="chat" aria-label="在 WhatsApp 上收到的消息">
+      <p class="who"><i>?</i> 一位联系人</p>
+      <div class="bubble">嗨 👋，想请你帮个忙！你能不能给 Sophie 投一票？她是我朋友的女儿。她参加了一个比赛，有机会拿到奖学金，还能登台演出。<br><br><span class="lnk">https://balletday[.]click/l/fibs2026e10</span><time>12:44</time></div>
+      <figcaption class="note">2026 年 10 月 21 日收到的消息。链接已被刻意破坏。</figcaption>
+    </figure>
+
+    <div class="box hot">
+      <p class="t">只读这一段也行</p>
+      <ol class="rules">
+        <li><span><strong>别点。</strong>真正的比赛从来不需要你用 WhatsApp 登录才能投票。</span></li>
+        <li><span><strong>永远不要在网站上输入你的号码，再输入 WhatsApp 验证码。</strong>这个验证码就是你账号的钥匙。谁拿到它，谁就能读你的聊天记录，并以你的名义说话。</span></li>
+        <li><span><strong>现在就去看看</strong>：WhatsApp → <em>设置</em> → <em>已关联的设备</em>。有不认识的设备？把它退出登录。</span></li>
+        <li><span><strong>开启两步验证</strong>（<em>设置</em> → <em>账号</em>）。它能防止别人用短信验证码盗走你的账号。但它挡不住有人添加设备：所以才有第 2 条规则。</span></li>
+      </ol>
+    </div>
+
+    <p>这条消息看起来很平常。它来自一位联系人，措辞礼貌，要求的举动不花一分钱。恰恰因此它才管用。我是 10 月 21 日收到的。当天晚上，我家里有两个人给我转发了几乎相同的消息，这次是为了“Eliška”和“一节免费的舞蹈课”。</p>
+    <p>我没有直接删掉它，而是想弄明白背后是什么。下面是我发现的。</p>
+
+    <h2><span class="n">01</span>骗局如何运作，五个步骤</h2>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><circle cx="44" cy="35" r="12" fill="none" stroke="#f1ead9" stroke-width="3"/><path d="M22 66c3-11 12-16 22-16s19 5 22 16" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round"/><rect x="52" y="48" width="20" height="16" rx="3" fill="#ff8f52"/><path d="M56 48v-5a6 6 0 0 1 12 0" fill="none" stroke="#ff8f52" stroke-width="3"/></svg>
+        <div><h3>身边有人已经中招</h3><p>消息来自某位联系人的真实 WhatsApp 账号。但写消息的已经不是他：他的账号几天前以同样的方式被盗了。</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M20 28h48a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H40l-12 9v-9h-8a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4z" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linejoin="round"/><path d="M28 39h32M28 47h20" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>一个再友善不过的请求</h3><p>“给我朋友的女儿投一票，这对她很重要。”一个孩子，一个梦想，点一下而已：没人愿意说不。</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><rect x="26" y="16" width="36" height="58" rx="6" fill="none" stroke="#f1ead9" stroke-width="3"/><circle cx="44" cy="36" r="8" fill="#ffc977"/><path d="M34 52h20M36 60h16" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>一个漂亮的比赛页面</h3><p>一个雅致的网站，两位小舞者，一个咬得很紧的票数计数器（497 对 492）。全是假的：学校、照片、数字。</p></div>
+      </li>
+      <li class="trap">
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#2a1a12" stroke="#ff8f52" stroke-width="2"/><circle cx="34" cy="44" r="11" fill="none" stroke="#ff8f52" stroke-width="3.5"/><path d="M45 44h24M60 44v8M67 44v6" stroke="#ff8f52" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><h3>圈套：“用 WhatsApp 确认你的投票”</h3><p>为了“防止作弊”，页面模仿 WhatsApp，先要你的号码，再要一个验证码。这个验证码，其实是 WhatsApp 在征求你的许可，让你的账号<strong>在黑客的电脑上</strong>打开。</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 22a22 22 0 1 1-20 13" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round"/><path d="M18 27l6 9 9-5" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/></svg>
+        <div><h3>然后轮到你的联系人</h3><p>黑客读你的聊天记录，并用你的名字和头像给你通讯录里的所有人发消息：“给 Sophie 投一票”。有时他还会“紧急”要钱。</p></div>
+      </li>
+    </ol>
+
+    <figure class="wide diagram" aria-label="示意图：骗局的循环">
+      <svg viewBox="-40 0 980 700" role="img" aria-labelledby="loop-t">
+        <title id="loop-t">骗局的循环：被黑的熟人发出消息，受害者投票，给出号码和验证码，账号在黑客那里打开，黑客再给他的联系人发消息。</title>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a3abbd"/></marker></defs>
+        <g fill="none" stroke="#a3abbd" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" marker-end="url(#ah)">
+          <path d="M512 155A200 200 0 0 1 612 227"/><path d="M650 345A200 200 0 0 1 612 463"/><path d="M512 535A200 200 0 0 1 388 535"/><path d="M288 463A200 200 0 0 1 250 345"/><path d="M288 227A200 200 0 0 1 388 155"/>
+        </g>
+        <g stroke-width="3"><circle cx="450" cy="145" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="640" cy="283" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="568" cy="507" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="332" cy="507" r="60" fill="#2a1a12" stroke="#ff8f52" stroke-width="4"/><circle cx="260" cy="283" r="60" fill="#141a28" stroke="#6fe3cc"/></g>
+        <g font-size="46" text-anchor="middle" dominant-baseline="central"><text x="450" y="147">🔓</text><text x="640" y="285">💬</text><text x="568" y="509">🩰</text><text x="332" y="509">🔑</text><text x="260" y="285">💻</text></g>
+        <g font-size="26" font-weight="600">
+          <text x="450" y="50" text-anchor="middle">一位熟人</text><text x="450" y="80" text-anchor="middle" class="mute">已被黑</text>
+          <text x="716" y="272">“给 Sophie</text><text x="716" y="302">投一票！”</text>
+          <text x="640" y="590">一个漂亮的</text><text x="640" y="620" class="mute">比赛页面</text>
+          <text x="262" y="590" text-anchor="end" class="hot">你的号码</text><text x="262" y="620" text-anchor="end" class="hot">+ 一个验证码</text>
+          <text x="184" y="272" text-anchor="end">你的账号</text><text x="184" y="302" text-anchor="end" class="mute">在黑客手里</text>
+        </g>
+        <g text-anchor="middle"><text x="450" y="322" font-size="28" font-weight="800">再来一遍</text><text x="450" y="356" font-size="22" class="mute">对象是你所有的联系人</text></g>
+      </svg>
+      <figcaption>你为什么会收到这位“朋友”的消息：每个受害者都会成为下一个发送者。这是一个自我复制的骗局。</figcaption>
+    </figure>
+
+    <h2><span class="n">02</span>验证码就是你家的钥匙</h2>
+    <p>WhatsApp 允许你在电脑（WhatsApp Web）或平板上使用账号。关联新设备有两种方式：扫描二维码，或者收到一个<strong>要在手机上输入的验证码</strong>。这本是为你设计的，让你能在电脑上看消息。</p>
+    <p>圈套劫持的正是这个机制。当你在假页面上输入号码时，是黑客的服务器在向 WhatsApp 请求：“我想把一台设备关联到这个号码的账号”。WhatsApp 很谨慎，会<em>在你的手机上</em>发出确认请求。这时假页面对你说：“输入这个验证码来确认你的投票”。你照做了。你刚刚打开了门。</p>
+
+    <figure class="wide diagram" aria-label="示意图：你以为在做什么，实际在做什么">
+      <svg viewBox="0 0 960 470" role="img" aria-labelledby="code-t">
+        <title id="code-t">左边是受害者以为自己在做的事：确认一次投票。右边是实际发生的事：她授权黑客的电脑登录自己的 WhatsApp 账号。</title>
+        <rect x="10" y="10" width="440" height="450" rx="22" fill="#10141f" stroke="#262f42" stroke-width="2"/>
+        <rect x="510" y="10" width="440" height="450" rx="22" fill="#1d130e" stroke="#ff8f52" stroke-width="2"/>
+        <text x="230" y="58" text-anchor="middle" font-size="26" font-weight="800">你以为在做的事</text>
+        <text x="730" y="58" text-anchor="middle" font-size="26" font-weight="800" class="hot">你实际在做的事</text>
+        <rect x="140" y="88" width="180" height="300" rx="22" fill="#0b141a" stroke="#a3abbd" stroke-width="3"/>
+        <text x="230" y="140" text-anchor="middle" font-size="18" class="mute">确认投票</text>
+        <rect x="160" y="160" width="140" height="44" rx="8" fill="#202c33"/><text x="230" y="189" text-anchor="middle" font-size="18" class="mono">+33 6 •• ••</text>
+        <text x="230" y="240" text-anchor="middle" font-size="17" class="mute">你的投票码：</text>
+        <text x="230" y="280" text-anchor="middle" font-size="30" font-weight="800" class="sun mono">K7QD-2XMB</text>
+        <rect x="165" y="315" width="130" height="44" rx="22" fill="#25d366"/><text x="230" y="344" text-anchor="middle" font-size="19" font-weight="700" fill="#0b141a">投票 ✓</text>
+        <text x="230" y="425" text-anchor="middle" font-size="20">“我确认我的投票。”</text>
+        <rect x="560" y="105" width="150" height="110" rx="10" fill="none" stroke="#f1ead9" stroke-width="3"/><path d="M540 235h190l-20-20h-150z" fill="#f1ead9"/>
+        <text x="635" y="160" text-anchor="middle" font-size="40">🕵️</text>
+        <text x="635" y="200" text-anchor="middle" font-size="15" class="mute">黑客的电脑</text>
+        <rect x="800" y="88" width="110" height="190" rx="18" fill="#0b141a" stroke="#a3abbd" stroke-width="3"/>
+        <text x="855" y="140" text-anchor="middle" font-size="15" class="mute">你的手机</text>
+        <rect x="810" y="160" width="90" height="62" rx="8" fill="#202c33"/><text x="855" y="186" text-anchor="middle" font-size="13">关联</text><text x="855" y="204" text-anchor="middle" font-size="13">设备？</text>
+        <path d="M730 160c25-30 45-30 70-10" fill="none" stroke="#ff8f52" stroke-width="3" stroke-dasharray="6 6"/>
+        <text x="730" y="318" text-anchor="middle" font-size="21">WhatsApp 在问你：</text>
+        <text x="730" y="348" text-anchor="middle" font-size="21">“你要在这台电脑上</text>
+        <text x="730" y="378" text-anchor="middle" font-size="21">打开你的账号吗？”</text>
+        <text x="730" y="425" text-anchor="middle" font-size="21" font-weight="800" class="hot">验证码回答：“是”。</text>
+      </svg>
+      <figcaption>这个验证码不是投票码。它是你的许可。黑客的设备一旦关联上，就能看到你的新消息，并以你的名义发送消息，而你的手机不会关机，也不会有任何变化。</figcaption>
+    </figure>
+
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-telephone.webp" width="1000" height="619" loading="lazy" alt="假页面截图：“Enter your phone for verification”，一个国家菜单（法国），一个电话号码输入框，一个绿色的“Continue”按钮和一个“Verify by QR code”链接。"><figcaption>第 1 步。页面模仿 WhatsApp，向你索要号码。（测试号码，已模糊处理。）</figcaption></figure>
+      <figure class="shot"><img src="img/vote/code-faux-whatsapp.webp" width="1100" height="629" loading="lazy" alt="假页面“Confirm verification”截图：一个分成两组、每组 4 位的 8 位验证码 GANR-KPGE，然后是四个步骤：打开 WhatsApp，进入“已关联的设备”，选择“通过电话号码关联”。"><figcaption>第 2 步。页面显示一个验证码，并告诉你要在 WhatsApp 的哪里输入。这不是投票码。</figcaption></figure>
+    </div>
+    <p class="note">真实截图，在沙箱（any.run）里用一个假号码截取。这里的页面是英文的；它会根据访客的语言自动适配。它确实把你带去<em>已关联的设备</em>：这正是黑客让自己进入你账号的路径。</p>
+
+    <div class="box teal">
+      <p class="t">要记住的画面</p>
+      <p>别人向你索要的验证码跟投票毫无关系：它是<strong>你钥匙的复制品</strong>。你绝不会为了“确认参赛”而把家门钥匙的复制品交给陌生人。这里也一样。有了这把复制钥匙，他随时能进你家，读你的信件，冒充你和你的亲友说话。而你自己的钥匙还在手上，所以你什么也察觉不到。</p>
+    </div>
+
+    <h2><span class="n">03</span>为什么总是舞者？</h2>
+    <p>四月，我已经收到过这个骗局：“你能给 Francesca 投票吗？她是我朋友的女儿，一等奖是一节免费的舞蹈课”。十月，我家人收到了一字不差的同一段文字，这次是“Eliška”。而我收到的是“Sophie”的变体。主题一直没变，因为它选得极其巧妙：</p>
+    <ul>
+      <li><strong>一个孩子</strong>：人们会放下戒心，拒绝显得小气。</li>
+      <li><strong>一次投票</strong>：免费、快速，不假思索就做了。不用付钱，所以没什么可疑。</li>
+      <li><strong>一位朋友的请求</strong>：消息来自你认识的账号。人们不会提防亲近的人。</li>
+      <li><strong>“防止作弊”</strong>：要求用 WhatsApp 登录的完美借口。听上去甚至很正规。</li>
+    </ul>
+    <p>芭蕾又添了一抹高雅和国际化的色彩：“布拉格第一国际芭蕾学校”。这所学校确实存在，跟这一切毫无关系：骗子盗用它的名字来显得可信。而这个假页面，至少有十二种语言版本。</p>
+
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="法语的假投票页面：“为芭蕾学院的年轻天才投票”，金色按钮，989 票的计数器。"><figcaption>假页面，法语版。</figcaption></figure>
+      <figure class="shot"><img src="img/vote/page-de.webp" width="1200" height="750" loading="lazy" alt="同一页面的德语版：“Abstimmung der jungen Talente der Ballettakademie”。"><figcaption>同一页面，德语版。网站会根据访客所在国家自动适配。</figcaption></figure>
+    </div>
+    <p class="note">urlscan.io 拍摄的公开截图，这个服务会代替我们“访问”可疑网站。我没有在这些页面上输入任何东西。</p>
+
+    <h2><span class="n">04</span>如何调查这样的骗局</h2>
+    <p>网站有点像一家店铺。它有<strong>招牌</strong>（名称，<code>balletday.click</code>）、<strong>地址</strong>（托管它的服务器）、<strong>身份证</strong>（它的安全证书，那个小锁头）和<strong>工商登记</strong>（谁、何时买下了这个名称）。骗子会把这些全部藏起来。但几乎总会有一条线索露出来。</p>
+    <p>调查，就是一条一条地顺着这些线索往下拉。这一次，我用了 <strong>Bounce</strong>，我开发的一个自动化调查工具：给它一个可疑链接，它会逐条跟进线索，并把发现的东西画成地图。它报告的内容之后还必须逐条线索地复核。</p>
+
+    <figure class="wide diagram" aria-label="示意图：顺藤摸瓜">
+      <svg viewBox="0 0 980 300" role="img" aria-labelledby="fil-t">
+        <title id="fil-t">调查的各个阶段：一个链接，一个全新的网站，一层 Cloudflare 面具，真实地址的泄露，以及 46 个孪生网站。</title>
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff8f52"/></marker></defs>
+        <g stroke="#ff8f52" stroke-width="3" marker-end="url(#ah2)"><path d="M168 120h30"/><path d="M362 120h30"/><path d="M556 120h30"/><path d="M750 120h30"/></g>
+        <g fill="#141a28" stroke="#262f42" stroke-width="2"><rect x="8" y="40" width="156" height="160" rx="16"/><rect x="202" y="40" width="156" height="160" rx="16"/><rect x="396" y="40" width="156" height="160" rx="16"/><rect x="590" y="40" width="156" height="160" rx="16" stroke="#ff8f52"/><rect x="784" y="40" width="188" height="160" rx="16" stroke="#6fe3cc"/></g>
+        <g font-size="42" text-anchor="middle"><text x="86" y="100">🔗</text><text x="280" y="100">🐣</text><text x="474" y="100">🎭</text><text x="668" y="100">💧</text><text x="878" y="100">🕸️</text></g>
+        <g font-size="19" font-weight="700" text-anchor="middle"><text x="86" y="140">1 个链接</text><text x="280" y="140">新生网站</text><text x="474" y="140">一层面具</text><text x="668" y="140" class="hot">一次泄露</text><text x="878" y="140" class="teal">46 个网站</text></g>
+        <g font-size="16" text-anchor="middle" class="mute"><text x="86" y="166">在 WhatsApp</text><text x="86" y="186">上收到</text><text x="280" y="166">刚刚</text><text x="280" y="186">一小时前注册</text><text x="474" y="166">Cloudflare 隐藏</text><text x="474" y="186">真实服务器</text><text x="668" y="166">一个孪生网站</text><text x="668" y="186">没藏好</text><text x="878" y="166">同一套工具包、同样的</text><text x="878" y="186">服务器、同一个团伙</text></g>
+        <text x="490" y="260" text-anchor="middle" font-size="18" class="mute">每一步都是一条“线索”（一个枢轴）：一条信息会牵出另一条。</text>
+      </svg>
+    </figure>
+
+    <p>具体来说，10 月 21 日发生了这些：</p>
+    <ol class="tl">
+      <li><time>12h44</time><p>我收到消息。域名 <code>balletday.click</code> 是<strong>一小时前</strong>买的。骗子扔网站像扔纸巾：新网站还没有任何坏名声，所以没有杀毒软件会拦它。</p></li>
+      <li><time>午后早些时候</time><p>我在一台一次性的受监控电脑（“沙箱”，any.run）里打开这个链接。能看到页面加载了一份 WhatsApp Web 界面的副本，然后尝试用一个号码连接 WhatsApp。机制得到确认。</p></li>
+      <li class="k"><time>下午</time><p>Bounce 从这个链接出发，找到了 <strong>27 个，然后是 32 个孪生网站</strong>：同样的页面、同样的隐藏路径、同样的翻译标题。最重要的是，面具后面有<strong>一台没藏住的服务器</strong>，在德国，托管着其中十来个网站。</p></li>
+      <li><time>19h54</time><p>家人给我转发了两条“Eliška”消息。新链接，<code>1forit21.shop</code>。新的 Bounce 调查。</p></li>
+      <li class="k"><time>20h50</time><p>结论：<strong>同一场行动</strong>。同样的页面，同样的隐藏链接，还有第二台泄露的服务器，在同一家托管商。它的证书有个说明问题的名字：<code>fws2panel</code>，很可能就是骗子的<strong>控制面板</strong>。</p></li>
+    </ol>
+
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="Bounce 截图：调查图谱，中央是 balletday.click，周围是它的孪生网站，底部是服务器 85.239.144.247，连着十来个域名。右侧是代理的推理日志。"><figcaption><b>Bounce 工作中。</b>每个圆圈是一个网站，每个橙色方块是一个服务器地址。底部，围绕一台服务器的域名星群：就是这次泄露把十来个网站连在了一起。右侧，代理记录它在做什么以及为什么。</figcaption></figure>
+
+    <h2><span class="n">05</span>我们发现的，用数字说话</h2>
+    <div class="stats">
+      <div class="stat"><b>46</b><span>个与这场行动相关联的域名</span></div>
+      <div class="stat"><b>1 小时</b><span>消息到达我这里时网站的年龄</span></div>
+      <div class="stat"><b>12</b><span>种语言，同一个假页面至少如此</span></div>
+      <div class="stat"><b>2</b><span>台隐藏的服务器，在同一家托管商被找到</span></div>
+      <div class="stat"><b>6 个月</b><span>四月的消息与十月的消息之间，一字不差</span></div>
+      <div class="stat"><b>第 181 号</b><span>页面里写着的“行动”编号。这不是小打小闹。</span></div>
+    </div>
+    <p>最后这个数字让我震惊。页面代码里有一个行动编号（181）、一个模板编号（27）、一个访问计数器和广告追踪器。这是一座<strong>工厂</strong>：有人做了一套现成的工具包，带统计功能，可以拆成几十个一次性网站。甚至还有“引流者”，也就是付费把受害者引来的中间网站。</p>
+
+    <h2><span class="n">06</span>四月就见过</h2>
+    <p>这不是我第一次撞上它。2026 年 4 月，我已经用 Bounce 调查过一条几乎相同的消息，先是我收到，然后是一位亲人收到。当时我们追到了<strong>二十来个网站</strong>，以及托管在俄罗斯一家以睁一只眼闭一只眼著称的托管商那里的一台服务器。我把它做成了<a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">一个案例研究</a>。</p>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/avril-message.webp" width="527" height="292" loading="lazy" alt="四月的消息：“嗨，你能给 Francesca 投票吗？她是我朋友的女儿，一等奖是一节免费的舞蹈课，这对她非常重要！”"><figcaption>2026 年 4 月：“Francesca”。</figcaption></figure>
+      <figure class="chat" style="margin:0"><p class="who"><i>?</i> 一位联系人（十月）</p><div class="bubble">嗨，你能给 Eliška 投票吗？她是我朋友的女儿。一等奖是一节免费的舞蹈课，这对她非常重要！<br><span class="lnk">https://1forit21[.]shop/</span><time>19:41</time></div><figcaption class="note">2026 年 10 月：“Eliška”。同样的文字。</figcaption></figure>
+    </div>
+    <p>同样的故事，同样的句子，六个月后。但网站、服务器和技术都变了。是同一个团伙吗？也许。又或者这套“工具包”是出租的，有好几个团伙在用。两种假设我在技术版里都有详述。可以确定的是：<strong>它不会停</strong>，还会换个名字再来。</p>
+
+    <h2><span class="n">07</span>你点了链接，或者输入了验证码？</h2>
+    <div class="box hot">
+      <p class="t">该做的事，按顺序</p>
+      <ol class="rules">
+        <li><span>打开 WhatsApp → <em>设置</em> → <em>已关联的设备</em>。把所有你不认识的设备退出登录。</span></li>
+        <li><span>开启<em>两步验证</em>（<em>设置</em> → <em>账号</em>），用一个你不会告诉任何人的密码。</span></li>
+        <li><span>通过其他渠道（短信、电话、状态）提醒你的联系人：“如果你收到我发的投票消息，那不是我，别点”。</span></li>
+        <li><span>如果你进不了自己的账号：重新安装 WhatsApp，重新注册你的号码，短信验证码会回到你手里。这会把入侵者挤下线。</span></li>
+        <li><span>在 WhatsApp 中举报这条消息（长按 → <em>举报</em>）。如果你已经汇过钱：立刻打电话给银行，然后报案。获得帮助的统一入口：<a href="https://17cyber.gouv.fr">17cyber.gouv.fr</a>（以及 Cybermalveillance 的<a href="https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/piratage-de-compte">“账号被盗”指引</a>）。</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">转给身边的人</p>
+      <p>对付这个骗局，最好的杀毒软件，就是让你的亲友在收到之前就已经知道它。</p>
+      <div class="share"><button type="button" data-share="simple">分享这篇文章</button><button type="button" class="ghost" data-set-mode="tech" data-jump>阅读技术版 →</button></div>
+    </div>
+
+
+    <h2><span class="n">08</span>其他人怎么说</h2>
+    <p>见过它的不止我一个，远远不止。至少从 2025 年初起，这个骗局就在欧洲流传，每次换一个名字：</p>
+    <ol class="tl">
+      <li><time>2025 年 1 月 · 罗马尼亚</time><p>国家网络安全机构就“给 Adeline 投票”发出警告，附带“在法国的免费奖学金”。随后，黑客向受害者的联系人要钱。</p></li>
+      <li><time>2025 年 5 月 · 捷克</time><p>警方通报“给我表妹 Anna 投票”。一个区在几天内至少有五名受害者，每人向一位“亲人”汇出了相当于 1 000 欧元以上的款项。</p></li>
+      <li><time>2025 年 9 至 10 月 · Kaspersky、Bitdefender</time><p>杀毒软件厂商描述了同样的圈套。Bitdefender 在两个月内统计到 177 个假网站，主要在波兰、罗马尼亚和德国。</p></li>
+      <li><time>2026 年初 · 意大利</time><p>媒体称之为“truffa della ballerina”（舞者骗局）。雷焦艾米利亚省有许多居民丢了 WhatsApp 账号，其中包括两位市长。</p></li>
+      <li><time>2026 年 3 至 5 月 · 捷克、瑞士</time><p>Whalebone 公司统计到超过 15 个国家的 200 多个域名。瑞士国家网络安全中心举了“Sofia”的例子。</p></li>
+      <li class="k"><time>2026 年 8 至 10 月 · 奥地利、西班牙</time><p>奥地利网站 Mimikama 早在 8 月就描述了假的“布拉格芭蕾学校”。而 10 月 21 日，也就是我收到消息的当天，西班牙就 Eliska 和 Sofie 发出了全国性警报。</p></li>
+    </ol>
+    <p><strong>这次调查额外带来的</strong>：与四月那一波的关联，网站背后的两台隐藏服务器和它们“控制面板”的线索，以及引流网站。还有一个法语版本：我没有找到法国当局针对这个骗局发出的任何专门警示。</p>
+    <p class="note">详细来源列在技术版末尾。</p>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li>通过 WhatsApp 传播的假投票行动，芭蕾主题，借用了布拉格一所真实学校的名义。受害者经历了什么，大众版里有说明；这一版讲的是<strong>基础设施与归因</strong>。</li>
+        <li>种子域名 <code>balletday[.]click</code>，注册于收到消息前约一小时。用 CTI 代理 Bounce 在被动来源上做枢轴：关联到 <strong>46 个域名</strong>，工具包被命名为“FIBS Prague Ballet Vote”。</li>
+        <li><strong>两个 CDN 之外的源站</strong>，都在分配给 Dedik.io 的地址段内：<code>85.239.144[.]247</code>（AS207043）和 <code>87.58.197[.]45</code>（AS62164）。后者的证书点名了 <code>fws2panel[.]sbs</code>。</li>
+        <li>工业化的行动：行动编号、模板编号、按访客的统计、早于域名的构建、带联盟参数的流量分发器。</li>
+        <li>与<a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">2026 年 4 月那一波</a>的关联：诱饵文字一字不差，但<strong>没有任何共同的基础设施</strong>。两种假设仍然成立：单一运营者，或者一套租给多个团伙的工具包。</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>背景与方法</h2>
+    <p>2026 年 10 月 21 日，我收到诱饵。当晚，我家里的两个人收到了一个指向 <code>1forit21[.]shop</code> 的变体。调查依托 <strong>Bounce</strong>（<a href="https://github.com/Iskandeur/bounce-cti">代码</a>），一个威胁情报代理：它从一个可观察对象出发，自己选择枢轴，构建基础设施图谱，并写出一份报告，包含它的工作假设、证据和自我批评。它的枢轴由我手动引导，与四月那一波交叉比对，并在采纳前逐条复核。</p>
+    <div class="box teal"><p class="t">行动规则</p><p>被动的公开来源：DNS、RDAP、Certificate Transparency、urlscan、VirusTotal、Shodan、Censys、被动 DNS。一次沙箱引爆（any.run），其中只输入了虚构的测试号码：没有真实号码，没有输入任何验证码。不绕过任何防护，不点名任何自然人。指标已去武器化（<code>[.]</code>）。来自未公开第三方报告的内容不在此引用。</p></div>
+
+    <h3>调查时间线（21/10/2026，巴黎时间）</h3>
+    <ol class="tl">
+      <li><time>12:44</time><p>收到 <code>balletday[.]click/l/fibs2026e10</code>。RDAP：11:43 在 Dynadot 创建，隐藏在隐私代理之后；当天签发的 Let's Encrypt 证书。</p></li>
+      <li><time>13:07</time><p>第一轮被动分析：Cloudflare 前端，页面标题为俄语，页面里有行动标识。</p></li>
+      <li><time>13:12</time><p>与四月那一波比对（favicon、标题哈希、JS 哈希、证书、NS、IP）：没有任何共同指纹。</p></li>
+      <li class="k"><time>13:22</time><p>对完整 URL 运行 Bounce。第一次遇到 CDN 受阻；我在 14:55 和 15:55 带着定向枢轴的指示重新启动。</p></li>
+      <li class="k"><time>15:38</time><p>27 个域名，第一个 CDN 之外的源站，两个流量分发器。</p></li>
+      <li class="k"><time>16:38</time><p>32 个域名，一个“锚点”域名（<code>wafisher[.]xyz</code>），工具包跨越数月的时间线。</p></li>
+      <li><time>19:54</time><p>家人收到“Eliška”变体：对 <code>1forit21[.]shop</code> 新运行一次 Bounce。</p></li>
+      <li class="k"><time>20:50</time><p>同一套工具包，同一个令牌，第二个源站和证书 <code>fws2panel[.]sbs</code>。</p></li>
+    </ol>
+
+    <h3>沙箱引爆（any.run，22/10/2026）</h3>
+    <p>我通过 <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">any.run</a> 在一个一次性浏览器（Windows 10 下的 Edge）中打开了 <code>1forit21[.]shop</code>，输入的是一个<strong>测试号码</strong>（+33 6 67 67 67 67），绝不是真实账号。any.run 将该任务判定为“Malicious activity”，标签为 <code>phishing</code>、<code>ip-check</code> 和 <code>websocket</code>。观察到的链条：</p>
+    <ol>
+      <li><code>https://1forit21[.]shop/</code>：页面“Audience voting — First International Ballet School in Prague”。</li>
+      <li>一个 <strong>Cloudflare Turnstile</strong> iframe（<code>challenges.cloudflare[.]com/cdn-cgi/challenge-platform/…/turnstile/…</code>）。这里，反机器人挑战是一道屏风：自动扫描器过不去，真人可以。</li>
+      <li><code>https://1forit21[.]shop/cdn-cgi/phish-bypass?atok=…&amp;original_path=%2F&amp;cf-turnstile-response=…</code>：Turnstile 令牌被交还给服务器，服务器随后放行。<code>/cdn-cgi/</code> 路径模仿 Cloudflare 的保留前缀；据我所知，它的名字（<code>phish-bypass</code>）是工具包的，不是 Cloudflare 的功能。</li>
+      <li><code>https://1forit21[.]shop/auth?return=%2F%3Fvoted%3D1&amp;lang=en</code>：页面“Vote verification — FIBS Prague”。</li>
+      <li>一个 iframe <code>https://1forit21[.]shop/assets/autraizaion/?mode=phone&amp;lng=en&amp;return=…</code>（拼写与 any.run 显示的一致）：它承载号码表单，随后是“Confirm verification”界面。</li>
+    </ol>
+    <figure class="wide shot"><img src="img/vote/anyrun-chaine.webp" width="1547" height="584" loading="lazy" alt="any.run 对 1forit21.shop 的请求树：判定为 Malicious activity，标签 phishing、ip-check、websocket，然后是上文所述的一系列页面和 iframe。"><figcaption><b>any.run 的“Browser Data”树。</b>从上到下：首页、Turnstile 挑战、<code>phish-bypass</code> 重定向、认证页面及其 <code>mode=phone</code> iframe。</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/anyrun-navigateur.webp" width="1200" height="637" loading="lazy" alt="沙箱浏览器停在 https://1forit21.shop/auth：“Confirm verification”界面，显示验证码 GANR-KPGE。"><figcaption>同一时刻，浏览器一侧：URL <code>1forit21[.]shop/auth</code> 显示配对码。测试号码已模糊处理。</figcaption></figure>
+    <p><strong>验证码的长度可以确定：8 个字符，分成两组 4 位</strong>（<code>XXXX-XXXX</code>，这里是 <code>GANR-KPGE</code>），这张截图里是大写字母。这是 WhatsApp 为“通过电话号码关联”生成的配对码的格式：页面并没有造一个投票码，它显示的是配对码，并照抄 WhatsApp 的步骤（已关联的设备 → 关联设备 → 通过电话号码关联）。局限：用的是假号码，我无法判断这个具体的码是否会被 WhatsApp 接受，而且我没有输入任何验证码。any.run 还给这个任务打了 <code>websocket</code> 标签：这与服务器在受害者停留在页面时实时与 WhatsApp 对话相符，但我没有其内容。</p>
+
+    <h2><span class="n">02</span>先例：2026 年 4 月那一波</h2>
+    <p>四月，两条几乎相同的诱饵（“给 Francesca 投票”）已经成为我的种子：<code>konkurzfrance[.]click/home/votenam</code>，然后是 <code>francevoice29[.]click/home/voteng</code>。<a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">已发布的案例研究</a>是这样说的：</p>
+    <ul>
+      <li>一套“School votingFR”工具包，路径为 <code>/home/vote*</code>。域名用 <code>.click</code>、<code>.cfd</code>、<code>.shop</code> 和 <code>.club</code>，注册于 02/04 至 24/05/2026，主要在 Dynadot（Global Domain Group）和 Spaceship。</li>
+      <li>一个被识破的源站，<code>217.145.226[.]186</code>，位于 AS205775（Neon Core Network），属防弹托管类型。</li>
+      <li>最强的聚类证据是一张<strong>源站证书</strong>（CN <code>voteingmap[.]click</code>），其 SAN 把三个行动域名联系在一起。JARM 则是 Cloudflare 的通用 JARM，什么也证明不了。</li>
+      <li>约两打域名，三种语言（FR、DE、IT），其中多个在扫描时 VirusTotal 上是 0/94。</li>
+    </ul>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/avril-graphe.webp" width="1600" height="997" loading="lazy" alt="2026 年 4 月围绕 konkurzfrance.click 及其源站的 Bounce 图谱。"><figcaption>四月：第一次运行后的 Bounce 图谱。</figcaption></figure>
+      <figure class="shot"><img src="img/vote/avril-certificat.webp" width="453" height="622" loading="lazy" alt="源站证书 voteingmap.click 及其 SAN 列表的细节。"><figcaption>四月：源站证书及其 SAN。</figcaption></figure>
+    </div>
+
+    <h2><span class="n">03</span>页面透露的作者信息</h2>
+    <p>不输入任何东西，页面本身就已经是一座指纹宝库：</p>
+    <ul>
+      <li><strong>是平台，不是网站。</strong>页面内嵌一个行动编号（<code>181</code>）、一个模板编号（<code>/p/27/</code>）、URL 里按收件人的标识（<code>/l/&lt;jeton&gt;</code>），以及一个用于按事件统计的访客标识。同一个模板被拆成多个行动，每个行动都有度量。</li>
+      <li><strong>构建早于域名。</strong>翻译文件的版本参数把构建时间定在 19/10 04:09，比 <code>balletday[.]click</code> 的注册早两天。工具包是稳定的；域名是消耗品。</li>
+      <li><strong>面向整个欧洲设计。</strong>翻译包涵盖 42 种语言。urlscan 的公开扫描显示至少 12 种语言的标题（FR、DE、EN、ES、IT、NL、PT、FI、PL、NO、IS、TR）。默认标题是俄语，这与 Whalebone 关于工具包出自俄语使用者之手的分析相吻合。这是线索，不是归因。</li>
+      <li><strong>除了口耳相传，还有买来的流量。</strong>Meta 和 TikTok 像素，以及流量分发器（<code>schoolbalet[.]club</code>、<code>kiddancebattle[.]web[.]id</code>、<code>baletkids[.]com</code>），它们带着 <code>sub_id_16</code>/<code>sub_id_17</code> 参数把人导回页面，这是追踪器 Keitaro 的命名惯例。这是联盟网络的特征。</li>
+      <li><strong>一个被排除的假枢轴。</strong>页面还从 <code>tk.mowell[.]tech</code> 加载一个广告追踪器。urlscan 搜索在近 2 900 个毫无关联的页面上找到它，主要是网店：它是共用的广告服务，不是行动之间的纽带。已从图谱中排除。</li>
+    </ul>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="法语的投票页面。"><figcaption>27 号模板，法语版（urlscan 公开扫描）。</figcaption></figure>
+      <figure class="shot"><img src="img/vote/page-de.webp" width="1200" height="750" loading="lazy" alt="同一页面的德语版。"><figcaption>同一页面，德语版。</figcaption></figure>
+    </div>
+
+    <h2><span class="n">04</span>基础设施：从链接到两个源站</h2>
+    <p>整个前端都在 Cloudflare 之后：anycast IP、域名服务器 <code>*.ns.cloudflare.com</code>，以及一个被一百多万台主机共享的通用 JARM，因此没有聚类价值。Bounce 会“化解”这些节点，不在它们上面做枢轴，转而寻找露出来的东西：一个配置错误而暴露真实地址的域名、一张共享的证书、一份被动 DNS 历史。</p>
+    <p>最终出现了两个源站，这正是这批数据相互印证之处：</p>
+    <div class="tbl"><table>
+      <thead><tr><th>源站</th><th>AS / 网络</th><th>国家</th><th>它承载的内容</th></tr></thead>
+      <tbody>
+        <tr><td><code>85.239.144[.]247</code></td><td>AS207043 — DEDIK-IO</td><td>DE（法兰克福）</td><td>十来个 <code>.sbs</code>、<code>.homes</code>、<code>.top</code> 的兄弟网站</td></tr>
+        <tr><td><code>87.58.197[.]45</code></td><td>AS62164 — Heymman，Dedik.io 地址段</td><td>“USA”地址块</td><td>工具包的六个网站；证书署名 <code>fws2panel[.]sbs</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>据欧洲地址注册机构（RIPE），这两个 IP 都在以同一家托管商 <strong>Dedik.io</strong> 名义登记的地址段内。第二个的证书点名 <code>fws2panel[.]sbs</code>（“panel”），很可能是运营者的管理界面；工具包的六个域名在被动 DNS 历史中曾解析到它。一个“锚点”域名 <code>wafisher[.]xyz</code> 把一个子域名与第一个源站联系起来；它的证书日志暴露出按模块（<code>wa</code>、<code>fb</code>）和按运营者命名的子域名，与多客户面板相符。对这些名称（<code>fws2panel</code>、<code>wafisher</code>）的解读属于<em>推断</em>，不是公开来源确认的事实。</p>
+
+    <figure class="wide shot"><img src="img/vote/bounce-1forit21.webp" width="1600" height="1168" loading="lazy" alt="Bounce 对 1forit21.shop 调查的图谱：中央是种子，周围是一簇标题完全相同的网站，源站 87.58.197.45 连着多个域名和证书 fws2panel.sbs。"><figcaption><b>对 <code>1forit21[.]shop</code> 的调查。</b>中央是收到的域名；周围是共享完全相同标题和工具包路径的网站；底部是源站 <code>87.58.197[.]45</code>，它连接其中多个网站，并带有证书 <code>fws2panel[.]sbs</code>。</figcaption></figure>
+
+    <h3>反分析迹象</h3>
+    <p>不展开细节，有两点使这场行动很难在上游被阻断：</p>
+    <ul>
+      <li><strong>一次性域名。</strong><code>balletday[.]click</code> 在消息到达前一小时注册；<code>1forit21[.]shop</code> 是前一天。名称是批量生产的（<code>1forit21</code>/<code>2forit21</code>、<code>fsk19hon2</code>/<code>fsk19hon3</code>），VirusTotal 还给其中一个打了 <code>dga</code> 标签。任何基于信誉的过滤都会晚于第一波。</li>
+      <li><strong>按访客选择沉默的页面。</strong>域名根路径对机器人返回一个空壳；工具包只在带令牌的正确路径上出现。生态系统还是有反应的：Cloudflare 当天就在一部分域名上挂出了“Suspected Phishing”拦截页，有些已经无法解析。轮换仍在新名称上继续。</li>
+    </ul>
+    <figure class="shot"><img src="img/vote/cloudflare-phishing.webp" width="1200" height="712" loading="lazy" alt="balletday.click 上的 Cloudflare“Suspected Phishing”拦截页。"><figcaption>收到消息几小时后，Cloudflare 标记了 <code>balletday[.]click</code>。下一个域名已经准备好了。</figcaption></figure>
+
+    <h2><span class="n">05</span>同一波，两次调查：交叉印证</h2>
+    <p>这两条消息，在不同时间、由不同的人收到，指向<strong>同一场行动</strong>。证据，从最强到最弱：</p>
+    <ul>
+      <li><strong>同一页面，同一令牌。</strong><code>1forit21[.]shop</code> 与 <code>balletday[.]click</code> 一样，提供完全相同的标题“Vote du public — Première École Internationale de Danse de Prague”和同一路径 <code>/l/fibs2026e10</code>。</li>
+      <li><strong>两次调查共有的域名</strong>：<code>balletday[.]click</code>、<code>balethdancing[.]art</code>、<code>dancefibs[.]site</code>、<code>ihonajjdi[.]shop</code>、<code>softfranpro[.]cloud</code>。</li>
+      <li><strong>同一家源站托管商</strong>（Dedik.io），对应两个被识破的 IP，还有一张指向共同面板的证书。</li>
+      <li><strong>较弱的</strong>：一个共同但平庸的 Cloudflare JARM，以及一个很可能是挂名的注册联系人。</li>
+    </ul>
+
+    <h2><span class="n">06</span>四月对十月：同一个行为者吗？</h2>
+    <p>这是最有意思的问题，而诚实的回答是：<em>就目前而言无法判定</em>。我把四月和十月两波逐项做了比对。</p>
+    <div class="tbl"><table>
+      <thead><tr><th>指纹</th><th>四月（School votingFR）</th><th>十月（FIBS）</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>诱饵主题</td><td>投票、舞蹈、孩子</td><td>投票、芭蕾、孩子</td><td class="y">相同</td></tr>
+        <tr><td>消息文字</td><td>“给 Francesca 投票……免费舞蹈课”</td><td>“给 Eliška 投票……免费舞蹈课”</td><td class="y">一字不差</td></tr>
+        <tr><td>注册商</td><td>Dynadot / Global Domain Group</td><td>Dynadot，以及其他</td><td class="m">共同但常见</td></tr>
+        <tr><td>工具包路径</td><td><code>/home/vote*</code></td><td><code>/l/&lt;jeton&gt;</code> 然后 <code>/p/27/</code></td><td class="n">不同</td></tr>
+        <tr><td>标题、favicon、JS、证书</td><td>“votingFR”指纹</td><td>“FIBS”指纹</td><td class="n">毫无共同</td></tr>
+        <tr><td>源站 / 托管商</td><td>AS205775（RU）</td><td>Dedik.io（AS207043、AS62164）</td><td class="n">不同</td></tr>
+      </tbody>
+    </table></div>
+    <p>主题和文字相同；<strong>没有任何技术指纹相同</strong>。在两者之间，可以观察到工具包路径在数月里持续演变（从 <code>/home/vote</code> 到 <code>/l/&lt;jeton&gt;</code>）。有两种解读站得住脚：</p>
+    <div class="pair">
+      <div class="box"><p class="t">假设 A — 单一运营者 <span class="conf c2" aria-label="低置信度"><i></i><i></i><i></i><i></i></span></p><p>同一个团伙在数月里不断改进工具包并更换托管商。支持：主题、文字和注册商的连续性。反对：没有任何共享的基础设施。</p></div>
+      <div class="box"><p class="t">假设 B — 出租的工具包（PhaaS） <span class="conf c3" aria-label="中等置信度"><i></i><i></i><i></i><i></i></span></p><p>同一套钓鱼“工具包”出售或出租给多个团伙，他们用各自的域名和服务器共用它。支持：带联盟机制的分发器、工业化程度，以及我在四月就已经贴上的“phaas”标签。</p></div>
+    </div>
+    <p>我倾向于 B，但不下定论。能让结论翻转的是：两波共用的源站 IP、共享的证书，或十月这一波真正的源服务器。仅靠被动来源，这些都拿不到。</p>
+
+    <h2><span class="n">07</span>方法笔记</h2>
+    <p>这次调查中重要的三点：</p>
+    <ul>
+      <li><strong>先化解，再做枢轴。</strong>在共享的 Cloudflare JARM 或 IP 上做枢轴，会“找到”成千上万条想象出来的联系。很大一部分工作是在<em>排除</em>：通用 JARM、共用的广告像素、廉价的注册商。</li>
+      <li><strong>一次泄露就够了。</strong>整个前端都被遮住了；只要一个配置错误的兄弟域名就暴露了源站，其余一切由此而来。</li>
+      <li><strong>说明自己的置信度。</strong>“同一个行为者”不是事实，是假设，可能性有高有低。必须如实说明。</li>
+    </ul>
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="Bounce 对 balletday.click 调查的图谱及其推理日志。"><figcaption><b>对 <code>balletday[.]click</code> 的调查。</b>右侧是日志：Bounce 解释每个枢轴，它化解了什么以及为什么。真正能让人验证结论的，是这份书面推理，而不是图谱。</figcaption></figure>
+
+    <h2><span class="n">08</span>指标（已去武器化）</h2>
+    <div class="box">
+      <p class="t">需阻断 / 监控</p>
+      <p class="note"><strong>源站：</strong><code>85.239.144[.]247</code>（AS207043）、<code>87.58.197[.]45</code>（AS62164）— Dedik.io 地址段。<br>
+      <strong>疑似面板：</strong><code>fws2panel[.]sbs</code>、<code>wafisher[.]xyz</code>。<br>
+      <strong>工具包标记：</strong>路径 <code>/l/&lt;jeton&gt;</code> 和 <code>/p/27/</code>；标题“First International Ballet School in Prague”及其各语言翻译。<br>
+      <strong>链条路径（any.run，<a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">任务 7fba8fa0</a>）：</strong><code>/cdn-cgi/phish-bypass?atok=…&amp;cf-turnstile-response=…</code>、<code>/auth?return=…voted…</code>、<code>/assets/autraizaion/?mode=phone</code>；上游有一个 Cloudflare Turnstile 挑战，被用作反机器人的屏风。<br>
+      <strong>配对页面：</strong>标题“Vote verification — FIBS Prague”，界面“Confirm verification”，验证码 <code>XXXX-XXXX</code>（8 个字符）。<br>
+      <strong>部分域名</strong>（不完整列表，轮换很快）：<code>balletday[.]click</code>、<code>1forit21[.]shop</code>、<code>dancefibs[.]site</code>、<code>softfranpro[.]cloud</code>、<code>balethdancing[.]art</code>、<code>pragafibs[.]click</code>、<code>votepraguedance[.]art</code>、<code>schoolbalet[.]club</code>、<code>fundisk235[.]lat</code>、<code>balletschool[.]cfd</code>、<code>balletschool[.]sbs</code>、<code>czechballet[.]world</code>、<code>czechballet[.]art</code>、<code>6pafjdov2[.]cyou</code>、<code>1foooodvvtr[.]homes</code>。<br>
+      <strong>23/10 更新：</strong>收到同样的“Eliška”消息，附新链接 <code>fundisk235[.]lat</code>。该域名当天（04:34 UTC）在 NameSilo 注册，位于 Cloudflare 之后，工具包与之前的相同（相同的文件 <code>fibs-lang.js</code> 和 <code>i18n-pack.js</code>，同样的空标题外壳）。它的名称和源站都与其他域名没有关联：轮换在新名称上继续。<br>
+      <strong>22/10 的兄弟域名：</strong><code>balletschool[.]cfd</code>、<code>balletschool[.]sbs</code>、<code>czechballet[.]world</code>、<code>czechballet[.]art</code>、<code>6pafjdov2[.]cyou</code> 和 <code>1foooodvvtr[.]homes</code> 使用了相同的页面标题。<code>1foooodvvtr[.]homes</code> 由 <code>87.58.197[.]247</code>（AS62164）提供服务，与为 <code>1forit21[.]shop</code> 所引用的源站 <code>87.58.197[.]45</code> 处在同一地址块：同一地址块，是共同基础设施的线索，但不是证据。<br>
+      <strong>四月那一波：</strong><code>konkurzfrance[.]click</code>、<code>francevoice29[.]click</code>，源站 <code>217.145.226[.]186</code>（AS205775）。</p>
+    </div>
+
+    <h2><span class="n">09</span>来源</h2>
+    <ol class="sources">
+      <li>我 2026 年 4 月的案例研究 — <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">bounce.alexandre-pinoteau.fr</a></li>
+      <li>Bitdefender，“Vote-for-my-child scams spreading across Europe”（08/10/2025）— 两个月内 177 个域名。</li>
+      <li>Whalebone，“Inside a WhatsApp account hijacking campaign”（04/03/2026）— 200+ 个域名，15+ 个国家。</li>
+      <li>Kaspersky，“weaponizing user engagement”（2025 年 9 至 10 月）。</li>
+      <li>瑞士 NCSC/BACS，第 21 周回顾（26/05/2026）。</li>
+      <li>罗马尼亚 DNSC（15/01/2025）；捷克警方（2025 年 5 月）；奥地利 Mimikama（20/08/2026）；西班牙 INCIBE（21/10/2026）。</li>
+      <li>RDAP / 注册局、Certificate Transparency、urlscan.io、VirusTotal、Censys、RIPEstat — 查询于 21/10/2026。</li>
+    </ol>
+
+    <div class="box"><p class="t">分享</p><div class="share"><button type="button" data-share="tech">分享技术版</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← 大众版</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">本调查借助 <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a> 完成，仅使用公开的被动来源。没有在诈骗页面上输入任何真实内容（只在沙箱里用了一个测试号码），没有点名任何自然人，指标被刻意破坏（<code>[.]</code>）。如果你收到这类消息：别点，并提醒那个账号被用来给你发消息的人。</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← 博客</a><a class="up" href="#top" aria-label="返回顶部">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>
