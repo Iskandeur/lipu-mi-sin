@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>« صوّتوا لصوفي »: تشريح عملية احتيال على واتساب · Alexandre Pinoteau</title>
+<meta name="description" content="رسالة على واتساب تطلب منك التصويت لابنة أصدقاء في مسابقة رقص. وراءها حزمة لسرقة حسابات واتساب، و46 نطاقًا، وخادمان مخفيّان، وسبعة أشهر من النشاط. التحقيق في نسخة للعموم ونسخة تقنية.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="« صوّتوا لصوفي »: تشريح عملية احتيال على واتساب">
+<meta property="og:description" content="لا تصوّت. والأهم: لا تكتب أبدًا رمز واتساب في موقع. كيف تعمل عملية الاحتيال، وكيف تتبّعتُها.">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/vote/page-fr.webp">
+<meta property="og:locale" content="ar_AR">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"ar",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">→ المدونة</a></nav>
+  <label class="lang"><span class="sr">اللغة</span><select id="blog-lang" aria-label="اللغة"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">تحقيق · احتيال على واتساب · استخبارات التهديدات</p>
+  <h1><span class="qt">« صوّتوا لصوفي »</span>: تشريح عملية احتيال على واتساب</h1>
+  <p class="lede">عند الظهيرة، تصلني رسالة تطلب مني التصويت لابنة أصدقاء في مسابقة للباليه. وفي المساء يتلقى اثنان من أقاربي رسالة شبه مطابقة. وراء هذه الخدمة الصغيرة: آلة لسرقة حسابات واتساب، تعمل منذ أشهر.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>بمساعدة Bounce</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="نسخة المقال">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>للعموم<small>افهم واحمِ نفسك</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>تقني<small>الحزمة، البنية، نقاط الارتكاز، المؤشرات</small></span></button>
+    </div>
+    <p class="hint2">مقالان لتحقيق واحد. يمكنك الانتقال بينهما في أي وقت.</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <figure class="chat" aria-label="الرسالة التي وصلت على واتساب">
+      <p class="who"><i>?</i> جهة اتصال</p>
+      <div class="bubble">مرحبًا 👋، أريد أن أطلب منك مساعدة صغيرة! هل يمكنك أن تمنح صوتك لصوفي، ابنة أصدقائي؟ هي في مسابقة قد تفوز فيها بمنحة دراسية وبفرصة للعرض على المسرح.<br><br><span class="lnk" dir="ltr">https://balletday[.]click/l/fibs2026e10</span><time>12:44</time></div>
+      <figcaption class="note">الرسالة التي وصلت في 21 أكتوبر 2026. الرابط معطَّل عمدًا.</figcaption>
+    </figure>
+
+    <div class="box hot">
+      <p class="t">إن لم تقرأ إلا هذا</p>
+      <ol class="rules">
+        <li><span><strong>لا تنقر.</strong> المسابقة الحقيقية لا تحتاج أبدًا إلى أن تسجّل الدخول عبر واتساب كي تصوّت.</span></li>
+        <li><span><strong>لا تكتب أبدًا رقمك ثم رمز واتساب في موقع.</strong> هذا الرمز هو مفتاح حسابك. من يتلقاه يقرأ محادثاتك ويتكلم باسمك.</span></li>
+        <li><span><strong>تحقّق الآن</strong> في واتساب ← <em>الإعدادات</em> ← <em>الأجهزة المرتبطة</em>. جهاز لا تعرفه؟ افصله.</span></li>
+        <li><span><strong>فعّل التحقق بخطوتين</strong> (<em>الإعدادات</em> ← <em>الحساب</em>). يمنع سرقة حسابك بالرمز الذي يصلك برسالة نصية. لكنه لا يكفي ضد إضافة جهاز جديد: ومن هنا القاعدة رقم 2.</span></li>
+      </ol>
+    </div>
+
+    <p>تبدو الرسالة عادية. تأتي من جهة اتصال، وهي مهذبة، وتطلب خدمة لا تكلّف شيئًا. ولهذا بالذات تنجح. تلقيتها في 21 أكتوبر. وفي المساء نفسه حوّل لي شخصان من عائلتي رسالة شبه مطابقة، هذه المرة باسم « Eliška » و« درس رقص مجاني ».</p>
+    <p>بدل أن أكتفي بحذفها، أردت أن أفهم ما وراءها. هذا ما وجدته.</p>
+
+    <h2><span class="n">01</span>كيف تعمل عملية الاحتيال، في خمس خطوات</h2>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><circle cx="44" cy="35" r="12" fill="none" stroke="#f1ead9" stroke-width="3"/><path d="M22 66c3-11 12-16 22-16s19 5 22 16" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round"/><rect x="52" y="48" width="20" height="16" rx="3" fill="#ff8f52"/><path d="M56 48v-5a6 6 0 0 1 12 0" fill="none" stroke="#ff8f52" stroke-width="3"/></svg>
+        <div><h3>أحد معارفك وقع في الفخ قبلك</h3><p>تصلك الرسالة من حساب واتساب حقيقي لأحد معارفك. لكنه لم يعد هو من يكتب: حسابه سُرق بالطريقة نفسها قبل أيام قليلة.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M20 28h48a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H40l-12 9v-9h-8a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4z" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linejoin="round"/><path d="M28 39h32M28 47h20" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>طلب لطيف جدًا</h3><p>« صوّت لابنة أصدقائي، الأمر مهم بالنسبة لها. » طفلة، وحلم، ونقرة واحدة: لا أحد يريد أن يرفض.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><rect x="26" y="16" width="36" height="58" rx="6" fill="none" stroke="#f1ead9" stroke-width="3"/><circle cx="44" cy="36" r="8" fill="#ffc977"/><path d="M34 52h20M36 60h16" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>صفحة مسابقة جميلة</h3><p>موقع أنيق، وراقصتان صغيرتان، وعدّاد أصوات متقارب (497 مقابل 492). كل شيء مزيّف: المدرسة والصور والأرقام.</p></div>
+      </li>
+      <li class="trap">
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#2a1a12" stroke="#ff8f52" stroke-width="2"/><circle cx="34" cy="44" r="11" fill="none" stroke="#ff8f52" stroke-width="3.5"/><path d="M45 44h24M60 44v8M67 44v6" stroke="#ff8f52" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <div><h3>الفخ: « أكّد تصويتك عبر واتساب »</h3><p>« لمنع التلاعب »، تقلّد الصفحة واتساب وتطلب رقمك ثم رمزًا. هذا الرمز هو واتساب يطلب إذنك لفتح حسابك <strong>على حاسوب المخترق</strong>.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 22a22 22 0 1 1-20 13" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round"/><path d="M18 27l6 9 9-5" fill="none" stroke="#f1ead9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/></svg>
+        <div><h3>وتبدأ الدورة من جديد، مع جهات اتصالك</h3><p>يقرأ المخترق محادثاتك ويكتب إلى دفتر عناوينك كله باسمك وصورتك: « صوّتوا لصوفي ». وأحيانًا يطلب أيضًا مالًا « بشكل عاجل ».</p></div>
+      </li>
+    </ol>
+
+    <figure class="wide diagram" aria-label="رسم توضيحي: حلقة الاحتيال">
+      <svg viewBox="-40 0 980 700" role="img" aria-labelledby="loop-t">
+        <title id="loop-t">حلقة الاحتيال: أحد المعارف المخترَقة حساباتهم يرسل الرسالة، فتصوّت الضحية وتعطي رقمها ورمزًا، ويُفتح حسابها عند المخترق، فيكتب إلى جهات اتصالها.</title>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a3abbd"/></marker></defs>
+        <g fill="none" stroke="#a3abbd" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" marker-end="url(#ah)">
+          <path d="M512 155A200 200 0 0 1 612 227"/><path d="M650 345A200 200 0 0 1 612 463"/><path d="M512 535A200 200 0 0 1 388 535"/><path d="M288 463A200 200 0 0 1 250 345"/><path d="M288 227A200 200 0 0 1 388 155"/>
+        </g>
+        <g stroke-width="3"><circle cx="450" cy="145" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="640" cy="283" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="568" cy="507" r="60" fill="#141a28" stroke="#6fe3cc"/><circle cx="332" cy="507" r="60" fill="#2a1a12" stroke="#ff8f52" stroke-width="4"/><circle cx="260" cy="283" r="60" fill="#141a28" stroke="#6fe3cc"/></g>
+        <g font-size="46" text-anchor="middle" dominant-baseline="central"><text x="450" y="147">🔓</text><text x="640" y="285">💬</text><text x="568" y="509">🩰</text><text x="332" y="509">🔑</text><text x="260" y="285">💻</text></g>
+        <g font-size="26" font-weight="600">
+          <text x="450" y="50" text-anchor="middle">أحد معارفك</text><text x="450" y="80" text-anchor="middle" class="mute">اختُرق حسابه</text>
+          <text x="716" y="272" text-anchor="end">« صوّتوا</text><text x="716" y="302" text-anchor="end">لصوفي! »</text>
+          <text x="640" y="590">صفحة مسابقة</text><text x="640" y="620" class="mute">جميلة</text>
+          <text x="262" y="590" text-anchor="start" class="hot">رقمك</text><text x="262" y="620" text-anchor="start" class="hot">+ رمز</text>
+          <text x="184" y="272" text-anchor="start">حسابك</text><text x="184" y="302" text-anchor="start" class="mute">عند المخترق</text>
+        </g>
+        <g text-anchor="middle"><text x="450" y="322" font-size="28" font-weight="800">وتبدأ من جديد</text><text x="450" y="356" font-size="22" class="mute">مع كل جهات اتصالك</text></g>
+      </svg>
+      <figcaption>لماذا تصلك هذه الرسالة من « صديق »: كل ضحية تصبح المُرسِل التالي. إنها عملية احتيال تنسخ نفسها بنفسها.</figcaption>
+    </figure>
+
+    <h2><span class="n">02</span>الرمز هو مفتاح بيتك</h2>
+    <p>يتيح لك واتساب استخدام حسابك على حاسوب (واتساب ويب) أو جهاز لوحي. ولربط جهاز جديد طريقتان: مسح رمز QR، أو تلقّي <strong>رمز تكتبه على هاتفك</strong>. صُمّم هذا لك، لتقرأ رسائلك على حاسوبك.</p>
+    <p>يستغل الفخ هذه الآلية نفسها بالضبط. حين تكتب رقمك في الصفحة المزيفة، فإن خادم المخترق هو الذي يطلب من واتساب: « أريد ربط جهاز بحساب صاحب هذا الرقم ». فيرسل واتساب، بحذر، طلب تأكيد <em>إلى هاتفك</em>. عندها تقول لك الصفحة المزيفة: « اكتب هذا الرمز لتأكيد تصويتك ». فتفعل. وتكون قد فتحت الباب للتو.</p>
+
+    <figure class="wide diagram" aria-label="رسم توضيحي: ما تظن أنك تفعله، وما تفعله حقًا">
+      <svg viewBox="0 0 960 470" role="img" aria-labelledby="code-t">
+        <title id="code-t">على اليسار، ما تظن الضحية أنها تفعله: تأكيد تصويت. على اليمين، ما يحدث: تأذن لحاسوب المخترق بالاتصال بحسابها على واتساب.</title>
+        <rect x="10" y="10" width="440" height="450" rx="22" fill="#10141f" stroke="#262f42" stroke-width="2"/>
+        <rect x="510" y="10" width="440" height="450" rx="22" fill="#1d130e" stroke="#ff8f52" stroke-width="2"/>
+        <text x="230" y="58" text-anchor="middle" font-size="26" font-weight="800">ما تظن أنك تفعله</text>
+        <text x="730" y="58" text-anchor="middle" font-size="26" font-weight="800" class="hot">ما تفعله حقًا</text>
+        <rect x="140" y="88" width="180" height="300" rx="22" fill="#0b141a" stroke="#a3abbd" stroke-width="3"/>
+        <text x="230" y="140" text-anchor="middle" font-size="18" class="mute">تأكيد التصويت</text>
+        <rect x="160" y="160" width="140" height="44" rx="8" fill="#202c33"/><text x="230" y="189" text-anchor="middle" font-size="18" class="mono">+33 6 •• ••</text>
+        <text x="230" y="240" text-anchor="middle" font-size="17" class="mute">رمز تصويتك:</text>
+        <text x="230" y="280" text-anchor="middle" font-size="30" font-weight="800" class="sun mono">K7QD-2XMB</text>
+        <rect x="165" y="315" width="130" height="44" rx="22" fill="#25d366"/><text x="230" y="344" text-anchor="middle" font-size="19" font-weight="700" fill="#0b141a">صوّت ✓</text>
+        <text x="230" y="425" text-anchor="middle" font-size="20">« أؤكد تصويتي. »</text>
+        <rect x="560" y="105" width="150" height="110" rx="10" fill="none" stroke="#f1ead9" stroke-width="3"/><path d="M540 235h190l-20-20h-150z" fill="#f1ead9"/>
+        <text x="635" y="160" text-anchor="middle" font-size="40">🕵️</text>
+        <text x="635" y="200" text-anchor="middle" font-size="15" class="mute">حاسوب المخترق</text>
+        <rect x="800" y="88" width="110" height="190" rx="18" fill="#0b141a" stroke="#a3abbd" stroke-width="3"/>
+        <text x="855" y="140" text-anchor="middle" font-size="15" class="mute">هاتفك</text>
+        <rect x="810" y="160" width="90" height="62" rx="8" fill="#202c33"/><text x="855" y="186" text-anchor="middle" font-size="13">ربط</text><text x="855" y="204" text-anchor="middle" font-size="13">جهاز؟</text>
+        <path d="M730 160c25-30 45-30 70-10" fill="none" stroke="#ff8f52" stroke-width="3" stroke-dasharray="6 6"/>
+        <text x="730" y="318" text-anchor="middle" font-size="21">يسألك واتساب:</text>
+        <text x="730" y="348" text-anchor="middle" font-size="21">« هل تريد فتح حسابك</text>
+        <text x="730" y="378" text-anchor="middle" font-size="21">على هذا الحاسوب؟ »</text>
+        <text x="730" y="425" text-anchor="middle" font-size="21" font-weight="800" class="hot">والرمز يجيب: « نعم ».</text>
+      </svg>
+      <figcaption>الرمز ليس رمز تصويت. إنه إذنك. فحين يُربط جهاز المخترق، يرى رسائلك الجديدة ويرسل رسائل باسمك، دون أن ينطفئ هاتفك أو يتغير فيه شيء.</figcaption>
+    </figure>
+
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-telephone.webp" width="1000" height="619" loading="lazy" alt="لقطة من الصفحة المزيفة: « Enter your phone for verification »، وقائمة للدول (فرنسا)، وحقل لرقم الهاتف، وزر أخضر « Continue »، ورابط « Verify by QR code »."><figcaption>الخطوة 1. تقلّد الصفحة واتساب وتطلب رقمك. (رقم تجريبي، مموَّه.)</figcaption></figure>
+      <figure class="shot"><img src="img/vote/code-faux-whatsapp.webp" width="1100" height="629" loading="lazy" alt="لقطة من الصفحة المزيفة « Confirm verification »: رمز من 8 أحرف في مجموعتين من 4، GANR-KPGE، ثم أربع خطوات لفتح واتساب والذهاب إلى « الأجهزة المرتبطة » واختيار « الربط برقم هاتف »."><figcaption>الخطوة 2. تعرض الصفحة رمزًا وتشرح لك أين تكتبه في واتساب. هذا ليس رمز تصويت.</figcaption></figure>
+    </div>
+    <p class="note">لقطات حقيقية، التُقطت في بيئة معزولة (any.run) برقم وهمي. الصفحة هنا بالإنجليزية؛ وهي تتكيف مع لغة الزائر. وهي فعلًا توجّهك إلى <em>الأجهزة المرتبطة</em>: وهذا بالضبط الطريق الذي يسلكه المخترق ليدعو نفسه إلى حسابك.</p>
+
+    <div class="box teal">
+      <p class="t">الصورة التي يجب أن تبقى في ذهنك</p>
+      <p>الرمز الذي يُطلب منك لا علاقة له بتصويت: إنه <strong>نسخة من مفاتيحك</strong>. لن تعطي أبدًا نسخة من مفاتيح بيتك لغريب كي « يؤكد مشاركتك » في مسابقة. وهنا الأمر نفسه. بهذه النسخة يدخل بيتك متى شاء، ويقرأ بريدك، ويكلّم أقرباءك منتحلًا شخصيتك. ولأنك احتفظت بمفاتيحك أنت، فلا تلاحظ شيئًا.</p>
+    </div>
+
+    <h2><span class="n">03</span>لماذا الراقصات دائمًا؟</h2>
+    <p>في أبريل، تلقيت عملية الاحتيال هذه من قبل: « هل يمكنك التصويت لـ Francesca؟ هي ابنة أصدقائي، والجائزة الأولى درس رقص مجاني ». وفي أكتوبر تتلقى عائلتي النص نفسه حرفيًا، باسم « Eliška ». وأنا، نسخة باسم « صوفي ». الموضوع لا يتغير، لأنه مختار بإتقان مخيف:</p>
+    <ul>
+      <li><strong>طفل</strong>: نخفض حذرنا، ويبدو الرفض بخلًا.</li>
+      <li><strong>تصويت</strong>: فعل مجاني وسريع نقوم به دون تفكير. لا شيء يُدفع، إذًا لا شيء مريب.</li>
+      <li><strong>صديق يطلب</strong>: الرسالة تأتي من حساب نعرفه. لا نشك في أقربائنا.</li>
+      <li><strong>« منع التلاعب »</strong>: العذر المثالي لطلب الاتصال عبر واتساب. يبدو الأمر جادًا حتى.</li>
+    </ul>
+    <p>ويضيف الباليه لمسة راقية وعالمية: « المدرسة الدولية الأولى للباليه في براغ ». هذه المدرسة موجودة فعلًا، ولا علاقة لها بكل هذا: المحتالون يسرقون اسمها ليبدوا موثوقين. أما الصفحة المزيفة فتوجد في اثنتي عشرة لغة على الأقل.</p>
+
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="صفحة التصويت المزيفة بالفرنسية: « Vote pour les jeunes talents de l'académie de ballet »، وأزرار ذهبية، وعدّاد 989 صوتًا."><figcaption>الصفحة المزيفة بالفرنسية.</figcaption></figure>
+      <figure class="shot"><img src="img/vote/page-de.webp" width="1200" height="750" loading="lazy" alt="الصفحة نفسها بالألمانية: « Abstimmung der jungen Talente der Ballettakademie »."><figcaption>هي نفسها بالألمانية. يتكيف الموقع مع بلد الزائر.</figcaption></figure>
+    </div>
+    <p class="note">لقطات عامة التقطها urlscan.io، وهي خدمة « تزور » المواقع المشبوهة بدلًا منا. لم أدخل أي شيء في هذه الصفحات.</p>
+
+    <h2><span class="n">04</span>كيف نحقق في عملية احتيال كهذه</h2>
+    <p>الموقع الإلكتروني أشبه بمتجر. له <strong>لافتة</strong> (الاسم، <code dir="ltr">balletday.click</code>)، و<strong>عنوان</strong> (الخادم الذي يُستضاف عليه)، و<strong>بطاقة هوية</strong> (شهادة الأمان الخاصة به، القفل الصغير)، و<strong>سجل تجاري</strong> (من اشترى الاسم، ومتى). والمحتالون يخفون كل هذا. لكن هناك دائمًا تقريبًا أثر يظهر.</p>
+    <p>التحقيق هو شدّ هذه الآثار واحدًا بعد الآخر. في هذه الحالة استخدمت <strong>Bounce</strong>، أداة تحقيق آلية أطوّرها: نعطيها رابطًا مشبوهًا، فتتبع الخيوط واحدًا واحدًا وترسم خريطة لما تجده. وما تعود به يجب بعد ذلك أن يُراجَع ويُتحقَّق منه، خيطًا خيطًا.</p>
+
+    <figure class="wide diagram" aria-label="رسم توضيحي: شدّ خيط التحقيق">
+      <svg viewBox="0 0 980 300" role="img" aria-labelledby="fil-t">
+        <title id="fil-t">مراحل التحقيق: رابط، موقع حديث الولادة، قناع Cloudflare، تسريب العنوان الحقيقي، و46 موقعًا توأمًا.</title>
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff8f52"/></marker></defs>
+        <g stroke="#ff8f52" stroke-width="3" marker-end="url(#ah2)"><path d="M168 120h30"/><path d="M362 120h30"/><path d="M556 120h30"/><path d="M750 120h30"/></g>
+        <g fill="#141a28" stroke="#262f42" stroke-width="2"><rect x="8" y="40" width="156" height="160" rx="16"/><rect x="202" y="40" width="156" height="160" rx="16"/><rect x="396" y="40" width="156" height="160" rx="16"/><rect x="590" y="40" width="156" height="160" rx="16" stroke="#ff8f52"/><rect x="784" y="40" width="188" height="160" rx="16" stroke="#6fe3cc"/></g>
+        <g font-size="42" text-anchor="middle"><text x="86" y="100">🔗</text><text x="280" y="100">🐣</text><text x="474" y="100">🎭</text><text x="668" y="100">💧</text><text x="878" y="100">🕸️</text></g>
+        <g font-size="19" font-weight="700" text-anchor="middle"><text x="86" y="140">رابط واحد</text><text x="280" y="140">موقع وُلد</text><text x="474" y="140">قناع</text><text x="668" y="140" class="hot">تسريب</text><text x="878" y="140" class="teal">46 موقعًا</text></g>
+        <g font-size="16" text-anchor="middle" class="mute"><text x="86" y="166">وصل على</text><text x="86" y="186">واتساب</text><text x="280" y="166">قبل ساعة</text><text x="280" y="186">فقط</text><text x="474" y="166">Cloudflare يخفي</text><text x="474" y="186">الخادم الحقيقي</text><text x="668" y="166">موقع توأم</text><text x="668" y="186">سيئ الإخفاء</text><text x="878" y="166">الحزمة نفسها،</text><text x="878" y="186">الخوادم نفسها، الفريق نفسه</text></g>
+        <text x="490" y="260" text-anchor="middle" font-size="18" class="mute">كل مرحلة « خيط » (نقطة ارتكاز): معلومة تكشف أخرى.</text>
+      </svg>
+    </figure>
+
+    <p>وفيما يلي ما جرى فعليًا في 21 أكتوبر:</p>
+    <ol class="tl">
+      <li><time>12:44</time><p>تصلني الرسالة. اسم النطاق <code dir="ltr">balletday.click</code> اشتُري <strong>قبل ساعة</strong>. المحتالون يرمون مواقعهم كما تُرمى المناديل: الموقع الجديد ليس له سمعة سيئة بعد، ولذا لا يحجبه أي برنامج مضاد للفيروسات.</p></li>
+      <li><time>بداية بعد الظهر</time><p>أفتح الرابط في حاسوب مؤقت ومراقَب (« بيئة معزولة »، any.run). نرى الصفحة تحمّل نسخة من واجهة واتساب ويب، ثم تحاول الاتصال بواتساب برقم. تأكدت الآلية.</p></li>
+      <li class="k"><time>بعد الظهر</time><p>ينطلق Bounce من الرابط ويجد <strong>27 ثم 32 موقعًا توأمًا</strong>: الصفحة نفسها، والمسار المخفي نفسه، والعناوين المترجمة نفسها. والأهم <strong>خادمًا لم يكن مخفيًا</strong> خلف القناع، في ألمانيا، يستضيف نحو عشرة من هذه المواقع.</p></li>
+      <li><time>19:54</time><p>تحوّل لي عائلتي الرسالتين « Eliška ». رابط جديد، <code dir="ltr">1forit21.shop</code>. تحقيق جديد مع Bounce.</p></li>
+      <li class="k"><time>20:50</time><p>الحكم: <strong>الحملة نفسها</strong>. الصفحة نفسها، والرابط المخفي نفسه، وخادم ثانٍ تسرّب، لدى المستضيف نفسه. وتحمل شهادته اسمًا كاشفًا: <code dir="ltr">fws2panel</code>، على الأرجح <strong>لوحة تحكم</strong> المحتالين.</p></li>
+    </ol>
+
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="لقطة من Bounce: مخطط التحقيق، وفي وسطه balletday.click وحوله مواقعه التوأم، وفي الأسفل الخادم 85.239.144.247 المرتبط بنحو عشرة نطاقات. وعلى اليمين سجل استدلال الوكيل."><figcaption><b>Bounce أثناء العمل.</b> كل دائرة موقع، وكل مربع برتقالي عنوان خادم. في الأسفل، نجمة النطاقات حول خادم واحد: إنه التسريب الذي يربط نحو عشرة مواقع ببعضها. وعلى اليمين، يدوّن الوكيل ما يفعله ولماذا.</figcaption></figure>
+
+    <h2><span class="n">05</span>ما وجدناه، بالأرقام</h2>
+    <div class="stats">
+      <div class="stat"><b>46</b><span>اسم نطاق مرتبط بهذه الحملة</span></div>
+      <div class="stat"><b>1 h</b><span>عمر الموقع حين وصلتني الرسالة</span></div>
+      <div class="stat"><b>12</b><span>لغة على الأقل للصفحة المزيفة نفسها</span></div>
+      <div class="stat"><b>2</b><span>خادمان مخفيان، وُجدا لدى المستضيف نفسه</span></div>
+      <div class="stat"><b>6 أشهر</b><span>بين رسالة أبريل ورسالة أكتوبر، حرفيًا</span></div>
+      <div class="stat"><b>n° 181</b><span>رقم « الحملة » المكتوب في الصفحة. هذا ليس عملًا هاويًا.</span></div>
+    </div>
+    <p>لفت هذا الرقم الأخير انتباهي. في شيفرة الصفحة رقم حملة (181)، ورقم قالب (27)، وعدّاد زيارات، ومتتبّعات إعلانية. إنه <strong>مصنع</strong>: شخص ما بنى حزمة جاهزة للاستخدام، بإحصاءات، تُستنسخ في عشرات المواقع المؤقتة. وهناك حتى « مروِّجون »، مواقع وسيطة يُدفع لها لجلب الضحايا.</p>
+
+    <h2><span class="n">06</span>سبق أن رأيناها في أبريل</h2>
+    <p>ليست المرة الأولى التي أصادفها فيها. في أبريل 2026، كنت قد حققت مع Bounce في رسالة شبه مطابقة، تلقيتها أنا ثم أحد أقاربي. وقتها تتبّعنا <strong>نحو عشرين موقعًا</strong> وخادمًا مستضافًا لدى مستضيف معروف بتغاضيه، في روسيا. وقد كتبت عنها <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">دراسة حالة</a>.</p>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/avril-message.webp" width="527" height="292" loading="lazy" alt="رسالة أبريل: « Salut, pourrais-tu voter pour Francesca ? C'est la fille de mes amis, le premier prix est un cours de danse gratuit, et c'est très important pour elle ! »"><figcaption>أبريل 2026: « Francesca ».</figcaption></figure>
+      <figure class="chat" style="margin:0"><p class="who"><i>?</i> جهة اتصال (أكتوبر)</p><div class="bubble">مرحبًا، هل يمكنك التصويت لـ Eliška؟ إنها ابنة أصدقائي. الجائزة الأولى درس رقص مجاني، وهذا مهم جدًا بالنسبة لها!<br><span class="lnk" dir="ltr">https://1forit21[.]shop/</span><time>19:41</time></div><figcaption class="note">أكتوبر 2026: « Eliška ». النص نفسه.</figcaption></figure>
+    </div>
+    <p>القصة نفسها، والجملة نفسها، بعد ستة أشهر. لكن المواقع والخوادم والتقنية تغيّرت. هل هو الفريق نفسه؟ ربما. أو أن « الحزمة » تُؤجَّر، وتستخدمها عدة فرق. أفصّل الفرضيتين في النسخة التقنية. المؤكد: <strong>أنها لا تتوقف</strong>، وأنها ستعود باسم آخر.</p>
+
+    <h2><span class="n">07</span>هل نقرتَ، أو كتبتَ رمزًا؟</h2>
+    <div class="box hot">
+      <p class="t">الخطوات الصحيحة، بالترتيب</p>
+      <ol class="rules">
+        <li><span>افتح واتساب ← <em>الإعدادات</em> ← <em>الأجهزة المرتبطة</em>. افصل كل جهاز لا تعرفه.</span></li>
+        <li><span>فعّل <em>التحقق بخطوتين</em> (<em>الإعدادات</em> ← <em>الحساب</em>) بكلمة مرور لن تعطيها لأحد.</span></li>
+        <li><span>نبّه جهات اتصالك بوسيلة أخرى (رسالة نصية، اتصال، حالة): « إن وصلتكم مني رسالة تصويت، فليست مني، لا تنقروا ».</span></li>
+        <li><span>إن لم تعد قادرًا على دخول حسابك: أعد تثبيت واتساب وسجّل رقمك من جديد، فيصلك رمز الرسالة النصية. هذا يفصل المتسلل.</span></li>
+        <li><span>أبلغ عن الرسالة في واتساب (ضغطة مطولة ← <em>إبلاغ</em>). وإن أرسلت مالًا: اتصل بمصرفك فورًا، ثم قدّم شكوى. النافذة الموحدة للحصول على المساعدة (في فرنسا): <a href="https://17cyber.gouv.fr" dir="ltr">17cyber.gouv.fr</a> (مع <a href="https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/piratage-de-compte">بطاقة « اختراق الحساب »</a> من Cybermalveillance).</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">شاركه</p>
+      <p>أفضل مضاد فيروسات ضد هذه العملية هو أن يعرفها أقرباؤك قبل أن تصلهم.</p>
+      <div class="share"><button type="button" data-share="simple">شارك المقال</button><button type="button" class="ghost" data-set-mode="tech" data-jump>اقرأ النسخة التقنية ←</button></div>
+    </div>
+
+
+    <h2><span class="n">08</span>ما يقوله الآخرون</h2>
+    <p>لست الوحيد الذي رآها تمرّ، بعيدًا عن ذلك. تتداول هذه العملية في أوروبا منذ مطلع 2025 على الأقل، وفي كل مرة باسم مختلف:</p>
+    <ol class="tl">
+      <li><time>يناير 2025 · رومانيا</time><p>تحذّر الوكالة الوطنية للأمن السيبراني من « صوّتوا لـ Adeline »، مقابل « منحة دراسية مجانية في فرنسا ». بعدها يطلب المخترقون المال من جهات اتصال الضحية.</p></li>
+      <li><time>مايو 2025 · التشيك</time><p>تبلغ الشرطة عن « صوّتوا لـ Anna، ابنة عمي ». خمس ضحايا على الأقل في بضعة أيام في منطقة واحدة، أرسل كل منهم ما يعادل أكثر من 1000 يورو إلى « قريب ».</p></li>
+      <li><time>سبتمبر-أكتوبر 2025 · Kaspersky، Bitdefender</time><p>تصف شركات مضادات الفيروسات الفخ نفسه. تحصي Bitdefender 177 موقعًا مزيفًا في شهرين، خاصة في بولندا ورومانيا وألمانيا.</p></li>
+      <li><time>مطلع 2026 · إيطاليا</time><p>تسميها الصحافة « truffa della ballerina ». يفقد عدد كبير من سكان مقاطعة ريجيو إميليا حساب واتساب، بينهم عمدتان.</p></li>
+      <li><time>مارس-مايو 2026 · التشيك، سويسرا</time><p>تحصي شركة Whalebone أكثر من 200 نطاق في أكثر من 15 بلدًا. ويذكر المركز الوطني السويسري للأمن السيبراني مثال « Sofia ».</p></li>
+      <li class="k"><time>أغسطس-أكتوبر 2026 · النمسا، إسبانيا</time><p>يصف الموقع النمساوي Mimikama « مدرسة الباليه في براغ » المزيفة منذ أغسطس. وفي 21 أكتوبر، يوم وصلتني رسالتي، تطلق إسبانيا تحذيرًا وطنيًا بشأن... Eliska وSofie.</p></li>
+    </ol>
+    <p><strong>ما يضيفه هذا التحقيق</strong>: الصلة بموجة أبريل، والخادمان المخفيان وراء المواقع وأثر « لوحة التحكم » الخاصة بهم، والمواقع المروِّجة. ونسخة بالفرنسية: لم أجد أي تحذير مخصص لهذه العملية لدى السلطات الفرنسية.</p>
+    <p class="note">المصادر المفصلة مدرجة في أسفل النسخة التقنية.</p>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li>حملة تصويت مزيفة تنتشر على واتساب، بموضوع الباليه، باسم مدرسة حقيقية في براغ. ما تعيشه الضحية مشروح في النسخة العامة؛ أما هذه النسخة فتتناول <strong>البنية التحتية والإسناد</strong>.</li>
+        <li>البذرة <code dir="ltr">balletday[.]click</code>، سُجّل قبل الاستلام بنحو ساعة. نقاط ارتكاز على مصادر سلبية، مع وكيل CTI المسمّى Bounce: <strong>46 نطاقًا</strong> مرتبطة، وحزمة سُمّيت « FIBS Prague Ballet Vote ».</li>
+        <li><strong>أصلان خارج شبكة CDN</strong>، كلاهما في نطاقات مسندة إلى Dedik.io: <code dir="ltr">85.239.144[.]247</code> (AS207043) و<code dir="ltr">87.58.197[.]45</code> (AS62164). وتذكر شهادة الثاني <code dir="ltr">fws2panel[.]sbs</code>.</li>
+        <li>حملة مُصنَّعة: رقم حملة، ورقم قالب، وإحصاءات لكل زائر، وبناء سابق للنطاقات، وموزّعات حركة بمعاملات إحالة.</li>
+        <li>الصلة بـ<a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">موجة أبريل 2026</a>: نص الطُّعم نفسه حرفيًا، لكن <strong>دون أي بنية تحتية مشتركة</strong>. تبقى فرضيتان مفتوحتان: مشغّل واحد، أو حزمة مؤجَّرة لعدة فرق.</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>السياق والمنهج</h2>
+    <p>في 21/10/2026 أتلقى الطُّعم. وفي المساء نفسه يتلقى اثنان من أقاربي نسخة تشير إلى <code dir="ltr">1forit21[.]shop</code>. يعتمد التحقيق على <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">الشيفرة</a>)، وهو وكيل لاستخبارات التهديدات: ينطلق من مُلاحَظ، ويختار نقاط ارتكازه، ويبني مخطط البنية التحتية، ويكتب تقريرًا بفرضيته العملية وأدلته ونقده الذاتي. وُجّهت نقاط ارتكازه يدويًا، وقوطعت مع موجة أبريل، وروجعت واحدة واحدة قبل اعتمادها.</p>
+    <div class="box teal"><p class="t">قواعد الاشتباك</p><p>مصادر سلبية وعامة: DNS، RDAP، Certificate Transparency، urlscan، VirusTotal، Shodan، Censys، DNS السلبي. وتفجير واحد في بيئة معزولة (any.run)، لم يُدخَل فيه سوى رقم تجريبي مختلَق: لا رقم حقيقي، ولا رمز مكتوب. لا تجاوز لأي حماية، ولا ذكر لأي شخص طبيعي. المؤشرات « معطَّلة » (<code dir="ltr">[.]</code>). العناصر المأخوذة من تقارير طرف ثالث غير منشورة لم تُدرج هنا.</p></div>
+
+    <h3>التسلسل الزمني للتحقيق (21/10/2026، بتوقيت باريس)</h3>
+    <ol class="tl">
+      <li><time>12:44</time><p>استلام <code dir="ltr">balletday[.]click/l/fibs2026e10</code>. RDAP: أُنشئ الساعة 11:43 لدى Dynadot، خلف وكيل خصوصية؛ وشهادة Let's Encrypt من اليوم نفسه.</p></li>
+      <li><time>13:07</time><p>أول مرور سلبي: واجهة Cloudflare، وعنوان الصفحة بالروسية، ومعرّفات حملة في الصفحة.</p></li>
+      <li><time>13:12</time><p>مقارنة مع موجة أبريل (favicon، بصمة العنوان، بصمة JS، الشهادات، NS، IP): لا بصمة مشتركة.</p></li>
+      <li class="k"><time>13:22</time><p>تشغيل Bounce على الرابط الكامل. يصطدم المرور الأول بالـ CDN؛ فأعيد تشغيله بتوجيهات لنقاط ارتكاز مستهدفة في 14:55 ثم 15:55.</p></li>
+      <li class="k"><time>15:38</time><p>27 نطاقًا، وأول أصل خارج الـ CDN، وموزِّعا حركة.</p></li>
+      <li class="k"><time>16:38</time><p>32 نطاقًا، ونطاق « مرساة » (<code dir="ltr">wafisher[.]xyz</code>)، وتسلسل زمني للحزمة على عدة أشهر.</p></li>
+      <li><time>19:54</time><p>وصول نسخة « Eliška » إلى عائلتي: تشغيل جديد لـ Bounce على <code dir="ltr">1forit21[.]shop</code>.</p></li>
+      <li class="k"><time>20:50</time><p>الحزمة نفسها، والرمز المميز نفسه، وأصل ثانٍ وشهادة <code dir="ltr">fws2panel[.]sbs</code>.</p></li>
+    </ol>
+
+    <h3>التفجير في بيئة معزولة (any.run، 22/10/2026)</h3>
+    <p>فتحت <code dir="ltr">1forit21[.]shop</code> في متصفح مؤقت (Edge على Windows 10) عبر <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">any.run</a>، مدخلًا <strong>رقمًا تجريبيًا</strong> (<bdi dir="ltr">+33 6 67 67 67 67</bdi>)، وليس حسابًا حقيقيًا أبدًا. يصنّف any.run المهمة « Malicious activity » بالوسوم <code dir="ltr">phishing</code> و<code dir="ltr">ip-check</code> و<code dir="ltr">websocket</code>. السلسلة المرصودة:</p>
+    <ol>
+      <li><code dir="ltr">https://1forit21[.]shop/</code>: صفحة « Audience voting — First International Ballet School in Prague ».</li>
+      <li>إطار iframe من <strong>Cloudflare Turnstile</strong> (<code dir="ltr">challenges.cloudflare[.]com/cdn-cgi/challenge-platform/…/turnstile/…</code>). هنا يعمل تحدي مكافحة الروبوتات كستار: الماسح الآلي لا يعبر، والإنسان يعبر.</li>
+      <li><code dir="ltr">https://1forit21[.]shop/cdn-cgi/phish-bypass?atok=…&amp;original_path=%2F&amp;cf-turnstile-response=…</code>: يُعاد رمز Turnstile إلى الخادم، فيسمح بالمرور. يقلّد المسار <code dir="ltr">/cdn-cgi/</code> البادئة المحجوزة لـ Cloudflare؛ واسمه (<code dir="ltr">phish-bypass</code>) هو اسم الحزمة، وليس وظيفة في Cloudflare على حد علمي.</li>
+      <li><code dir="ltr">https://1forit21[.]shop/auth?return=%2F%3Fvoted%3D1&amp;lang=en</code>: صفحة « Vote verification — FIBS Prague ».</li>
+      <li>إطار iframe <code dir="ltr">https://1forit21[.]shop/assets/autraizaion/?mode=phone&amp;lng=en&amp;return=…</code> (بالتهجئة كما يعرضها any.run): هو الذي يحمل نموذج الرقم، ثم شاشة « Confirm verification ».</li>
+    </ol>
+    <figure class="wide shot"><img src="img/vote/anyrun-chaine.webp" width="1547" height="584" loading="lazy" alt="شجرة طلبات any.run لـ 1forit21.shop: الحكم Malicious activity، والوسوم phishing وip-check وwebsocket، ثم تسلسل الصفحات والـ iframes الموصوف أعلاه."><figcaption><b>شجرة « Browser Data » في any.run.</b> من الأعلى إلى الأسفل: الصفحة الرئيسية، وتحدي Turnstile، وإعادة التوجيه <code dir="ltr">phish-bypass</code>، وصفحة المصادقة وإطارها <code dir="ltr">mode=phone</code>.</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/anyrun-navigateur.webp" width="1200" height="637" loading="lazy" alt="متصفح البيئة المعزولة على https://1forit21.shop/auth: شاشة « Confirm verification » مع الرمز GANR-KPGE."><figcaption>اللحظة نفسها من جهة المتصفح: العنوان <code dir="ltr">1forit21[.]shop/auth</code> يعرض رمز الاقتران. الرقم التجريبي مموَّه.</figcaption></figure>
+    <p><strong>طول الرمز محسوم: 8 أحرف، في مجموعتين من 4</strong> (<code dir="ltr">XXXX-XXXX</code>، وهنا <code dir="ltr">GANR-KPGE</code>)، أحرف كبيرة في هذه اللقطة. هذه هي صيغة رمز الاقتران الذي يولّده واتساب عند « الربط برقم هاتف »: الصفحة لا تصنع رمز تصويت، بل تعرض رمز اقتران وتنسخ خطوات واتساب (الأجهزة المرتبطة ← ربط جهاز ← الربط برقم هاتف). الحد: بهاتف وهمي، لا أستطيع القول إن كان واتساب سيقبل هذا الرمز بالذات، ولم أكتب أي رمز. كما يضع any.run الوسم <code dir="ltr">websocket</code> على المهمة: وهذا متسق مع خادم يتحاور مباشرة مع واتساب بينما الضحية على الصفحة، دون أن أملك محتوى ذلك.</p>
+
+    <h2><span class="n">02</span>السوابق: موجة أبريل 2026</h2>
+    <p>في أبريل، كان طُعمان شبه متطابقين (« التصويت لـ Francesca ») قد خدماني كبذرتين: <code dir="ltr">konkurzfrance[.]click/home/votenam</code>، ثم <code dir="ltr">francevoice29[.]click/home/voteng</code>. ما قالته <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">دراسة الحالة المنشورة</a>:</p>
+    <ul>
+      <li>حزمة « School votingFR » على مسارات <code dir="ltr">/home/vote*</code>. نطاقات <code dir="ltr">.click</code> و<code dir="ltr">.cfd</code> و<code dir="ltr">.shop</code> و<code dir="ltr">.club</code>، سُجّلت بين 02/04 و24/05/2026، خاصة لدى Dynadot (Global Domain Group) وSpaceship.</li>
+      <li>أصل مكشوف، <code dir="ltr">217.145.226[.]186</code>، لدى AS205775 (Neon Core Network)، وهو استضافة من نوع bulletproof.</li>
+      <li>كان أقوى دليل على التجميع <strong>شهادة الأصل</strong> (CN <code dir="ltr">voteingmap[.]click</code>) التي ربطت بدائلها SAN بين ثلاثة نطاقات حملة. أما JARM فكان JARM العام لـ Cloudflare ولم يثبت شيئًا.</li>
+      <li>نحو دزينتين من النطاقات بثلاث لغات (FR، DE، IT)، عدة منها بنتيجة 0/94 على VirusTotal وقت الفحص.</li>
+    </ul>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/avril-graphe.webp" width="1600" height="997" loading="lazy" alt="مخطط Bounce لأبريل 2026 حول konkurzfrance.click وأصله."><figcaption>أبريل: مخطط Bounce بعد التشغيل الأول.</figcaption></figure>
+      <figure class="shot"><img src="img/vote/avril-certificat.webp" width="453" height="622" loading="lazy" alt="تفصيل شهادة الأصل voteingmap.click وقائمة SAN الخاصة بها."><figcaption>أبريل: شهادة الأصل وبدائلها SAN.</figcaption></figure>
+    </div>
+
+    <h2><span class="n">03</span>ما تقوله الصفحة عن مؤلفيها</h2>
+    <p>دون إدخال أي شيء، تُعدّ الصفحة نفسها منجمًا للبصمات:</p>
+    <ul>
+      <li><strong>منصة، لا موقع.</strong> تحمل الصفحة رقم حملة (<code dir="ltr">181</code>)، ورقم قالب (<code dir="ltr">/p/27/</code>)، ومعرّفًا لكل مستلم في الرابط (<code dir="ltr">/l/&lt;jeton&gt;</code>)، ومعرّف زائر لإحصاءات لكل حدث. يُستنسخ القالب نفسه في حملات، وتُقاس كل حملة.</li>
+      <li><strong>بُنيت قبل النطاقات.</strong> يؤرّخ معامل إصدار ملفات الترجمة البناء في 19/10 الساعة 04:09، قبل يومين من تسجيل <code dir="ltr">balletday[.]click</code>. الحزمة ثابتة؛ والنطاقات مستهلَكة.</li>
+      <li><strong>مصمَّمة لأوروبا كلها.</strong> تغطي حزمة الترجمة 42 لغة. وتُظهر فحوص urlscan العامة عناوين بـ 12 لغة على الأقل (FR، DE، EN، ES، IT، NL، PT، FI، PL، NO، IS، TR). العنوان الافتراضي بالروسية، وهذا يتقاطع مع تحليل Whalebone لحزمة كتبها ناطقون بالروسية. هذه قرينة، وليست إسنادًا.</li>
+      <li><strong>حركة مشتراة فوق الكلام المتناقل.</strong> بكسلات Meta وTikTok، وموزّعات حركة (<code dir="ltr">schoolbalet[.]club</code>، <code dir="ltr">kiddancebattle[.]web[.]id</code>، <code dir="ltr">baletkids[.]com</code>) تحيل إلى الصفحات بمعاملات <code dir="ltr">sub_id_16</code>/<code dir="ltr">sub_id_17</code>، وهي اصطلاح التسمية في متتبّع Keitaro. إنه توقيع شبكة من الشركاء المروِّجين.</li>
+      <li><strong>نقطة ارتكاز زائفة استُبعدت.</strong> تحمّل الصفحة أيضًا متتبّعًا إعلانيًا من <code dir="ltr">tk.mowell[.]tech</code>. يجده بحث في urlscan في نحو 2 900 صفحة لا صلة لها، خاصة متاجر إلكترونية: إنها خدمة إعلانية مشتركة، لا صلة بين الحملات. واستُبعد من المخطط.</li>
+    </ul>
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-fr.webp" width="1200" height="750" loading="lazy" alt="صفحة التصويت بالفرنسية."><figcaption>القالب 27، بالفرنسية (فحص عام عبر urlscan).</figcaption></figure>
+      <figure class="shot"><img src="img/vote/page-de.webp" width="1200" height="750" loading="lazy" alt="الصفحة نفسها بالألمانية."><figcaption>هو نفسه، بالألمانية.</figcaption></figure>
+    </div>
+
+    <h2><span class="n">04</span>البنية التحتية: من الرابط إلى الأصلين</h2>
+    <p>الواجهة كلها خلف Cloudflare: عناوين IP من نوع anycast، وخوادم أسماء <code dir="ltr">*.ns.cloudflare.com</code>، وJARM عام تشترك فيه أكثر من مليون مضيف، فلا قيمة له في التجميع. يعطّل Bounce هذه العُقد كي لا يرتكز عليها، ويبحث عمّا يبرز: نطاق سيئ الإعداد يكشف عنوانه الحقيقي، أو شهادة مشتركة، أو تاريخ DNS سلبي.</p>
+    <p>ظهر أصلان في النهاية، وهنا تتقاطع المجموعة:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>الأصل</th><th>AS / الشبكة</th><th>البلد</th><th>ما يخدمه</th></tr></thead>
+      <tbody>
+        <tr><td><code dir="ltr">85.239.144[.]247</code></td><td>AS207043 — DEDIK-IO</td><td>DE (فرانكفورت)</td><td>نحو عشرة مواقع شقيقة بامتدادات <code dir="ltr">.sbs</code> و<code dir="ltr">.homes</code> و<code dir="ltr">.top</code></td></tr>
+        <tr><td><code dir="ltr">87.58.197[.]45</code></td><td>AS62164 — Heymman، نطاق Dedik.io</td><td>كتلة « USA »</td><td>ستة مواقع من الحزمة؛ وشهادة باسم <code dir="ltr">fws2panel[.]sbs</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>العنوانان في نطاقين مسجَّلين باسم المستضيف نفسه، <strong>Dedik.io</strong>، بحسب سجل العناوين الأوروبي (RIPE). وتذكر شهادة الثاني <code dir="ltr">fws2panel[.]sbs</code> (« panel »)، على الأرجح واجهة إدارة المشغّلين؛ وقد حُلّت إليه ستة نطاقات من الحزمة في تاريخ DNS السلبي. يربط نطاق « مرساة »، <code dir="ltr">wafisher[.]xyz</code>، نطاقًا فرعيًا بالأصل الأول؛ وتكشف سجلات شهاداته نطاقات فرعية مسمّاة بحسب الوحدة (<code dir="ltr">wa</code>، <code dir="ltr">fb</code>) وبحسب المشغّل، بما يتسق مع لوحة متعددة العملاء. هذه القراءات للأسماء (<code dir="ltr">fws2panel</code>، <code dir="ltr">wafisher</code>) هي <em>تأويلات</em>، لا وقائع أكدها مصدر عام.</p>
+
+    <figure class="wide shot"><img src="img/vote/bounce-1forit21.webp" width="1600" height="1168" loading="lazy" alt="مخطط Bounce لتحقيق 1forit21.shop: البذرة في الوسط، وعنقود العناوين المتطابقة، والأصل 87.58.197.45 المرتبط بعدة نطاقات وبشهادة fws2panel.sbs."><figcaption><b>التحقيق في <code dir="ltr">1forit21[.]shop</code>.</b> في الوسط، النطاق الذي وصلني؛ وحوله المواقع التي تشترك في العنوان نفسه تمامًا وفي مسار الحزمة؛ وفي الأسفل الأصل <code dir="ltr">87.58.197[.]45</code> الذي يربط عدة منها ويحمل الشهادة <code dir="ltr">fws2panel[.]sbs</code>.</figcaption></figure>
+
+    <h3>قرائن مكافحة التحليل</h3>
+    <p>دون الدخول في التفاصيل، أمران يجعلان الحملة صعبة الحجب من المنبع:</p>
+    <ul>
+      <li><strong>نطاقات للرمي.</strong> سُجّل <code dir="ltr">balletday[.]click</code> قبل ساعة من وصول الرسالة؛ و<code dir="ltr">1forit21[.]shop</code> في اليوم السابق. تُنتَج الأسماء بالجملة (<code dir="ltr">1forit21</code>/<code dir="ltr">2forit21</code>، <code dir="ltr">fsk19hon2</code>/<code dir="ltr">fsk19hon3</code>)، ويضع VirusTotal على أحدها الوسم <code dir="ltr">dga</code>. أي مرشّح قائم على السمعة يأتي بعد الموجة الأولى.</li>
+      <li><strong>صفحة تصمت بحسب الزائر.</strong> جذر النطاقات يقدّم قشرة فارغة للروبوتات؛ ولا تظهر الحزمة إلا على المسار الصحيح ذي الرمز المميز. ومع ذلك يتفاعل النظام البيئي: وضعت Cloudflare صفحتها البينية « Suspected Phishing » على جزء من النطاقات خلال اليوم، وبعضها لم يعد يُحَلّ. ويستمر التدوير على أسماء جديدة.</li>
+    </ul>
+    <figure class="shot"><img src="img/vote/cloudflare-phishing.webp" width="1200" height="712" loading="lazy" alt="الصفحة البينية « Suspected Phishing » من Cloudflare على balletday.click."><figcaption>بعد ساعات من الاستلام، تبلّغ Cloudflare عن <code dir="ltr">balletday[.]click</code>. النطاق التالي جاهز بالفعل.</figcaption></figure>
+
+    <h2><span class="n">05</span>الموجة نفسها، تحقيقان: التقاطع</h2>
+    <p>الرسالتان، اللتان وصلتا في ساعتين مختلفتين إلى شخصين مختلفين، تقودان إلى <strong>الحملة نفسها</strong>. الأدلة، من الأقوى إلى الأضعف:</p>
+    <ul>
+      <li><strong>الصفحة نفسها، والرمز المميز نفسه.</strong> يقدّم <code dir="ltr">1forit21[.]shop</code> العنوان نفسه تمامًا « Vote du public — Première École Internationale de Danse de Prague » والمسار نفسه <code dir="ltr">/l/fibs2026e10</code> كما في <code dir="ltr">balletday[.]click</code>.</li>
+      <li><strong>نطاقات مشتركة بين التحقيقين</strong>: <code dir="ltr">balletday[.]click</code>، <code dir="ltr">balethdancing[.]art</code>، <code dir="ltr">dancefibs[.]site</code>، <code dir="ltr">ihonajjdi[.]shop</code>، <code dir="ltr">softfranpro[.]cloud</code>.</li>
+      <li><strong>المستضيف الأصلي نفسه</strong> (Dedik.io) للعنوانين المكشوفين، وشهادة تشير إلى لوحة مشتركة.</li>
+      <li><strong>الأضعف</strong>: JARM مشترك لـ Cloudflare لكنه عادي، وجهة اتصال تسجيل هي على الأرجح اسم مستعار.</li>
+    </ul>
+
+    <h2><span class="n">06</span>أبريل مقابل أكتوبر: الفاعل نفسه؟</h2>
+    <p>هذا هو السؤال الأكثر إثارة، والجواب الصادق: <em>لا يمكن البتّ فيه بالوضع الحالي</em>. قارنت موجة أبريل بموجة أكتوبر بندًا بندًا.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>البصمة</th><th>أبريل (School votingFR)</th><th>أكتوبر (FIBS)</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>موضوع الطُّعم</td><td>تصويت، رقص، طفل</td><td>تصويت، باليه، طفل</td><td class="y">مطابق</td></tr>
+        <tr><td>نص الرسالة</td><td>« التصويت لـ Francesca… درس رقص مجاني »</td><td>« التصويت لـ Eliška… درس رقص مجاني »</td><td class="y">حرفيًا</td></tr>
+        <tr><td>جهة التسجيل</td><td>Dynadot / Global Domain Group</td><td>Dynadot، وغيرها</td><td class="m">مشترك لكنه شائع</td></tr>
+        <tr><td>مسار الحزمة</td><td><code dir="ltr">/home/vote*</code></td><td><code dir="ltr">/l/&lt;jeton&gt;</code> ثم <code dir="ltr">/p/27/</code></td><td class="n">مختلف</td></tr>
+        <tr><td>العنوان، favicon، JS، الشهادات</td><td>بصمات « votingFR »</td><td>بصمات « FIBS »</td><td class="n">لا شيء مشترك</td></tr>
+        <tr><td>الأصل / المستضيف</td><td>AS205775 (RU)</td><td>Dedik.io (AS207043، AS62164)</td><td class="n">مختلف</td></tr>
+      </tbody>
+    </table></div>
+    <p>الموضوع والنص متطابقان؛ <strong>ولا بصمة تقنية واحدة متطابقة</strong>. وبين الموجتين نلاحظ تطورًا مستمرًا في مسارات الحزمة (من <code dir="ltr">/home/vote</code> إلى <code dir="ltr">/l/&lt;jeton&gt;</code>) على مدى عدة أشهر. قراءتان تصمدان:</p>
+    <div class="pair">
+      <div class="box"><p class="t">الفرضية A — مشغّل واحد <span class="conf c2" aria-label="ثقة منخفضة"><i></i><i></i><i></i><i></i></span></p><p>مجموعة واحدة تطوّر حزمتها وتغيّر مستضيفها عبر الأشهر. مع: استمرارية الموضوع والنص وجهة التسجيل. ضد: لا بنية تحتية مشتركة.</p></div>
+      <div class="box"><p class="t">الفرضية B — حزمة مؤجَّرة (PhaaS) <span class="conf c3" aria-label="ثقة متوسطة"><i></i><i></i><i></i><i></i></span></p><p>« حزمة » تصيّد واحدة تُباع أو تُؤجَّر لعدة فرق، تتقاسمها بنطاقاتها وخوادمها الخاصة. مع: موزّعات الإحالة، والتصنيع، والوسم « phaas » الذي كنت وضعته في أبريل.</p></div>
+    </div>
+    <p>أميل إلى B، دون أن أحسم. ما يقلب الميزان: عنوان أصل مشترك بين الموجتين، أو شهادة مشتركة، أو خادم الأصل الحقيقي لموجة أكتوبر. لا شيء من هذا متاح بالمصادر السلبية وحدها.</p>
+
+    <h2><span class="n">07</span>ملاحظات منهجية</h2>
+    <p>ثلاث نقاط كان لها وزنها في هذا التحقيق:</p>
+    <ul>
+      <li><strong>التعطيل قبل الارتكاز.</strong> الارتكاز على JARM أو IP مشترك في Cloudflare يجعلك « تجد » آلاف الصلات الوهمية. جزء كبير من العمل هو <em>الاستبعاد</em>: JARM العام، والبكسل الإعلاني المشترك، وجهة التسجيل الرخيصة.</li>
+      <li><strong>تسريب واحد يكفي.</strong> الواجهة كلها مقنَّعة؛ وكفى نطاق شقيق سيئ الإعداد ليكشف أصلًا، ومنه كل الباقي.</li>
+      <li><strong>تسمية مستوى الثقة.</strong> « الفاعل نفسه » ليس واقعة، بل فرضية، قليلة أو كثيرة الاحتمال. ويجب قولها كما هي.</li>
+    </ul>
+    <figure class="wide shot"><img src="img/vote/bounce-balletday.webp" width="1600" height="1170" loading="lazy" alt="مخطط Bounce لتحقيق balletday.click وسجل استدلاله."><figcaption><b>تحقيق <code dir="ltr">balletday[.]click</code>.</b> على اليمين، السجل: يشرح Bounce كل نقطة ارتكاز، وما يعطّله ولماذا. هذا الاستدلال المكتوب، أكثر من المخطط، هو ما يتيح التحقق من الاستنتاجات.</figcaption></figure>
+
+    <h2><span class="n">08</span>المؤشرات (معطَّلة)</h2>
+    <div class="box">
+      <p class="t">للحجب / للمراقبة</p>
+      <p class="note"><strong>الأصول:</strong> <code dir="ltr">85.239.144[.]247</code> (AS207043)، <code dir="ltr">87.58.197[.]45</code> (AS62164) — نطاقات Dedik.io.<br>
+      <strong>اللوحة المحتملة:</strong> <code dir="ltr">fws2panel[.]sbs</code>، <code dir="ltr">wafisher[.]xyz</code>.<br>
+      <strong>علامات الحزمة:</strong> المسار <code dir="ltr">/l/&lt;jeton&gt;</code> و<code dir="ltr">/p/27/</code>؛ والعنوان « First International Ballet School in Prague » وترجماته.<br>
+      <strong>مسارات السلسلة (any.run، <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">المهمة 7fba8fa0</a>):</strong> <code dir="ltr">/cdn-cgi/phish-bypass?atok=…&amp;cf-turnstile-response=…</code>، <code dir="ltr">/auth?return=…voted…</code>، <code dir="ltr">/assets/autraizaion/?mode=phone</code>؛ وتحدي Cloudflare Turnstile في المنبع، يُستخدم ستارًا ضد الروبوتات.<br>
+      <strong>صفحة الاقتران:</strong> العنوان « Vote verification — FIBS Prague »، والشاشة « Confirm verification »، والرمز <code dir="ltr">XXXX-XXXX</code> (8 أحرف).<br>
+      <strong>بعض النطاقات</strong> (قائمة جزئية، تدوير سريع): <code dir="ltr">balletday[.]click</code>، <code dir="ltr">1forit21[.]shop</code>، <code dir="ltr">dancefibs[.]site</code>، <code dir="ltr">softfranpro[.]cloud</code>، <code dir="ltr">balethdancing[.]art</code>، <code dir="ltr">pragafibs[.]click</code>، <code dir="ltr">votepraguedance[.]art</code>، <code dir="ltr">schoolbalet[.]club</code>، <code dir="ltr">fundisk235[.]lat</code>، <code dir="ltr">balletschool[.]cfd</code>، <code dir="ltr">balletschool[.]sbs</code>، <code dir="ltr">czechballet[.]world</code>، <code dir="ltr">czechballet[.]art</code>، <code dir="ltr">6pafjdov2[.]cyou</code>، <code dir="ltr">1foooodvvtr[.]homes</code>.<br>
+      <strong>تحديث 23/10:</strong> وصلت رسالة « Eliška » نفسها برابط جديد، <code dir="ltr">fundisk235[.]lat</code>. نطاق سُجّل في اليوم نفسه (04:34 UTC) لدى NameSilo، خلف Cloudflare، وبالحزمة نفسها كالسابقة (الملفان <code dir="ltr">fibs-lang.js</code> و<code dir="ltr">i18n-pack.js</code> نفساهما، والقشرة نفسها ذات العنوان الفارغ). لا اسمه ولا أصله مرتبطان بالنطاقات الأخرى: التدوير مستمر على أسماء جديدة.<br>
+      <strong>نطاقات شقيقة من 22/10:</strong> <code dir="ltr">balletschool[.]cfd</code>، <code dir="ltr">balletschool[.]sbs</code>، <code dir="ltr">czechballet[.]world</code>، <code dir="ltr">czechballet[.]art</code>، <code dir="ltr">6pafjdov2[.]cyou</code> و<code dir="ltr">1foooodvvtr[.]homes</code> كانت تحمل عنوان الصفحة نفسه. يخدم <code dir="ltr">87.58.197[.]247</code> (AS62164) النطاق <code dir="ltr">1foooodvvtr[.]homes</code>، في كتلة العناوين نفسها التي فيها الأصل <code dir="ltr">87.58.197[.]45</code> المذكور لـ <code dir="ltr">1forit21[.]shop</code>: كتلة عناوين واحدة، قرينة على بنية تحتية مشتركة، دون إثبات.<br>
+      <strong>موجة أبريل:</strong> <code dir="ltr">konkurzfrance[.]click</code>، <code dir="ltr">francevoice29[.]click</code>، الأصل <code dir="ltr">217.145.226[.]186</code> (AS205775).</p>
+    </div>
+
+    <h2><span class="n">09</span>المصادر</h2>
+    <ol class="sources">
+      <li>دراسة حالتي لأبريل 2026 — <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">bounce.alexandre-pinoteau.fr</a></li>
+      <li>Bitdefender، « Vote-for-my-child scams spreading across Europe » (08/10/2025) — 177 نطاقًا في شهرين.</li>
+      <li>Whalebone، « Inside a WhatsApp account hijacking campaign » (04/03/2026) — أكثر من 200 نطاق، أكثر من 15 بلدًا.</li>
+      <li>Kaspersky، « weaponizing user engagement » (سبتمبر-أكتوبر 2025).</li>
+      <li>NCSC/BACS السويسري، مراجعة الأسبوع 21 (26/05/2026).</li>
+      <li>DNSC رومانيا (15/01/2025)؛ الشرطة التشيكية (مايو 2025)؛ Mimikama النمسا (20/08/2026)؛ INCIBE إسبانيا (21/10/2026).</li>
+      <li>RDAP / السجلات، Certificate Transparency، urlscan.io، VirusTotal، Censys، RIPEstat — اطُّلع عليها في 21/10/2026.</li>
+    </ol>
+
+    <div class="box"><p class="t">مشاركة</p><div class="share"><button type="button" data-share="tech">شارك النسخة التقنية</button><button type="button" class="ghost" data-set-mode="simple" data-jump>→ النسخة العامة</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">تحقيق أُجري مع <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>، على مصادر عامة وسلبية. لم يُدخَل أي شيء حقيقي في صفحات الاحتيال (رقم تجريبي فقط في بيئة معزولة)، ولا يُذكر أي شخص طبيعي، والمؤشرات معطَّلة عمدًا (<code dir="ltr">[.]</code>). إن وصلتك رسالة من هذا النوع: لا تنقر، ونبّه صاحب الحساب الذي استُخدم لإرسالها إليك.</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">→ المدونة</a><a class="up" href="#top" aria-label="إلى الأعلى">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>

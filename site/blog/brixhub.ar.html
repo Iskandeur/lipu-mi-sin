@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-mode="simple">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BrixHub: محرك البحث عن بياناتك المسروقة · Alexandre Pinoteau</title>
+<meta name="description" content="يزعم BrixHub أنه يفهرس 14 مليار بيانات شخصية مسروقة، ويعرض حذف سجلّك مقابل مبلغ مالي. من يقف وراءه، وما هو، وكيف يعمل، وهل هو قانوني، ولماذا لا يزال متاحًا؟ التحقيق في نسخة للعموم ونسخة تقنية.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BrixHub: محرك البحث عن بياناتك المسروقة">
+<meta property="og:description" content="يزعم أنه يفهرس 14 مليار سجل ويبيع حذف سجلّك. القضاء الفرنسي يلاحقه، ومع ذلك لا يزال متاحًا. كيف يصمد، وماذا يقول القانون.">
+<meta property="og:image" content="https://alexandre-pinoteau.fr/blog/img/brixhub/brixhub-accueil.webp">
+<meta property="og:locale" content="ar_AR">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
+<script>window.__ARTICLE={slug:"brixhub",lang:"ar",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">→ المدونة</a></nav>
+  <label class="lang"><span class="sr">اللغة</span><select id="blog-lang" aria-label="اللغة"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">تحقيق · تسريبات البيانات · OSINT</p>
+  <h1>BrixHub: محرك البحث عن بياناتك المسروقة</h1>
+  <p class="lede">موقع تكتب فيه اسمك فيعرض عليك عنوانك ورقم هاتفك ورقم ضمانك الاجتماعي. يقول إنه يفهرس 14 مليار سجل مصدرها عمليات قرصنة. ويعرض عليك حذف سجلّك... مقابل مبلغ. القضاء الفرنسي يلاحقه، ومع ذلك لا يزال متاحًا. نظرتُ كيف يصمد.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-21">21.10.2026</time></span><span>بمساعدة Bounce</span></p>
+
+  <div class="modes">
+    <div class="switch" role="group" aria-label="نسخة المقال">
+      <button type="button" data-set-mode="simple" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2M9 9.5h.01M15 9.5h.01"/></svg>
+        <span>للعموم<small>افهم واحمِ نفسك</small></span></button>
+      <button type="button" data-set-mode="tech" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/></svg>
+        <span>تقني<small>البنية، التدوير، القانون</small></span></button>
+    </div>
+    <p class="hint2">مقالان لتحقيق واحد. يمكنك الانتقال بينهما في أي وقت.</p>
+  </div>
+
+<!-- =====================================================================================
+     VERSION TOUT PUBLIC
+     ===================================================================================== -->
+  <article class="v-simple">
+
+    <div class="box hot">
+      <p class="t">إن لم تقرأ إلا هذا</p>
+      <ol class="rules">
+        <li><span><strong>لا تستخدمه</strong>، ولو من باب الفضول، ولو للبحث عن اسمك أنت. البحث عن شخص آخر قد يعرّضك للملاحقة القضائية، والقضاء الفرنسي أحال هذا الموقع إلى النيابة العامة.</span></li>
+        <li><span><strong>لا تدفع أبدًا</strong> لحذف سجلّك، و<strong>لا ترسل أبدًا وثيقة هويتك</strong>. ستدفع لمن لديهم بياناتك المسروقة، وستعطيهم بيانًا إضافيًا.</span></li>
+        <li><span><strong>يمكنك التحقق من تسريباتك مجانًا وبلا خطر</strong> على <a href="https://haveibeenpwned.com" dir="ltr">haveibeenpwned.com</a>، وهي خدمة مشروعة لا تعرض أي بيانات.</span></li>
+        <li><span><strong>إن كانت بياناتك متداولة</strong>: غيّر كلمات مرورك المهمة، وفعّل المصادقة الثنائية، وراقب حساباتك المصرفية.</span></li>
+      </ol>
+    </div>
+
+    <p>BrixHub محرك بحث. لكنه بدل صفحات الويب، ينبش في <strong>تسريبات البيانات</strong>: الملفات المسروقة في عمليات اختراق الشركات والإدارات. تكتب اسمًا أو هاتفًا أو بريدًا إلكترونيًا فيعيد لك سجلًا. يعلن عن <strong>أكثر من 14 مليار تسجيل</strong>.</p>
+    <p>في أكتوبر 2026، تتناوله الصحافة الفرنسية وتحيله وزيرة الشؤون الرقمية إلى القضاء. كثيرون يتساءلون ما هو وهل يمكن استخدامه. الجواب المختصر: <strong>لا، إياك</strong>. وهذا السبب، وكيف يعمل هذا النوع من المواقع.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/brixhub-accueil.webp" width="1400" height="1050" loading="lazy" alt="الصفحة الرئيسية لـ BrixHub: خلفية داكنة، وعين مرسومة كدارة مطبوعة، وشعار « BrixHub reste accessible »، وعدّاد 14 556 649 351 تسجيلًا، وزرّا « Lancer une recherche » و« Suppression RGPD »."><figcaption><b>الواجهة.</b> تصميم متقن، وعدّاد عند 14 مليارًا، وزر « Suppression RGPD »، وحتى فقاعة تقول « بوت تيليغرام الخاص بنا يرسل لك العنوان الجديد إن تغيّر الموقع أو حُجب ». كل شيء مصمم للطمأنة وللنجاة من الحجب.</figcaption></figure>
+
+    <h2><span class="n">01</span>من أين تأتي هذه البيانات؟</h2>
+    <p>من تسريبات حقيقية. في السنوات الأخيرة، سُرقت ملفات عملاء كثير من الشركات والهيئات الفرنسية: مشغّلو اتصالات، وتعاضديات، ومواقع تجارة، وخدمات عامة. كل تسريب يعني ملايين الأشخاص الذين صار اسمهم أو عنوانهم أو هاتفهم، أو ما هو أسوأ، في العراء.</p>
+    <p>موقع مثل BrixHub لا يخترق شيئًا بنفسه. إنه <strong>يلتقط</strong> هذه الملفات المبعثرة، ويقاطعها، ويجعلها <strong>قابلة للاستعلام بنقرة واحدة</strong>. وهنا المشكلة كلها: التسريب المنفرد مرهق في استغلاله، أما محرك يربط اسمك وعنوانك وهاتفك ورقم ضمانك الاجتماعي في سجل واحد، فهو سلاح للتحرش وانتحال الهوية والنصب.</p>
+    <div class="box"><p class="t">للتنبيه</p><p>يعرض BrixHub بفخر أسماء هيئات عامة كمصادر. لم تؤكد أي منها ذلك، ولا أتبنى هذه الادعاءات: إنها أقواله، لا وقائع ثابتة.</p></div>
+
+    <h2><span class="n">02</span>العمل الحقيقي: أن يبيعك راحة بالك</h2>
+    <p>الأشد خبثًا ليس البحث. إنه خيار <strong>« Suppression RGPD »</strong>. يعرض عليك الموقع، مقابل مبلغ، حذف سجلّك. نحو بضعة يوروهات لحفنة من السجلات، بحسب الشهادات. وأحيانًا حذف « مجاني »... مقابل صورة لوثيقة هويتك.</p>
+    <div class="box hot">
+      <p class="t">إنه فخ داخل فخ</p>
+      <p>ستدفع لمن يحوزون بياناتك المسروقة كي يعدوا بمحوها. لا شيء يضمن أنهم يفعلون. وإن أرسلت وثيقة هويتك، فإنك تعطيهم بيانًا إضافيًا، صحيحًا تمامًا هذه المرة. قالت الوزيرة المنتدبة للشؤون الرقمية ذلك علنًا في 5 أكتوبر: « لا تدفعوا أبدًا لحذف بياناتكم » (<a href="https://www.techniques-ingenieur.fr/actualite/breves-afp/donnees-personnelles-la-ministre-du-numerique-saisit-la-justice-contre-brixhub-164449/">AFP</a>). إذن: <strong>لا تدفع، ولا ترسل شيئًا</strong>.</p>
+    </div>
+    <p>وهذا ليس تحذيرًا نظريًا فحسب. على X (تويتر سابقًا)، يروي مستخدمون أنهم دفعوا لحذف سجلاتهم: اختفى فعلًا... بضعة أيام، ثم <strong>عاد للظهور</strong>. أمر طبيعي: محو سطر من العرض لا يمحو البيانات من الملف المسروق الذي يحتفظ به المشغّل. يمكنه إعادتها إلى الشبكة، أو بيعها، أو جعلك تدفع من جديد.</p>
+
+    <figure class="shot"><img src="img/brixhub/brixhub-recherche.webp" width="1400" height="1050" loading="lazy" alt="صفحة البحث في BrixHub: حقول « Nom » و« Prénom » و« Nom de naissance » و« Nom affiché »، وأقسام مطوية « Naissance » و« Contact » و« Localisation »."><figcaption>نموذج البحث. تُدخل فيه اسمًا وكنية وتاريخ ميلاد. الوعد المعروض: « معيار واحد. كل ما تسرّب. »</figcaption></figure>
+
+    <h2><span class="n">03</span>لماذا لم يُغلَق؟</h2>
+    <p>لأن إغلاق موقع كهذا أصعب بكثير مما يبدو. يلعب BrixHub على ثلاث جبهات:</p>
+    <ol class="steps">
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M44 18l22 10v16c0 14-9 22-22 26-13-4-22-12-22-26V28z" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linejoin="round"/><path d="M34 44l7 7 13-14" fill="none" stroke="#6fe3cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><h3>ستار</h3><p>يختبئ الموقع خلف وسيط تقني (Cloudflare) يخفي عنوان خادمه الحقيقي. نرى الواجهة، لا المبنى.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M26 34h36M26 44h36M26 54h36" stroke="#ffc977" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="34" r="3" fill="#ffc977"/><circle cx="20" cy="44" r="3" fill="#ffc977"/><circle cx="20" cy="54" r="3" fill="#ffc977"/></svg>
+        <div><h3>عناوين للرمي</h3><p>يغيّر اسم نطاقه كلما حُجب أحدها: <bdi dir="ltr">.fun</bdi>، <bdi dir="ltr">.net</bdi>، <bdi dir="ltr">.site</bdi>، <bdi dir="ltr">.org</bdi>، <bdi dir="ltr">.cc</bdi>، ثم <bdi dir="ltr">.to</bdi>، <bdi dir="ltr">.ru</bdi>، <bdi dir="ltr">.st</bdi>... حين يُغلق باب، يكون آخر قد فُتح.</p></div>
+      </li>
+      <li>
+        <svg viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="40" fill="#141a28" stroke="#262f42" stroke-width="2"/><path d="M28 44a16 16 0 0 1 32 0" fill="none" stroke="#ff8f52" stroke-width="3"/><circle cx="44" cy="44" r="6" fill="#ff8f52"/><path d="M44 50v12M34 62h20" stroke="#ff8f52" stroke-width="3" stroke-linecap="round"/></svg>
+        <div><h3>بلدان متساهلة</h3><p>يختار امتدادات تديرها بلدان صغيرة (ساو تومي لـ <bdi dir="ltr">.st</bdi>، وتونغا لـ <bdi dir="ltr">.to</bdi>) لا تراقب المحتوى ولا تتحرك إلا بقرار قضائي.</p></div>
+      </li>
+    </ol>
+    <p>النتيجة: لا يمكن إسقاطه بنقرة. وما يُسقط هذه المواقع عادة ليس إغلاق النطاق، بل <strong>توقيف الأشخاص الذين يشغّلونها</strong>. وهذا يستغرق وقتًا.</p>
+
+    <h2><span class="n">04</span>ما يقوله القانون</h2>
+    <p>لست قانونيًا، لكن هذا ما يتضح من المصادر:</p>
+    <ul>
+      <li><strong>النظر إلى الموقع</strong> ليس في حد ذاته جريمة محددة.</li>
+      <li><strong>البحث عن شخص آخر</strong>، ثم الاحتفاظ بالنتيجة أو مشاركتها أو استخدامها، يعرّضك في المقابل لمخاطر حقيقية: إخفاء أشياء مسروقة، وجمع غير نزيه للبيانات، بل التحرش أو انتحال الهوية إن استهدفت شخصًا.</li>
+      <li><strong>تشغيل الموقع</strong> (من يديرونه) يندرج تحت الدخول والاستخراج الاحتياليين للبيانات: عدة سنوات سجنًا وغرامات ثقيلة.</li>
+    </ul>
+    <p>في 5 أكتوبر 2026، أحالت الوزيرة المنتدبة للشؤون الرقمية الأمر إلى المدعية العامة في باريس. ونصيحتها، التي رددها الجميع: « لا تدفعوا أبدًا لحذف بياناتكم ».</p>
+
+    <div class="box teal">
+      <p class="t">ربما أنت في ملفاتهم. ماذا تفعل؟</p>
+      <ol class="rules">
+        <li><span><strong>لا تتحقق عبر BrixHub.</strong> استخدم <a href="https://haveibeenpwned.com" dir="ltr">haveibeenpwned.com</a> (أدخل بريدك الإلكتروني، فيخبرك في أي تسريبات معروفة يظهر).</span></li>
+        <li><span><strong>غيّر كلمات المرور</strong> للحسابات المعنية، وفعّل المصادقة الثنائية في كل مكان.</span></li>
+        <li><span><strong>احذر عمليات النصب الموجهة</strong>: بهذه البيانات يمكن الوصول إليك بانتحال صفة مصرفك أو خدمة عامة. عند الشك، أغلق الخط واتصل بالرقم الرسمي.</span></li>
+        <li><span><strong>إن كان سجلّك منشورًا</strong>: احتفظ بلقطة لسجلّك وحده كدليل، وأبلغ، وارفع الأمر إلى CNIL إن لم يتحرك شيء. لا تدفع.</span></li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <p class="t">شاركه</p>
+      <p>كثيرون سيذهبون « فقط للتحقق من اسمهم » دون أن يعرفوا أنها فكرة سيئة. نبّههم.</p>
+      <div class="share"><button type="button" data-share="simple">شارك المقال</button><button type="button" class="ghost" data-set-mode="tech" data-jump>اقرأ النسخة التقنية ←</button></div>
+    </div>
+  </article>
+
+<!-- =====================================================================================
+     VERSION TECHNIQUE
+     ===================================================================================== -->
+  <article class="v-tech">
+
+    <div class="box">
+      <p class="t">TL;DR</p>
+      <ul class="tldr">
+        <li><strong>BrixHub</strong>: محرك بحث في بيانات التسريبات، ناطق بالفرنسية، يزعم نحو 14,5 مليار تسجيل ويبيع حذف السجلات. إحالة إلى المدعي العام في باريس في 05/10/2026 (المادة 40 من قانون الإجراءات الجزائية).</li>
+        <li><strong>تدوير النطاقات عبر نحو اثني عشر امتدادًا TLD</strong> منذ فبراير 2026: <code dir="ltr">.fun → .net → .site → .org → .cc → .to → .ru → .st</code>. ثلاثة نشطة في 21/10 (<code dir="ltr">.to</code>، <code dir="ltr">.ru</code>، <code dir="ltr">.st</code>)، بزوج NS نفسه من Cloudflare.</li>
+        <li><strong>أصل الويب لم يُكشف أبدًا</strong> (كل شيء خلف Cloudflare). البنية الوحيدة خارج الـ CDN: <strong>خادم بريد مخصص</strong>، <code dir="ltr">195.58.146[.]225</code> (M247)، تفوّض إليه النطاقات الثلاثة بريدها.</li>
+        <li><strong>صمود مقصود</strong>: امتدادات ccTLD ضعيفة التعاون (<bdi dir="ltr">.st</bdi> ساو تومي، <bdi dir="ltr">.to</bdi> تونغا)، ووكيل خصوصية، وبوت تيليغرام للإعلان عن العناوين الجديدة.</li>
+        <li>تحقيق سلبي (Bounce + urlscan + الصحافة). <strong>لم يُدخَل شيء، ولا طلب إلى الخدمة يتجاوز متصفحًا عاديًا، ولا إسناد.</strong></li>
+      </ul>
+    </div>
+
+    <h2><span class="n">01</span>السياق والمنهج</h2>
+    <p>BrixHub « محرك بحث في التسريبات » (<em>data leak search engine</em>) باللغة الفرنسية. يفهرس قواعد بيانات ناتجة عن اختراقات، ويقدم بحثًا بالاسم، إضافة إلى حذف سجل مدفوع. وهو مستهدف في فرنسا ببلاغ جنائي منذ 05/10/2026. كان السؤال الأول بسيطًا: هل يمكن استخدام واجهته البرمجية (API)؟ هذا التحقيق يجيب عن ذلك.</p>
+    <div class="box teal"><p class="t">قواعد الاشتباك</p><p>مصادر عامة وسلبية: WHOIS/RDAP لدى السجلات، DNS، Certificate Transparency، urlscan.io، VirusTotal، Shodan/InternetDB، DNS السلبي، الصحافة. مرور أول مع وكيل CTI المسمى Bounce، استُكمل يدويًا. <strong>لم أسجّل الدخول إلى الخدمة قط، ولم أجرِ فيها أي بحث، ولم أتجاوز أي حماية</strong> (تردّ الصفحة بتحدي Cloudflare برمز 403 على عميل بلا متصفح، ولم يُتجاوَز). النطاقات معطَّلة (<code dir="ltr">[.]</code>).</p></div>
+
+    <h2><span class="n">02</span>ما تزعمه الخدمة</h2>
+    <p>بحسب صفحاتها نفسها والصحافة (الأرقام مزاعم لا وقائع):</p>
+    <div class="stats">
+      <div class="stat"><b>14,5 Md</b><span>تسجيل مزعوم (عدّاد الصفحة الرئيسية)</span></div>
+      <div class="stat"><b>~5 €</b><span>لحذف 10 سجلات، بحسب الشهادات</span></div>
+      <div class="stat"><b>10→90 €</b><span>اشتراكات، من « شهريًا » إلى « مدى الحياة »</span></div>
+      <div class="stat"><b>12+</b><span>نطاقًا متعاقبًا منذ فبراير 2026</span></div>
+    </div>
+    <p>بحث بالاسم والبريد والهاتف ومعرّف Discord؛ بيانات معلنة تصل إلى NIR وIBAN؛ تغطية فرنسا وبلجيكا وسويسرا. تبويب « شجرة العائلة »، و« API مفتوحة، بلا مفتاح، محدودة بحسب IP » (وهذا جواب السؤال الأول: يعرض واجهة API، واستخدامها يعني استخراج بيانات مسروقة عن علم)، وبوت تيليغرام وحساب على X. إشعارات قانونية تذكر « شركة مقرها في روسيا »، بلا اسم. <strong>لا يمكن التحقق من أي من هذه المزاعم من الخارج، ولا أعدّها مسلّمة.</strong></p>
+
+    <h2><span class="n">03</span>البنية التحتية: واجهة، بلا مبنى</h2>
+    <p>الويب كله خلف Cloudflare، على النطاقات الثلاثة النشطة. الأصل لم يتسرب قط. البصمات المشتركة تؤكد مشغّلًا واحدًا:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>النطاق</th><th>أُنشئ</th><th>السجل</th><th>الحالة في 21/10</th></tr></thead>
+      <tbody>
+        <tr><td><code dir="ltr">brixhub[.]to</code></td><td>26/06/2026</td><td>Tonic (تونغا)</td><td class="y">نشط</td></tr>
+        <tr><td><code dir="ltr">brixhub[.]ru</code></td><td>27/08/2026</td><td>RU-CENTER، « Private Person »، غير موثَّق</td><td class="y">نشط</td></tr>
+        <tr><td><code dir="ltr">brixhub[.]st</code></td><td>30/09/2026</td><td>ST Registry (ساو تومي)، صاحب النطاق مخفي</td><td class="y">نشط (الأساسي)</td></tr>
+        <tr><td colspan="4" class="note">+ <code dir="ltr">.fun</code>، <code dir="ltr">.net</code>، <code dir="ltr">.site</code>، <code dir="ltr">.org</code>، <code dir="ltr">.top</code>، <code dir="ltr">.cc</code> (فبراير-يونيو 2026): علّقتها جهات التسجيل أو انطفأت.</td></tr>
+      </tbody>
+    </table></div>
+    <p>ثلاث علامات تربط النطاقات النشطة: زوج خوادم الأسماء نفسه من Cloudflare (<code dir="ltr">irena</code> / <code dir="ltr">weston</code>)، وسياسة SPF نفسها (<code dir="ltr">v=spf1 mx:brixhub[.]to -all</code>)، وعنوان الصفحة نفسه. وُلد <code dir="ltr">.st</code> في 30/09، <strong>قبل خمسة أيام من إحالة الوزيرة</strong>.</p>
+
+    <figure class="wide shot"><img src="img/brixhub/bounce-brixhub.webp" width="1600" height="1170" loading="lazy" alt="مخطط Bounce لتحقيق brixhub.st: نطاقات brixhub الثلاثة مرتبطة بخوادم أسمائها وشهاداتها وخادم بريد مشترك 195.58.146.225؛ وعلى اليمين سجل الوكيل."><figcaption><b>مخطط Bounce.</b> النطاقات الثلاثة (<code dir="ltr">.st</code>، <code dir="ltr">.to</code>، <code dir="ltr">.ru</code>) تلتقي عند زوج NS نفسه من Cloudflare وخادم البريد نفسه. وعلى اليمين سجل الوكيل، الذي يعطّل عناوين IP الخاصة بـ Cloudflare (عديمة الفائدة كنقاط ارتكاز) ويركز على ما يبرز.</figcaption></figure>
+
+    <h3>التسريب الوحيد: خادم البريد</h3>
+    <p>أصل الويب مقنَّع، لكن <strong>البريد</strong> ليس كذلك. تفوّض النطاقات الثلاثة بريدها (MX وSPF) إلى <code dir="ltr">mail.brixhub[.]to</code>، الذي يُحَلّ إلى IP <strong>خارج Cloudflare</strong>:</p>
+    <div class="req"><b>mail.brixhub[.]to</b> → <span class="t">195.58.146[.]225</span>
+  AS9009 <b>M247</b> · ptr <span class="s">mail.brixhub.to</span>
+  Postfix + OpenSSH 9.6p1 · Ubuntu 24.04
+  cert SMTP auto-signé, CN=mail.brixhub.to (04/10/2026, valide 10 ans)
+  pas d'autre domaine observé sur cette IP en DNS passif</div>
+    <p>هذه هي نقطة البنية الوحيدة الخاصة بالمشغّل التي كشفها التحقيق. إنها لا « تكشف » موقع الويب (المستضاف في مكان آخر، خلف Cloudflare)، لكنها نقطة ارتكاز متينة: IP مخصص، ومستضيف مسمّى، وشهادة مؤرَّخة. وقد لاحظ Bounce نفسه ذلك في نقده الذاتي: كان عنوان « البريد » هذا هدف الإثراء الأكثر إثارة للاهتمام، ونقطة الضعف في إعداد المشغّل.</p>
+
+    <h2><span class="n">04</span>لماذا يبقى متاحًا</h2>
+    <p>صمود BrixHub ليس عرضيًا. إنه قائم على أربعة اختيارات:</p>
+    <ul>
+      <li><strong>واجهة Cloudflare</strong> تخفي المستضيف الفعلي وتمتص بلاغات الإساءة.</li>
+      <li><strong>تدوير النطاقات</strong> عبر امتدادات TLD متنوعة. علّقت جهات التسجيل الامتدادات العامة التقليدية (<bdi dir="ltr">.fun</bdi>، <bdi dir="ltr">.cc</bdi>، <bdi dir="ltr">.site</bdi>، <bdi dir="ltr">.org</bdi>) بين يونيو وأغسطس؛ وفي كل مرة هاجر المشغّل إلى ccTLD أكثر تعاونًا معه.</li>
+      <li><strong>سجلات ضعيفة التعاون.</strong> يوضح سجل <code dir="ltr">.st</code> (ساو تومي، ومزوّده الخلفي سويدي) في سياسته أنه « لا يراقب المحتوى » ولا يلغي نطاقًا إلا بقرار من محكمة مختصة. أما <code dir="ltr">.to</code> (تونغا، المشغّل Tonic) فله السمعة نفسها، وإن سبق أن علّق نطاقات بأمر قضائي.</li>
+      <li><strong>قناة احتياطية.</strong> يعلن بوت تيليغرام عن العنوان الجديد عند كل تحويل، ويبقى البريد مرتكزًا على <code dir="ltr">.to</code> مهما حدث. تنجو الخدمة من فقدان أي من نطاقاتها.</li>
+    </ul>
+    <p>بعبارة أخرى: <strong>ليست مصادرة نطاق هي ما يُسقط هذه الخدمات، بل توقيف المشغّلين.</strong> السوابق تُظهر ذلك: WeLeakInfo (صودر في 2020)، وRaidForums (2022)، ومديرو BreachForums (أُوقفوا في فرنسا في 2025)، وعدة « lookups » فرنسية فُكّكت في 2026 مع توقيفات. في كل مرة كان التحقيق القضائي، لا الحجب التقني.</p>
+
+    <h2><span class="n">05</span>هل هو قانوني؟ هل يمكن استخدام واجهتهم البرمجية؟</h2>
+    <p>لا، ولا. خلاصة قانونية (بحسب تحليلات محامين والصحافة؛ لست قانونيًا):</p>
+    <div class="tbl"><table>
+      <thead><tr><th>الطرف</th><th>ما هو على المحك</th></tr></thead>
+      <tbody>
+        <tr><td>المشغّل</td><td>الدخول والاستخراج الاحتياليان للبيانات (المادة 323-1 وما بعدها من قانون العقوبات)، حتى عدة سنوات سجنًا وغرامات ثقيلة.</td></tr>
+        <tr><td>المستخدم</td><td>الاطلاع ليس جريمة محددة في حد ذاته. لكن البحث عن طرف ثالث ثم <strong>حيازة النتيجة أو مشاركتها أو استخدامها</strong> يعرّض لجريمة الإخفاء (المادة 321-1)، وللجمع غير النزيه (226-18)، بل للتحرش أو الانتحال (223-1-1). والدفع أو إرسال وثيقة الهوية يزيد التعرض.</td></tr>
+        <tr><td>API</td><td>وصول آلي إلى قاعدة بيانات مسروقة هو استخراج متعمد وعلى نطاق واسع. ويمول خدمة ابتزاز. يجب تجنبه.</td></tr>
+      </tbody>
+    </table></div>
+    <p>وقد أقرّت محكمة النقض في فبراير 2026 بأن المعلومة غير المادية يمكن أن تكون محل إخفاء. كانت القضية تتعلق بأسرار تجارية، لا بتسريبات بيانات، لكن المبدأ يُضعف فكرة أن « استخدام » هذه البيانات بلا مخاطر.</p>
+    <div class="box hot"><p class="t">البديل الصحيح</p><p>للتحقق من تسريبات <strong>خاصة بك</strong>، دون تمويل أحد أو إثرائه: <a href="https://haveibeenpwned.com">Have I Been Pwned</a>. يخبرك في أي تسريبات معروفة يظهر بريدك، و<strong>لا يعرض البيانات نفسها أبدًا</strong>. إنه النقيض القانوني لـ BrixHub.</p></div>
+
+    <h2><span class="n">06</span>ما لا يحسمه التحقيق</h2>
+    <p>أمانةً، هذه هي الحدود:</p>
+    <ul>
+      <li><strong>المستضيف الفعلي للموقع</strong> وهوية المشغّلين: مخفيان. لا شيء قابل للإسناد بالمصادر السلبية وحدها.</li>
+      <li><strong>المصدر الحقيقي للبيانات</strong>: يعرض الموقع مصادر مرموقة (هيئات عامة)، ولم يتأكد أي منها. لا أتبنى هذه الادعاءات.</li>
+      <li><strong>المبالغ الدقيقة</strong> والوجود الفعلي للـ API والاشتراكات يستندان إلى شهادات من الدرجة الثانية. وكذلك السجلات المدفوعة ثم المعاودة للظهور: هي شهادات مستخدمين على X، متسقة مع عمل الخدمة، لكنني لم أستطع التحقق منها واحدة واحدة.</li>
+      <li>عدة <strong>مقالات صحفية</strong> (franceinfo، Le Monde، Siècle Digital...) لم أتمكن من قراءتها كاملة، إلا من عناوينها ومقتطفاتها.</li>
+    </ul>
+
+    <h2><span class="n">07</span>المؤشرات (معطَّلة)</h2>
+    <div class="box">
+      <p class="t">للمراقبة</p>
+      <p class="note"><strong>النطاقات النشطة:</strong> <code dir="ltr">brixhub[.]st</code>، <code dir="ltr">brixhub[.]to</code>، <code dir="ltr">brixhub[.]ru</code>.<br>
+      <strong>خادم البريد (خارج CDN):</strong> <code dir="ltr">195.58.146[.]225</code> (AS9009 M247)، <code dir="ltr">mail.brixhub[.]to</code>.<br>
+      <strong>NS المشتركة:</strong> <code dir="ltr">irena[.]ns.cloudflare.com</code>، <code dir="ltr">weston[.]ns.cloudflare.com</code>.<br>
+      <strong>SPF المشترك:</strong> <code dir="ltr">v=spf1 mx:brixhub[.]to -all</code>.<br>
+      <strong>السجل التاريخي:</strong> <code dir="ltr">brixhub[.]{fun,net,site,org,top,cc}</code> (معلّقة / مطفأة).</p>
+    </div>
+
+    <h2><span class="n">08</span>المصادر</h2>
+    <ol class="sources">
+      <li>AFP / Techniques de l'ingénieur (05/10/2026) — الإحالة إلى المدعي العام، المادة 40 من قانون الإجراءات الجزائية، « لا تدفعوا أبدًا ».</li>
+      <li>franceinfo، Siècle Digital، Senioractu، Next (أكتوبر 2026) — طبيعة الخدمة، التسلسل الزمني.</li>
+      <li>Zataz — تفكيك « lookups » فرنسية، توقيفات 2026.</li>
+      <li>CNIL — الموقف العام من خدمات البحث في البيانات وخدمات المحو المزيفة.</li>
+      <li>WHOIS / RDAP للسجلات، Certificate Transparency، urlscan.io، Shodan، DNS السلبي — اطُّلع عليها في 16 و21/10/2026.</li>
+      <li>سياسات سجلَّي <code dir="ltr">.st</code> (nic.st / Bahnhof) و<code dir="ltr">.to</code> (Tonic).</li>
+    </ol>
+
+    <div class="box"><p class="t">مشاركة</p><div class="share"><button type="button" data-share="tech">شارك النسخة التقنية</button><button type="button" class="ghost" data-set-mode="simple" data-jump>→ النسخة العامة</button></div></div>
+  </article>
+
+  <p class="note" style="margin-top:3rem">تحقيق أُجري مع <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>، على مصادر عامة وسلبية. لا اتصال بالخدمة، ولا بحث أُجري، ولا تجاوز لأي حماية، ولا ذكر لأي شخص. المؤشرات معطَّلة (<code dir="ltr">[.]</code>). إن تسربت بياناتك: <a href="https://haveibeenpwned.com" dir="ltr">haveibeenpwned.com</a>، ولا تدفع لأحد.</p>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">→ المدونة</a><a class="up" href="#top" aria-label="إلى الأعلى">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+</body>
+</html>

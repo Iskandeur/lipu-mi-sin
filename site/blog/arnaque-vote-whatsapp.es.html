@@ -14,9 +14,9 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css?v=62">
-<link rel="stylesheet" href="blog.css?v=2">
+<link rel="stylesheet" href="blog.css?v=3">
 <script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
-<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"es",langs:["fr","en","es","it","id"]};</script>
+<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"es",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js?v=1"></script>
 </head>
 <body class="post">
@@ -147,6 +147,12 @@
       <figcaption>El código no es un código de voto. Es tu permiso. Una vez vinculado el dispositivo del pirata, ve tus mensajes nuevos y los envía en tu nombre, sin que tu teléfono se apague ni cambie nada.</figcaption>
     </figure>
 
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-telephone.webp" width="1000" height="619" loading="lazy" alt="Captura de la página falsa: «Enter your phone for verification», un menú de países (Francia), un campo para el número de teléfono, un botón verde «Continue» y un enlace «Verify by QR code»."><figcaption>Paso 1. La página imita WhatsApp y te pide tu número. (Número de prueba, difuminado.)</figcaption></figure>
+      <figure class="shot"><img src="img/vote/code-faux-whatsapp.webp" width="1100" height="629" loading="lazy" alt="Captura de la página falsa «Confirm verification»: un código de 8 caracteres en dos bloques de 4, GANR-KPGE, y después cuatro pasos para abrir WhatsApp, ir a «Dispositivos vinculados» y elegir «Vincular con el número de teléfono»."><figcaption>Paso 2. La página muestra un código y te explica dónde teclearlo en WhatsApp. No es un código de voto.</figcaption></figure>
+    </div>
+    <p class="note">Capturas reales, hechas en un entorno aislado (sandbox, any.run) con un número falso. La página está aquí en inglés; se adapta al idioma del visitante. Te manda justo a <em>Dispositivos vinculados</em>: es exactamente el camino que sigue el pirata para colarse en tu cuenta.</p>
+
     <div class="box teal">
       <p class="t">La imagen que hay que recordar</p>
       <p>El código que te piden no tiene nada que ver con un voto: es una <strong>copia de tus llaves</strong>. Nunca le darías una copia de tus llaves a un desconocido para «validar tu participación» en un concurso. Aquí es igual. Con esa copia, entra en tu casa cuando quiere, lee tu correo y habla con tus allegados haciéndose pasar por ti. Y como tú te has quedado con tus propias llaves, no notas nada.</p>
@@ -266,7 +272,7 @@
 
     <h2><span class="n">01</span>Contexto y método</h2>
     <p>El 21/10/2026 recibo el cebo. Esa misma noche, dos familiares cercanos reciben una variante que apunta a <code>1forit21[.]shop</code>. La investigación se apoya en <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">código</a>), un agente de threat intelligence: parte de un observable, elige sus pivotes, construye el grafo de infraestructura y redacta un informe con su hipótesis de trabajo, sus pruebas y su autocrítica. Sus pivotes se orientaron a mano, se cruzaron con la oleada de abril y se releyeron uno a uno antes de ser retenidos.</p>
-    <div class="box teal"><p class="t">Reglas de enfrentamiento</p><p>Fuentes pasivas y públicas: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, DNS pasivo. Una detonación en sandbox (any.run). Nada introducido en las páginas, ninguna elusión de protecciones, ninguna persona física nombrada. Indicadores «neutralizados» (<code>[.]</code>). Los elementos procedentes de informes de terceros no públicos no se recogen aquí.</p></div>
+    <div class="box teal"><p class="t">Reglas de enfrentamiento</p><p>Fuentes pasivas y públicas: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, DNS pasivo. Una detonación en sandbox (any.run), donde solo se introdujo un número de prueba inventado: ningún número real, ningún código tecleado. Ninguna elusión de protecciones, ninguna persona física nombrada. Indicadores «neutralizados» (<code>[.]</code>). Los elementos procedentes de informes de terceros no públicos no se recogen aquí.</p></div>
 
     <h3>Cronología de la investigación (21/10/2026, hora de París)</h3>
     <ol class="tl">
@@ -279,6 +285,19 @@
       <li><time>19:54</time><p>Variante «Eliška» recibida en mi familia: nueva ejecución de Bounce sobre <code>1forit21[.]shop</code>.</p></li>
       <li class="k"><time>20:50</time><p>Mismo kit, mismo token, segundo origen y certificado <code>fws2panel[.]sbs</code>.</p></li>
     </ol>
+
+    <h3>Detonación en un entorno aislado (sandbox, any.run, 22/10/2026)</h3>
+    <p>Abrí <code>1forit21[.]shop</code> en un navegador desechable (Edge sobre Windows 10) mediante <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">any.run</a>, introduciendo un <strong>número de prueba</strong> (+33 6 67 67 67 67), nunca una cuenta real. any.run clasifica la tarea como «Malicious activity» con las etiquetas <code>phishing</code>, <code>ip-check</code> y <code>websocket</code>. La cadena observada:</p>
+    <ol>
+      <li><code>https://1forit21[.]shop/</code>: página «Audience voting — First International Ballet School in Prague».</li>
+      <li>Un iframe de <strong>Cloudflare Turnstile</strong> (<code>challenges.cloudflare[.]com/cdn-cgi/challenge-platform/…/turnstile/…</code>). Aquí, el desafío antirrobot sirve de pantalla: un escáner automático no pasa, un humano sí.</li>
+      <li><code>https://1forit21[.]shop/cdn-cgi/phish-bypass?atok=…&amp;original_path=%2F&amp;cf-turnstile-response=…</code>: el token de Turnstile se devuelve al servidor, que entonces deja pasar. La ruta <code>/cdn-cgi/</code> imita el prefijo reservado de Cloudflare; su nombre (<code>phish-bypass</code>) es el del kit, no una función de Cloudflare que yo sepa.</li>
+      <li><code>https://1forit21[.]shop/auth?return=%2F%3Fvoted%3D1&amp;lang=en</code>: página «Vote verification — FIBS Prague».</li>
+      <li>Un iframe <code>https://1forit21[.]shop/assets/autraizaion/?mode=phone&amp;lng=en&amp;return=…</code> (grafía tal como la muestra any.run): es el que lleva el formulario del número y luego la pantalla «Confirm verification».</li>
+    </ol>
+    <figure class="wide shot"><img src="img/vote/anyrun-chaine.webp" width="1547" height="584" loading="lazy" alt="Árbol de peticiones de any.run para 1forit21.shop: veredicto Malicious activity, etiquetas phishing, ip-check, websocket, y después la sucesión de páginas e iframes descrita arriba."><figcaption><b>El árbol «Browser Data» de any.run.</b> De arriba abajo: la página de inicio, el desafío Turnstile, la redirección <code>phish-bypass</code>, la página de autenticación y su iframe <code>mode=phone</code>.</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/anyrun-navigateur.webp" width="1200" height="637" loading="lazy" alt="El navegador del sandbox en https://1forit21.shop/auth: la pantalla «Confirm verification» con el código GANR-KPGE."><figcaption>El mismo momento, desde el navegador: la URL <code>1forit21[.]shop/auth</code> muestra el código de vinculación. El número de prueba está difuminado.</figcaption></figure>
+    <p><strong>La longitud del código queda zanjada: 8 caracteres, en dos bloques de 4</strong> (<code>XXXX-XXXX</code>, aquí <code>GANR-KPGE</code>), letras mayúsculas en esta captura. Es el formato del código de vinculación que WhatsApp genera para «Vincular con el número de teléfono»: la página no fabrica un código de voto, muestra un código de emparejamiento y copia los pasos de WhatsApp (Dispositivos vinculados → Vincular un dispositivo → Vincular con el número de teléfono). Límite: con un número falso, no puedo decir si este código concreto habría sido aceptado por WhatsApp, y no tecleé ningún código. any.run etiqueta además la tarea como <code>websocket</code>: es coherente con un servidor que dialoga en directo con WhatsApp mientras la víctima está en la página, sin que yo tenga el contenido.</p>
 
     <h2><span class="n">02</span>Antecedente: la oleada de abril de 2026</h2>
     <p>En abril, dos cebos casi idénticos («votar por Francesca») ya me habían servido de seeds: <code>konkurzfrance[.]click/home/votenam</code>, y luego <code>francevoice29[.]click/home/voteng</code>. Lo que decía el <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">estudio de caso publicado</a>:</p>
@@ -373,7 +392,11 @@
       <p class="note"><strong>Orígenes:</strong> <code>85.239.144[.]247</code> (AS207043), <code>87.58.197[.]45</code> (AS62164) — rangos Dedik.io.<br>
       <strong>Panel probable:</strong> <code>fws2panel[.]sbs</code>, <code>wafisher[.]xyz</code>.<br>
       <strong>Marcadores de kit:</strong> ruta <code>/l/&lt;jeton&gt;</code> y <code>/p/27/</code>; título «First International Ballet School in Prague» y sus traducciones.<br>
-      <strong>Algunos dominios</strong> (lista parcial, rotación rápida): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>.<br>
+      <strong>Rutas de la cadena (any.run, <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">tarea 7fba8fa0</a>):</strong> <code>/cdn-cgi/phish-bypass?atok=…&amp;cf-turnstile-response=…</code>, <code>/auth?return=…voted…</code>, <code>/assets/autraizaion/?mode=phone</code>; un desafío Cloudflare Turnstile aguas arriba, usado como pantalla antirrobots.<br>
+      <strong>Página de vinculación:</strong> título «Vote verification — FIBS Prague», pantalla «Confirm verification», código <code>XXXX-XXXX</code> (8 caracteres).<br>
+      <strong>Algunos dominios</strong> (lista parcial, rotación rápida): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>, <code>fundisk235[.]lat</code>, <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code>, <code>1foooodvvtr[.]homes</code>.<br>
+      <strong>Actualización del 23/10:</strong> el mismo mensaje «Eliška» recibido con un enlace nuevo, <code>fundisk235[.]lat</code>. Dominio registrado el mismo día (04:34 UTC) en NameSilo, tras Cloudflare, y mismo kit que los anteriores (mismos archivos <code>fibs-lang.js</code> y <code>i18n-pack.js</code>, misma carcasa con título vacío). Ni su nombre ni su origen están vinculados a los demás dominios: la rotación continúa con nombres nuevos.<br>
+      <strong>Dominios hermanos del 22/10:</strong> <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code> y <code>1foooodvvtr[.]homes</code> llevaban el mismo título de página. <code>1foooodvvtr[.]homes</code> lo sirve <code>87.58.197[.]247</code> (AS62164), en el mismo bloque de direcciones que el origen <code>87.58.197[.]45</code> citado para <code>1forit21[.]shop</code>: mismo bloque de direcciones, indicio de infraestructura común, sin prueba.<br>
       <strong>Oleada de abril:</strong> <code>konkurzfrance[.]click</code>, <code>francevoice29[.]click</code>, origen <code>217.145.226[.]186</code> (AS205775).</p>
     </div>
 
@@ -391,7 +414,7 @@
     <div class="box"><p class="t">Compartir</p><div class="share"><button type="button" data-share="tech">Compartir la versión técnica</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← Versión para todos los públicos</button></div></div>
   </article>
 
-  <p class="note" style="margin-top:3rem">Investigación realizada con <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, sobre fuentes públicas y pasivas. No se introdujo nada en las páginas de la estafa, no se nombra a ninguna persona física, los indicadores están rotos a propósito (<code>[.]</code>). Si recibes este tipo de mensaje: no hagas clic, y avisa a la persona cuya cuenta sirvió para enviártelo.</p>
+  <p class="note" style="margin-top:3rem">Investigación realizada con <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, sobre fuentes públicas y pasivas. No se introdujo nada real en las páginas de la estafa (solo un número de prueba en un sandbox), no se nombra a ninguna persona física, los indicadores están rotos a propósito (<code>[.]</code>). Si recibes este tipo de mensaje: no hagas clic, y avisa a la persona cuya cuenta sirvió para enviártelo.</p>
 </main>
 
 <footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Arriba">↑</a></div></footer>

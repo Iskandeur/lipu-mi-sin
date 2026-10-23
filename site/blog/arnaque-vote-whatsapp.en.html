@@ -14,9 +14,9 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css?v=62">
-<link rel="stylesheet" href="blog.css?v=2">
+<link rel="stylesheet" href="blog.css?v=3">
 <script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
-<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"en",langs:["fr","en","es","it","id"]};</script>
+<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"en",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js?v=1"></script>
 </head>
 <body class="post">
@@ -147,6 +147,12 @@
       <figcaption>The code is not a voting code. It's your permission. Once the hacker's device is linked, it sees your new messages and sends some in your name, without your phone turning off or changing anything.</figcaption>
     </figure>
 
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-telephone.webp" width="1000" height="619" loading="lazy" alt="Screenshot of the fake page: “Enter your phone for verification”, a country menu (France), a phone number field, a green “Continue” button and a “Verify by QR code” link."><figcaption>Step 1. The page imitates WhatsApp and asks for your number. (Test number, blurred.)</figcaption></figure>
+      <figure class="shot"><img src="img/vote/code-faux-whatsapp.webp" width="1100" height="629" loading="lazy" alt="Screenshot of the fake “Confirm verification” page: an 8-character code in two blocks of 4, GANR-KPGE, then four steps to open WhatsApp, go to “Linked devices” and choose “Link with phone number”."><figcaption>Step 2. The page displays a code and explains where to type it in WhatsApp. It is not a voting code.</figcaption></figure>
+    </div>
+    <p class="note">Real screenshots, taken in a sandbox (any.run) with a fake number. The page is in English here; it adapts to the visitor's language. It does send you to <em>Linked devices</em>: that is exactly the path the hacker takes to invite themselves into your account.</p>
+
     <div class="box teal">
       <p class="t">The image to remember</p>
       <p>The code you're asked for has nothing to do with a vote: it's a <strong>copy of your keys</strong>. You would never give a copy of your keys to a stranger to “validate your entry” in a contest. Here, it's the same. With that copy, they walk into your home whenever they want, read your mail and talk to your loved ones while pretending to be you. And since you kept your own keys, you notice nothing.</p>
@@ -266,7 +272,7 @@
 
     <h2><span class="n">01</span>Context and method</h2>
     <p>On 21/10/2026, I receive the lure. The same evening, two relatives of mine receive a variant pointing to <code>1forit21[.]shop</code>. The investigation relies on <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">code</a>), a threat intelligence agent: it starts from an observable, chooses its pivots, builds the infrastructure graph and writes a report with its working hypothesis, its evidence and its self-criticism. Its pivots were steered by hand, cross-checked with the April wave and re-read one by one before being kept.</p>
-    <div class="box teal"><p class="t">Rules of engagement</p><p>Passive and public sources: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, passive DNS. One sandbox detonation (any.run). Nothing entered on the pages, no protection bypassed, no natural person named. “Defanged” indicators (<code>[.]</code>). Elements drawn from non-public third-party reports are not reproduced here.</p></div>
+    <div class="box teal"><p class="t">Rules of engagement</p><p>Passive and public sources: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, passive DNS. One sandbox detonation (any.run), where only an invented test number was entered: no real number, no code typed. No protection bypassed, no natural person named. “Defanged” indicators (<code>[.]</code>). Elements drawn from non-public third-party reports are not reproduced here.</p></div>
 
     <h3>Timeline of the investigation (21/10/2026, Paris time)</h3>
     <ol class="tl">
@@ -279,6 +285,19 @@
       <li><time>19:54</time><p>“Eliška” variant received in my family: new Bounce run on <code>1forit21[.]shop</code>.</p></li>
       <li class="k"><time>20:50</time><p>Same kit, same token, second origin and certificate <code>fws2panel[.]sbs</code>.</p></li>
     </ol>
+
+    <h3>Detonation in a sandbox (any.run, 22/10/2026)</h3>
+    <p>I opened <code>1forit21[.]shop</code> in a disposable browser (Edge on Windows 10) via <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">any.run</a>, entering a <strong>test number</strong> (+33 6 67 67 67 67), never a real account. any.run rates the task “Malicious activity” with the tags <code>phishing</code>, <code>ip-check</code> and <code>websocket</code>. The chain observed:</p>
+    <ol>
+      <li><code>https://1forit21[.]shop/</code>: page “Audience voting — First International Ballet School in Prague”.</li>
+      <li>A <strong>Cloudflare Turnstile</strong> iframe (<code>challenges.cloudflare[.]com/cdn-cgi/challenge-platform/…/turnstile/…</code>). Here, the anti-robot challenge serves as a screen: an automated scanner doesn't get through, a human does.</li>
+      <li><code>https://1forit21[.]shop/cdn-cgi/phish-bypass?atok=…&amp;original_path=%2F&amp;cf-turnstile-response=…</code>: the Turnstile token is handed back to the server, which then lets the visitor through. The <code>/cdn-cgi/</code> path imitates Cloudflare's reserved prefix; its name (<code>phish-bypass</code>) is the kit's, not a Cloudflare feature to my knowledge.</li>
+      <li><code>https://1forit21[.]shop/auth?return=%2F%3Fvoted%3D1&amp;lang=en</code>: page “Vote verification — FIBS Prague”.</li>
+      <li>An iframe <code>https://1forit21[.]shop/assets/autraizaion/?mode=phone&amp;lng=en&amp;return=…</code> (spelling as displayed by any.run): it carries the number form, then the “Confirm verification” screen.</li>
+    </ol>
+    <figure class="wide shot"><img src="img/vote/anyrun-chaine.webp" width="1547" height="584" loading="lazy" alt="any.run request tree for 1forit21.shop: verdict Malicious activity, tags phishing, ip-check, websocket, then the sequence of pages and iframes described above."><figcaption><b>The any.run “Browser Data” tree.</b> From top to bottom: the home page, the Turnstile challenge, the <code>phish-bypass</code> redirect, the authentication page and its <code>mode=phone</code> iframe.</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/anyrun-navigateur.webp" width="1200" height="637" loading="lazy" alt="The sandbox browser on https://1forit21.shop/auth: the “Confirm verification” screen with the code GANR-KPGE."><figcaption>The same moment, browser side: the URL <code>1forit21[.]shop/auth</code> displays the pairing code. The test number is blurred.</figcaption></figure>
+    <p><strong>The length of the code is settled: 8 characters, in two blocks of 4</strong> (<code>XXXX-XXXX</code>, here <code>GANR-KPGE</code>), capital letters in this capture. This is the format of the pairing code WhatsApp generates for “Link with phone number”: the page does not make up a voting code, it displays a pairing code and copies WhatsApp's steps (Linked devices → Link a device → Link with phone number). Limit: with a fake number, I cannot say whether this particular code would have been accepted by WhatsApp, and I typed no code. any.run also tags the task <code>websocket</code>: this is consistent with a server talking live to WhatsApp while the victim is on the page, without my having the content.</p>
 
     <h2><span class="n">02</span>Precedent: the April 2026 wave</h2>
     <p>In April, two near-identical lures (“vote for Francesca”) had already served me as seeds: <code>konkurzfrance[.]click/home/votenam</code>, then <code>francevoice29[.]click/home/voteng</code>. What the <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">published case study</a> said:</p>
@@ -373,7 +392,11 @@
       <p class="note"><strong>Origins:</strong> <code>85.239.144[.]247</code> (AS207043), <code>87.58.197[.]45</code> (AS62164) — Dedik.io ranges.<br>
       <strong>Probable panel:</strong> <code>fws2panel[.]sbs</code>, <code>wafisher[.]xyz</code>.<br>
       <strong>Kit markers:</strong> paths <code>/l/&lt;token&gt;</code> and <code>/p/27/</code>; title “First International Ballet School in Prague” and its translations.<br>
-      <strong>A few domains</strong> (partial list, fast rotation): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>.<br>
+      <strong>Chain paths (any.run, <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">task 7fba8fa0</a>):</strong> <code>/cdn-cgi/phish-bypass?atok=…&amp;cf-turnstile-response=…</code>, <code>/auth?return=…voted…</code>, <code>/assets/autraizaion/?mode=phone</code>; a Cloudflare Turnstile challenge upstream, used as an anti-robot screen.<br>
+      <strong>Pairing page:</strong> title “Vote verification — FIBS Prague”, “Confirm verification” screen, code <code>XXXX-XXXX</code> (8 characters).<br>
+      <strong>A few domains</strong> (partial list, fast rotation): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>, <code>fundisk235[.]lat</code>, <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code>, <code>1foooodvvtr[.]homes</code>.<br>
+      <strong>Update of 23/10:</strong> the same “Eliška” message received with a new link, <code>fundisk235[.]lat</code>. Domain registered the same day (04:34 UTC) at NameSilo, behind Cloudflare, and the same kit as the previous ones (same <code>fibs-lang.js</code> and <code>i18n-pack.js</code> files, same empty-title shell). Neither its name nor its origin is linked to the other domains: the rotation continues on fresh names.<br>
+      <strong>Sibling domains of 22/10:</strong> <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code> and <code>1foooodvvtr[.]homes</code> carried the same page title. <code>1foooodvvtr[.]homes</code> is served by <code>87.58.197[.]247</code> (AS62164), in the same address block as the origin <code>87.58.197[.]45</code> cited for <code>1forit21[.]shop</code>: same address block, a sign of shared infrastructure, without proof.<br>
       <strong>April wave:</strong> <code>konkurzfrance[.]click</code>, <code>francevoice29[.]click</code>, origin <code>217.145.226[.]186</code> (AS205775).</p>
     </div>
 
@@ -391,7 +414,7 @@
     <div class="box"><p class="t">Share</p><div class="share"><button type="button" data-share="tech">Share the technical version</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← General-audience version</button></div></div>
   </article>
 
-  <p class="note" style="margin-top:3rem">Investigation conducted with <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, on public and passive sources. Nothing was entered on the scam pages, no natural person is named, the indicators are deliberately broken (<code>[.]</code>). If you receive this kind of message: don't click, and warn the person whose account was used to send it to you.</p>
+  <p class="note" style="margin-top:3rem">Investigation conducted with <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, on public and passive sources. Nothing real was entered on the scam pages (only a test number in a sandbox), no natural person is named, the indicators are deliberately broken (<code>[.]</code>). If you receive this kind of message: don't click, and warn the person whose account was used to send it to you.</p>
 </main>
 
 <footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Top">↑</a></div></footer>

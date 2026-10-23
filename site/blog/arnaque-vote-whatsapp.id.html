@@ -14,9 +14,9 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css?v=62">
-<link rel="stylesheet" href="blog.css?v=2">
+<link rel="stylesheet" href="blog.css?v=3">
 <script>(function(){var h=location.hash,m=null;try{m=localStorage.getItem('ap-blog-mode')}catch(e){}if(/tech/.test(h))m='tech';else if(/tout-public|simple/.test(h))m='simple';document.documentElement.setAttribute('data-mode',m==='tech'?'tech':'simple')})()</script>
-<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"id",langs:["fr","en","es","it","id"]};</script>
+<script>window.__ARTICLE={slug:"arnaque-vote-whatsapp",lang:"id",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js?v=1"></script>
 </head>
 <body class="post">
@@ -147,6 +147,12 @@
       <figcaption>Kode itu bukan kode pemilihan. Itu adalah izinmu. Begitu perangkat si peretas tertaut, ia melihat pesan-pesan barumu dan mengirim pesan atas namamu, tanpa ponselmu mati atau berubah apa pun.</figcaption>
     </figure>
 
+    <div class="pair">
+      <figure class="shot"><img src="img/vote/page-telephone.webp" width="1000" height="619" loading="lazy" alt="Tangkapan layar halaman palsu: « Enter your phone for verification », menu negara (Prancis), kolom nomor telepon, tombol hijau « Continue » dan tautan « Verify by QR code »."><figcaption>Langkah 1. Halaman itu meniru WhatsApp dan meminta nomormu. (Nomor uji coba, diburamkan.)</figcaption></figure>
+      <figure class="shot"><img src="img/vote/code-faux-whatsapp.webp" width="1100" height="629" loading="lazy" alt="Tangkapan layar halaman palsu « Confirm verification »: kode 8 karakter dalam dua blok berisi 4, GANR-KPGE, lalu empat langkah untuk membuka WhatsApp, masuk ke « Perangkat tertaut » dan memilih « Tautkan dengan nomor telepon »."><figcaption>Langkah 2. Halaman itu menampilkan sebuah kode dan menjelaskan di mana mengetikkannya di WhatsApp. Itu bukan kode pemilihan.</figcaption></figure>
+    </div>
+    <p class="note">Tangkapan layar asli, diambil di sandbox (any.run) dengan nomor palsu. Halaman ini tampil dalam bahasa Inggris di sini; ia menyesuaikan dengan bahasa pengunjung. Halaman itu memang mengarahkanmu ke <em>Perangkat tertaut</em>: persis jalur yang dipakai peretas untuk masuk ke akunmu.</p>
+
     <div class="box teal">
       <p class="t">Gambaran yang perlu diingat</p>
       <p>Kode yang diminta darimu tidak ada hubungannya dengan pemilihan: itu adalah <strong>duplikat kuncimu</strong>. Kamu tak akan pernah memberikan duplikat kuncimu kepada orang asing untuk « mengesahkan keikutsertaanmu » dalam sebuah lomba. Di sini sama saja. Dengan duplikat itu, ia masuk ke rumahmu kapan pun ia mau, membaca suratmu, dan berbicara kepada orang-orang terdekatmu sambil menyamar sebagai kamu. Dan karena kamu masih memegang kuncimu sendiri, kamu tidak menyadari apa-apa.</p>
@@ -266,7 +272,7 @@
 
     <h2><span class="n">01</span>Konteks dan metode</h2>
     <p>Pada 21/10/2026, aku menerima umpan itu. Malam yang sama, dua anggota keluargaku menerima sebuah varian yang mengarah ke <code>1forit21[.]shop</code>. Investigasi ini bertumpu pada <strong>Bounce</strong> (<a href="https://github.com/Iskandeur/bounce-cti">kode</a>), sebuah agen threat intelligence: ia berangkat dari sebuah observable, memilih pivot-pivotnya, membangun grafik infrastruktur, dan menyusun laporan berisi hipotesis kerjanya, bukti-buktinya, dan otokritiknya. Pivot-pivotnya diarahkan secara manual, disilangkan dengan gelombang April, dan dibaca ulang satu per satu sebelum diterima.</p>
-    <div class="box teal"><p class="t">Aturan keterlibatan</p><p>Sumber pasif dan publik: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, DNS pasif. Satu detonasi di sandbox (any.run). Tidak ada yang dimasukkan di halaman-halaman itu, tidak ada proteksi yang ditembus, tidak ada orang perorangan yang disebut namanya. Indikator « defang » (<code>[.]</code>). Unsur-unsur yang berasal dari laporan pihak ketiga non-publik tidak diambil di sini.</p></div>
+    <div class="box teal"><p class="t">Aturan keterlibatan</p><p>Sumber pasif dan publik: DNS, RDAP, Certificate Transparency, urlscan, VirusTotal, Shodan, Censys, DNS pasif. Satu detonasi di sandbox (any.run), tempat hanya sebuah nomor uji coba rekaan yang dimasukkan: tanpa nomor asli, tanpa kode yang diketik. Tidak ada proteksi yang ditembus, tidak ada orang perorangan yang disebut namanya. Indikator « defang » (<code>[.]</code>). Unsur-unsur yang berasal dari laporan pihak ketiga non-publik tidak diambil di sini.</p></div>
 
     <h3>Kronologi investigasi (21/10/2026, waktu Paris)</h3>
     <ol class="tl">
@@ -279,6 +285,19 @@
       <li><time>19:54</time><p>Varian « Eliška » diterima di keluargaku: menjalankan Bounce baru pada <code>1forit21[.]shop</code>.</p></li>
       <li class="k"><time>20:50</time><p>Kit yang sama, token yang sama, origin kedua dan sertifikat <code>fws2panel[.]sbs</code>.</p></li>
     </ol>
+
+    <h3>Detonasi di sandbox (any.run, 22/10/2026)</h3>
+    <p>Aku membuka <code>1forit21[.]shop</code> di peramban sekali pakai (Edge di Windows 10) lewat <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">any.run</a>, dengan memasukkan <strong>nomor uji coba</strong> (+33 6 67 67 67 67), tidak pernah akun asli. any.run menggolongkan tugas ini « Malicious activity » dengan label <code>phishing</code>, <code>ip-check</code>, dan <code>websocket</code>. Rantai yang teramati:</p>
+    <ol>
+      <li><code>https://1forit21[.]shop/</code>: halaman « Audience voting — First International Ballet School in Prague ».</li>
+      <li>Sebuah iframe <strong>Cloudflare Turnstile</strong> (<code>challenges.cloudflare[.]com/cdn-cgi/challenge-platform/…/turnstile/…</code>). Di sini, tantangan anti-robot berfungsi sebagai tabir: pemindai otomatis tidak lolos, manusia lolos.</li>
+      <li><code>https://1forit21[.]shop/cdn-cgi/phish-bypass?atok=…&amp;original_path=%2F&amp;cf-turnstile-response=…</code>: token Turnstile dikembalikan ke server, yang lalu meloloskan pengunjung. Jalur <code>/cdn-cgi/</code> meniru awalan khusus milik Cloudflare; namanya (<code>phish-bypass</code>) adalah nama kit itu, bukan fitur Cloudflare setahuku.</li>
+      <li><code>https://1forit21[.]shop/auth?return=%2F%3Fvoted%3D1&amp;lang=en</code>: halaman « Vote verification — FIBS Prague ».</li>
+      <li>Sebuah iframe <code>https://1forit21[.]shop/assets/autraizaion/?mode=phone&amp;lng=en&amp;return=…</code> (ejaan seperti yang ditampilkan any.run): iframe inilah yang memuat formulir nomor, lalu layar « Confirm verification ».</li>
+    </ol>
+    <figure class="wide shot"><img src="img/vote/anyrun-chaine.webp" width="1547" height="584" loading="lazy" alt="Pohon permintaan any.run untuk 1forit21.shop: vonis Malicious activity, label phishing, ip-check, websocket, lalu rangkaian halaman dan iframe yang dijelaskan di atas."><figcaption><b>Pohon « Browser Data » any.run.</b> Dari atas ke bawah: beranda, tantangan Turnstile, pengalihan <code>phish-bypass</code>, halaman autentikasi dan iframe <code>mode=phone</code>-nya.</figcaption></figure>
+    <figure class="wide shot"><img src="img/vote/anyrun-navigateur.webp" width="1200" height="637" loading="lazy" alt="Peramban sandbox di https://1forit21.shop/auth: layar « Confirm verification » dengan kode GANR-KPGE."><figcaption>Momen yang sama, dari sisi peramban: URL <code>1forit21[.]shop/auth</code> menampilkan kode penautan. Nomor uji coba diburamkan.</figcaption></figure>
+    <p><strong>Panjang kode sudah dipastikan: 8 karakter, dalam dua blok berisi 4</strong> (<code>XXXX-XXXX</code>, di sini <code>GANR-KPGE</code>), huruf kapital dalam tangkapan ini. Itulah format kode penautan yang dibuat WhatsApp untuk « Tautkan dengan nomor telepon »: halaman ini tidak membuat kode pemilihan, melainkan menampilkan kode penautan dan menyalin langkah-langkah WhatsApp (Perangkat tertaut → Tautkan perangkat → Tautkan dengan nomor telepon). Batasan: dengan nomor palsu, aku tidak bisa memastikan apakah kode persis ini akan diterima WhatsApp, dan aku tidak mengetik kode apa pun. any.run juga memberi label <code>websocket</code> pada tugas ini: itu sejalan dengan server yang berbicara langsung dengan WhatsApp saat korban berada di halaman, tanpa aku memiliki isinya.</p>
 
     <h2><span class="n">02</span>Pendahulu: gelombang April 2026</h2>
     <p>Pada bulan April, dua umpan yang nyaris identik (« pilih Francesca ») sudah menjadi seed bagiku: <code>konkurzfrance[.]click/home/votenam</code>, lalu <code>francevoice29[.]click/home/voteng</code>. Apa yang dikatakan <a href="https://bounce.alexandre-pinoteau.fr/case-study/whatsapp-phaas/index.html">studi kasus yang dipublikasikan</a>:</p>
@@ -373,7 +392,11 @@
       <p class="note"><strong>Origin:</strong> <code>85.239.144[.]247</code> (AS207043), <code>87.58.197[.]45</code> (AS62164) — rentang Dedik.io.<br>
       <strong>Panel kemungkinan:</strong> <code>fws2panel[.]sbs</code>, <code>wafisher[.]xyz</code>.<br>
       <strong>Penanda kit:</strong> jalur <code>/l/&lt;jeton&gt;</code> dan <code>/p/27/</code>; judul « First International Ballet School in Prague » dan terjemahannya.<br>
-      <strong>Beberapa domain</strong> (daftar sebagian, rotasi cepat): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>.<br>
+      <strong>Jalur rantai (any.run, <a href="https://app.any.run/tasks/7fba8fa0-8077-456f-955f-1a53887412b3">tugas 7fba8fa0</a>):</strong> <code>/cdn-cgi/phish-bypass?atok=…&amp;cf-turnstile-response=…</code>, <code>/auth?return=…voted…</code>, <code>/assets/autraizaion/?mode=phone</code>; tantangan Cloudflare Turnstile di hulu, dipakai sebagai tabir anti-robot.<br>
+      <strong>Halaman penautan:</strong> judul « Vote verification — FIBS Prague », layar « Confirm verification », kode <code>XXXX-XXXX</code> (8 karakter).<br>
+      <strong>Beberapa domain</strong> (daftar sebagian, rotasi cepat): <code>balletday[.]click</code>, <code>1forit21[.]shop</code>, <code>dancefibs[.]site</code>, <code>softfranpro[.]cloud</code>, <code>balethdancing[.]art</code>, <code>pragafibs[.]click</code>, <code>votepraguedance[.]art</code>, <code>schoolbalet[.]club</code>, <code>fundisk235[.]lat</code>, <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code>, <code>1foooodvvtr[.]homes</code>.<br>
+      <strong>Pembaruan 23/10:</strong> pesan « Eliška » yang sama diterima dengan tautan baru, <code>fundisk235[.]lat</code>. Domain didaftarkan hari itu juga (04:34 UTC) di NameSilo, di balik Cloudflare, dan kitnya sama dengan sebelumnya (berkas <code>fibs-lang.js</code> dan <code>i18n-pack.js</code> yang sama, cangkang berjudul kosong yang sama). Baik namanya maupun origin-nya tidak terkait dengan domain lain: rotasi berlanjut dengan nama-nama baru.<br>
+      <strong>Domain kembaran 22/10:</strong> <code>balletschool[.]cfd</code>, <code>balletschool[.]sbs</code>, <code>czechballet[.]world</code>, <code>czechballet[.]art</code>, <code>6pafjdov2[.]cyou</code> dan <code>1foooodvvtr[.]homes</code> memuat judul halaman yang sama. <code>1foooodvvtr[.]homes</code> dilayani oleh <code>87.58.197[.]247</code> (AS62164), dalam blok alamat yang sama dengan origin <code>87.58.197[.]45</code> yang disebut untuk <code>1forit21[.]shop</code>: blok alamat yang sama, indikasi infrastruktur bersama, tanpa bukti.<br>
       <strong>Gelombang April:</strong> <code>konkurzfrance[.]click</code>, <code>francevoice29[.]click</code>, origin <code>217.145.226[.]186</code> (AS205775).</p>
     </div>
 
@@ -391,7 +414,7 @@
     <div class="box"><p class="t">Bagikan</p><div class="share"><button type="button" data-share="tech">Bagikan versi teknis</button><button type="button" class="ghost" data-set-mode="simple" data-jump>← Versi untuk umum</button></div></div>
   </article>
 
-  <p class="note" style="margin-top:3rem">Investigasi dilakukan dengan <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, atas sumber publik dan pasif. Tidak ada yang dimasukkan di halaman-halaman penipuan, tidak ada orang perorangan yang disebut namanya, indikator sengaja dirusak (<code>[.]</code>). Kalau kamu menerima pesan semacam ini: jangan klik, dan beri tahu orang yang akunnya dipakai untuk mengirimnya kepadamu.</p>
+  <p class="note" style="margin-top:3rem">Investigasi dilakukan dengan <a href="https://bounce.alexandre-pinoteau.fr">Bounce</a>, atas sumber publik dan pasif. Tidak ada yang asli dimasukkan di halaman-halaman penipuan (hanya nomor uji coba di sandbox), tidak ada orang perorangan yang disebut namanya, indikator sengaja dirusak (<code>[.]</code>). Kalau kamu menerima pesan semacam ini: jangan klik, dan beri tahu orang yang akunnya dipakai untuk mengirimnya kepadamu.</p>
 </main>
 
 <footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Atas">↑</a></div></footer>
