@@ -1,401 +1,422 @@
-// « Chacun ne voit qu'une ombre » : objets en voxels, leurs ombres, et la reconstruction d'un objet à partir
-// des ombres de plusieurs témoins (sculpture de l'enveloppe visuelle). Canvas 2D, aucune dépendance.
-(function () {
-  'use strict';
-  var N = 24, S = 2 / N, N2 = N * N, NN = N2 * N;
-  var REDUCE = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  var X = new Float32Array(NN), Y = new Float32Array(NN), Z = new Float32Array(NN);
-  for (var k0 = 0, n0 = 0; k0 < N; k0++) for (var j0 = 0; j0 < N; j0++) for (var i0 = 0; i0 < N; i0++, n0++) {
-    X[n0] = -1 + (i0 + .5) * S; Y[n0] = -1 + (j0 + .5) * S; Z[n0] = -1 + (k0 + .5) * S;
-  }
+// « Chacun ne voit qu'une ombre » : trois scènes 3D (Three.js, servi depuis vendor/, aucune requête tierce).
+// 1. un objet, une lampe, un mur ; 2. deux ombres qui se contredisent ; 3. reconstruire un objet à partir des
+// ombres de plusieurs témoins (sculpture de l'enveloppe visuelle sur une grille de voxels, surface par marching cubes).
+import * as T from './vendor/three-ombres.min.js?v=1';
 
-  var SHAPES = {
-    cylindre: function (x, y, z) { return x * x + z * z <= .4 && Math.abs(y) <= .63; },
-    cone: function (x, y, z) { if (y < -.7 || y > .7) return false; var r = .75 * (.7 - y) / 1.4; return x * x + z * z <= r * r; },
-    tasse: function (x, y, z) { var r2 = x * x + z * z; if (Math.abs(y) > .62 || r2 > .5) return false; return !(r2 < .26 && y > -.38); },
-    tore: function (x, y, z) { var q = Math.sqrt(x * x + z * z) - .6; return q * q + y * y <= .065; }
+const SUN = 0xffc977, TEAL = 0x6fe3cc, HOT = 0xff8f52, CREAM = 0xf1ead9, WALL = 0xc9bfa9;
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+// ---------- les objets : une géométrie pour l'image, une fonction « dedans ? » pour les mesures ----------
+function cup() {
+  const p = [[0, -.62], [.68, -.62], [.707, -.595], [.707, .6], [.69, .62], [.53, .62], [.51, .6], [.51, -.35], [.48, -.38], [0, -.38]];
+  return new T.LatheGeometry(p.map(([x, y]) => new T.Vector2(x, y)), 96);
+}
+const SHAPES = {
+  cylindre: { name: 'un cylindre', geo: () => new T.CylinderGeometry(.63, .63, 1.26, 96, 1), inside: (x, y, z) => x * x + z * z <= .397 && Math.abs(y) <= .63 },
+  cone: { name: 'un cône', geo: () => new T.ConeGeometry(.75, 1.4, 96, 1), inside: (x, y, z) => y >= -.7 && y <= .7 && Math.hypot(x, z) <= .75 * (.7 - y) / 1.4 },
+  tore: { name: 'un tore (un donut)', geo: () => new T.TorusGeometry(.6, .255, 48, 128).rotateX(Math.PI / 2), inside: (x, y, z) => { const q = Math.hypot(x, z) - .6; return q * q + y * y <= .065; } },
+  tasse: { name: 'une tasse', geo: cup, inside: (x, y, z) => { const r = Math.hypot(x, z); return Math.abs(y) <= .62 && r <= .707 && !(r < .51 && y > -.38); } }
+};
+const GEO = {};
+const geo = (n) => GEO[n] || (GEO[n] = SHAPES[n].geo());
+const solidMat = (color, extra) => new T.MeshStandardMaterial(Object.assign({ color, roughness: .42, metalness: .04, side: T.DoubleSide }, extra));
+
+// ---------- plomberie commune ----------
+function stage(el, frame) {
+  const canvas = el.querySelector('canvas.gl');
+  let renderer;
+  try { renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
+  catch (e) { el.classList.add('nogl'); return null; }
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFShadowMap;
+  renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.outputColorSpace = T.SRGBColorSpace;
+  const s = { renderer, canvas, w: 1, h: 1, on: false, onResize: null };
+  const resize = () => {
+    const r = canvas.getBoundingClientRect();
+    s.w = Math.max(1, Math.round(r.width)); s.h = Math.max(1, Math.round(r.height));
+    renderer.setSize(s.w, s.h, false); if (s.onResize) s.onResize(s);
   };
-  var NAMES = { cylindre: 'un cylindre', cone: 'un cône', tasse: 'une tasse', tore: 'un tore (un donut)' };
-
-  // ---------- math ----------
-  function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
-  function norm(a) { var l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }
-  // Rotation: yaw about y, then pitch about x (row-major 3x3).
-  function rot(yaw, pitch) {
-    var cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
-    return [cy, 0, sy, sp * sy, cp, -sp * cy, -cp * sy, sp, cp * cy];
-  }
-  function mul(A, B) {
-    var C = new Array(9);
-    for (var r = 0; r < 3; r++) for (var c = 0; c < 3; c++) C[r * 3 + c] = A[r * 3] * B[c] + A[r * 3 + 1] * B[3 + c] + A[r * 3 + 2] * B[6 + c];
-    return C;
-  }
-  var L = norm([-.45, .65, .62]);
-
-  // ---------- voxels ----------
-  function voxelize(f) { var a = new Uint8Array(NN); for (var n = 0; n < NN; n++) a[n] = f(X[n], Y[n], Z[n]) ? 1 : 0; return a; }
-  function count(a) { var c = 0; for (var n = 0; n < NN; n++) c += a[n]; return c; }
-  // Surface voxels (a face touches empty space) with a smooth normal taken from the empty 3x3x3 neighbourhood.
-  function surface(occ) {
-    var idx = [], nx = [], ny = [], nz = [];
-    for (var k = 0, n = 0; k < N; k++) for (var j = 0; j < N; j++) for (var i = 0; i < N; i++, n++) {
-      if (!occ[n]) continue;
-      var a = 0, b = 0, c = 0, open = false;
-      for (var dk = -1; dk <= 1; dk++) for (var dj = -1; dj <= 1; dj++) for (var di = -1; di <= 1; di++) {
-        var ii = i + di, jj = j + dj, kk = k + dk;
-        if (ii >= 0 && jj >= 0 && kk >= 0 && ii < N && jj < N && kk < N && occ[n + di + dj * N + dk * N2]) continue;
-        a += di; b += dj; c += dk;
-        if (Math.abs(di) + Math.abs(dj) + Math.abs(dk) === 1) open = true;
-      }
-      if (!open) continue;
-      var l = Math.sqrt(a * a + b * b + c * c);
-      if (l < 1e-6) { a = 0; b = 1; c = 0; l = 1; }
-      idx.push(n); nx.push(a / l); ny.push(b / l); nz.push(c / l);
-    }
-    return { idx: Int32Array.from(idx), nx: Float32Array.from(nx), ny: Float32Array.from(ny), nz: Float32Array.from(nz) };
-  }
-  function pick(s, keep) {
-    var idx = [], nx = [], ny = [], nz = [];
-    for (var t = 0; t < s.idx.length; t++) if (keep(s.idx[t])) { idx.push(s.idx[t]); nx.push(s.nx[t]); ny.push(s.ny[t]); nz.push(s.nz[t]); }
-    return { idx: Int32Array.from(idx), nx: Float32Array.from(nx), ny: Float32Array.from(ny), nz: Float32Array.from(nz) };
-  }
-  var CACHE = {};
-  function solid(name) {
-    if (!CACHE[name]) { var occ = voxelize(SHAPES[name]); CACHE[name] = { occ: occ, surf: surface(occ), vol: count(occ) }; }
-    return CACHE[name];
-  }
-
-  // ---------- drawing ----------
-  function ramp(r, g, b) { var a = []; for (var i = 0; i <= 32; i++) { var s = i / 32; a.push('rgb(' + (r * s | 0) + ',' + (g * s | 0) + ',' + (b * s | 0) + ')'); } return a; }
-  var SUN = ramp(255, 201, 119), CREAM = ramp(241, 234, 217), TEAL = ramp(111, 227, 204), HOT = ramp(255, 143, 82);
-
-  var BUF = { d: new Float32Array(0) };
-  // Paints voxel groups ({idx, nx?, ramp, alpha?, stroke?}) through matrix M, back to front.
-  function paint(ctx, cam, M, groups) {
-    var total = 0, gi, t, m = 0;
-    for (gi = 0; gi < groups.length; gi++) total += groups[gi].idx.length;
-    if (BUF.d.length < total) {
-      var cap = total + 2048;
-      BUF = { d: new Float32Array(cap), x: new Float32Array(cap), y: new Float32Array(cap), s: new Uint8Array(cap), g: new Uint8Array(cap) };
-    }
-    var D = BUF.d, PX = BUF.x, PY = BUF.y, SH = BUF.s, G = BUF.g;
-    for (gi = 0; gi < groups.length; gi++) {
-      var g = groups[gi], idx = g.idx;
-      for (t = 0; t < idx.length; t++, m++) {
-        var n = idx[t], x = X[n], y = Y[n], z = Z[n], s = .8;
-        PX[m] = cam.cx + (M[0] * x + M[1] * y + M[2] * z) * cam.sc;
-        PY[m] = cam.cy - (M[3] * x + M[4] * y + M[5] * z) * cam.sc;
-        D[m] = M[6] * x + M[7] * y + M[8] * z;
-        if (g.nx) {
-          var a = g.nx[t], b = g.ny[t], c = g.nz[t];
-          var l = (M[0] * a + M[1] * b + M[2] * c) * L[0] + (M[3] * a + M[4] * b + M[5] * c) * L[1] + (M[6] * a + M[7] * b + M[8] * c) * L[2];
-          s = .3 + .7 * Math.max(0, l);
-        }
-        SH[m] = Math.round(s * 32); G[m] = gi;
-      }
-    }
-    var order = new Uint32Array(m);
-    for (t = 0; t < m; t++) order[t] = t;
-    order.sort(function (p, q) { return D[p] - D[q]; });
-    var q = S * cam.sc * 1.15, h = q / 2, last = -1;
-    ctx.lineWidth = Math.max(1, cam.dpr * .8);
-    for (t = 0; t < m; t++) {
-      var k = order[t], gr = groups[G[k]];
-      if (G[k] !== last) { last = G[k]; ctx.globalAlpha = gr.alpha == null ? 1 : gr.alpha; }
-      if (gr.stroke) { ctx.strokeStyle = gr.ramp[SH[k]]; ctx.strokeRect(PX[k] - h + 1, PY[k] - h + 1, q - 2, q - 2); }
-      else { ctx.fillStyle = gr.ramp[SH[k]]; ctx.fillRect(PX[k] - h, PY[k] - h, q, q); }
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  function fit(cv) {
-    var r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
-    var w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d));
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-    return { w: w, h: h, dpr: d };
-  }
-  // Runs frame(dt) on every animation frame while el is on screen.
-  function run(el, frame) {
-    var vis = false, raf = 0, last = 0;
-    function tick(t) {
-      var dt = last ? Math.min(.05, (t - last) / 1000) : 0;
-      last = t; frame(dt);
-      if (vis) raf = requestAnimationFrame(tick); else { raf = 0; last = 0; }
-    }
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (es) { vis = es[0].isIntersecting; if (vis && !raf) raf = requestAnimationFrame(tick); }, { rootMargin: '80px' }).observe(el);
-    } else { vis = true; raf = requestAnimationFrame(tick); }
-  }
-  function drag(el, move, start, end) {
-    var p = null;
-    el.addEventListener('pointerdown', function (e) { p = [e.clientX, e.clientY]; try { el.setPointerCapture(e.pointerId); } catch (x) {} if (start) start(); });
-    el.addEventListener('pointermove', function (e) { if (!p) return; move(e.clientX - p[0], e.clientY - p[1]); p = [e.clientX, e.clientY]; });
-    function up() { if (p && end) end(); p = null; }
-    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
-  }
-  function press(buttons, attr, value) {
-    buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute(attr) === value)); });
-  }
-
-  // =====================================================================================
-  // Figure 1 : un objet, une lampe, un mur.
-  // =====================================================================================
-  function figOmbre(root) {
-    var cv = root.querySelector('canvas.scene'), flat = root.querySelector('canvas.flat');
-    var ctx = cv.getContext('2d'), fx = flat.getContext('2d');
-    var btns = [].slice.call(root.querySelectorAll('[data-shape]'));
-    var obj = solid('cylindre'), yaw = .5, pitch = .45, held = false;
-    var CAM = rot(-.62, .28), WX = -1.7, E = 1.25, R = 40, P = 2 * E / R, mask = new Uint8Array(R * R);
-    btns.forEach(function (b) { b.addEventListener('click', function () { obj = solid(b.getAttribute('data-shape')); press(btns, 'data-shape', b.getAttribute('data-shape')); }); });
-    drag(cv, function (dx, dy) { yaw += dx * .012; pitch = Math.max(-1.4, Math.min(1.4, pitch + dy * .012)); }, function () { held = true; }, function () { held = false; });
-
-    function frame(dt) {
-      if (!held && !REDUCE) yaw += dt * .4;
-      var f = fit(cv), w = f.w, h = f.h, Ro = rot(yaw, pitch), M = mul(CAM, Ro);
-      var sc = Math.min(w / 4.2, h / 3.25), cam = { cx: w / 2 + .15 * sc, cy: h / 2 + .275 * sc, sc: sc, dpr: f.dpr };
-      function pt(x, y, z) { return [cam.cx + (CAM[0] * x + CAM[1] * y + CAM[2] * z) * sc, cam.cy - (CAM[3] * x + CAM[4] * y + CAM[5] * z) * sc]; }
-      // shadow on the wall: light travels along -x, so the shadow keeps (y, z)
-      mask.fill(0);
-      var s = obj.surf, hh = S * .72, t, a, b, c;
-      for (t = 0; t < s.idx.length; t++) {
-        var n = s.idx[t], wy = Ro[3] * X[n] + Ro[4] * Y[n] + Ro[5] * Z[n], wz = Ro[6] * X[n] + Ro[7] * Y[n] + Ro[8] * Z[n];
-        var c0 = Math.max(0, Math.floor((wz - hh + E) / P)), c1 = Math.min(R - 1, Math.floor((wz + hh + E) / P));
-        var r0 = Math.max(0, Math.floor((wy - hh + E) / P)), r1 = Math.min(R - 1, Math.floor((wy + hh + E) / P));
-        for (a = r0; a <= r1; a++) for (b = c0; b <= c1; b++) mask[a * R + b] = 1;
-      }
-      ctx.clearRect(0, 0, w, h);
-      // lamp glow
-      var lp = pt(2.25, .3, .2), gl = ctx.createRadialGradient(lp[0], lp[1], 0, lp[0], lp[1], sc * 1.6);
-      gl.addColorStop(0, 'rgba(255,201,119,.55)'); gl.addColorStop(.12, 'rgba(255,201,119,.16)'); gl.addColorStop(1, 'rgba(255,201,119,0)');
-      ctx.fillStyle = gl; ctx.fillRect(0, 0, w, h);
-      // wall
-      var q1 = pt(WX, -E, -E), q2 = pt(WX, -E, E), q3 = pt(WX, E, E), q4 = pt(WX, E, -E);
-      var wg = ctx.createLinearGradient(q2[0], 0, q1[0], 0);
-      wg.addColorStop(0, '#2a3246'); wg.addColorStop(1, '#1b2232');
-      ctx.beginPath(); ctx.moveTo(q1[0], q1[1]); ctx.lineTo(q2[0], q2[1]); ctx.lineTo(q3[0], q3[1]); ctx.lineTo(q4[0], q4[1]); ctx.closePath();
-      ctx.fillStyle = wg; ctx.fill(); ctx.strokeStyle = 'rgba(241,234,217,.18)'; ctx.lineWidth = f.dpr; ctx.stroke();
-      ctx.beginPath();
-      for (a = 0; a < R; a++) for (b = 0; b < R; b++) {
-        if (!mask[a * R + b]) continue;
-        var y0 = -E + a * P, z0 = -E + b * P, p1 = pt(WX, y0, z0), p2 = pt(WX, y0, z0 + P), p3 = pt(WX, y0 + P, z0 + P), p4 = pt(WX, y0 + P, z0);
-        ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.lineTo(p3[0], p3[1]); ctx.lineTo(p4[0], p4[1]); ctx.closePath();
-      }
-      ctx.fillStyle = '#07090e'; ctx.fill();
-      ctx.strokeStyle = '#07090e'; ctx.lineWidth = .6 * f.dpr; ctx.stroke();
-      paint(ctx, cam, M, [{ idx: s.idx, nx: s.nx, ny: s.ny, nz: s.nz, ramp: SUN }]);
-      // the flat view: what someone facing the wall sees (their right is -z)
-      var g2 = fit(flat), cw = g2.w / R;
-      fx.fillStyle = '#262e41'; fx.fillRect(0, 0, g2.w, g2.h);
-      fx.fillStyle = '#07090e';
-      for (a = 0; a < R; a++) for (b = 0; b < R; b++) if (mask[a * R + b]) fx.fillRect((R - 1 - b) * cw, (R - 1 - a) * cw, cw + .6, cw + .6);
-    }
-    run(root, frame);
-  }
-
-  // =====================================================================================
-  // Figure 2 : deux ombres qui se contredisent.
-  // =====================================================================================
-  function circlePoly(r) { var p = []; for (var i = 0; i < 120; i++) { var a = i / 120 * 2 * Math.PI; p.push([r * Math.cos(a), r * Math.sin(a)]); } return p; }
-  function radial(poly, a) {
-    var dx = Math.cos(a), dy = Math.sin(a), best = 0;
-    for (var i = 0; i < poly.length; i++) {
-      var p = poly[i], q = poly[(i + 1) % poly.length], ex = q[0] - p[0], ey = q[1] - p[1], den = dx * ey - dy * ex;
-      if (Math.abs(den) < 1e-9) continue;
-      var t = (p[0] * ey - p[1] * ex) / den, s = (p[0] * dy - p[1] * dx) / den;
-      if (t > 0 && s >= -1e-9 && s <= 1 + 1e-9 && t > best) best = t;
-    }
-    return best;
-  }
-  function pathOf(poly) { return 'M' + poly.map(function (p) { return p[0].toFixed(3) + ' ' + p[1].toFixed(3); }).join('L') + 'Z'; }
-  function average(A, B) {
-    var p = [];
-    for (var i = 0; i < 180; i++) { var a = i / 180 * 2 * Math.PI, r = (radial(A, a) + radial(B, a)) / 2; p.push([r * Math.cos(a), r * Math.sin(a)]); }
-    return p;
-  }
-  var PAIRS = {
-    cylindre: { a: circlePoly(.63), b: [[-.63, -.63], [.63, -.63], [.63, .63], [-.63, .63]], la: 'disque', lb: 'carré',
-      v: 'Un <strong>cylindre</strong>. Vu d’en haut : un disque. Vu de côté : un carré. Ana et Ben avaient raison tous les deux.' },
-    cone: { a: circlePoly(.75), b: [[0, -.7], [.75, .7], [-.75, .7]], la: 'disque', lb: 'triangle',
-      v: 'Un <strong>cône</strong>. Vu d’en haut : un disque. Vu de côté : un triangle. Ana et Ben avaient raison tous les deux.' }
+  new ResizeObserver(resize).observe(canvas); resize();
+  let raf = 0, last = 0;
+  const tick = (t) => {
+    const dt = last ? Math.min(.05, (t - last) / 1000) : 0; last = t;
+    frame(dt, s);
+    if (s.on) raf = requestAnimationFrame(tick); else { raf = 0; last = 0; }
   };
-  function figDeux(root) {
-    var cv = root.querySelector('canvas'), ctx = cv.getContext('2d');
-    var pa = root.querySelector('[data-a]'), pb = root.querySelector('[data-b]'), pv = root.querySelector('[data-avg]');
-    var la = root.querySelector('[data-la]'), lb = root.querySelector('[data-lb]'), verdict = root.querySelector('[data-v]');
-    var sb = [].slice.call(root.querySelectorAll('[data-go]')), pbtn = [].slice.call(root.querySelectorAll('[data-pair]'));
-    var pair = 'cylindre', state = 'ombres', yaw = .3, held = false, pitch = .5;
-    var TXT = {
-      ombres: 'Chacun a la preuve sous les yeux. Qui a raison ?',
-      moyenne: 'Le compromis : la moyenne des deux ombres. Ça a l’air raisonnable, mais personne ne voit cette forme-là. <strong>Fausse pour les deux.</strong>'
-    };
-    function show() {
-      var P = PAIRS[pair];
-      pa.setAttribute('d', pathOf(P.a)); pb.setAttribute('d', pathOf(P.b)); pv.setAttribute('d', pathOf(average(P.a, P.b)));
-      la.textContent = P.la; lb.textContent = P.lb;
-      root.setAttribute('data-state', state);
-      verdict.innerHTML = state === 'objet' ? P.v : TXT[state];
-      press(sb, 'data-go', state); press(pbtn, 'data-pair', pair);
-    }
-    sb.forEach(function (b) { b.addEventListener('click', function () { var s = b.getAttribute('data-go'); state = state === s ? 'ombres' : s; show(); }); });
-    pbtn.forEach(function (b) { b.addEventListener('click', function () { pair = b.getAttribute('data-pair'); state = 'ombres'; show(); }); });
-    drag(cv, function (dx, dy) { yaw += dx * .012; pitch = Math.max(-1.4, Math.min(1.4, pitch + dy * .012)); }, function () { held = true; }, function () { held = false; });
-    show();
-    run(root, function (dt) {
-      if (state !== 'objet') return;
-      if (!held && !REDUCE) yaw += dt * .5;
-      var f = fit(cv), sc = Math.min(f.w, f.h) / 2.5, o = solid(pair);
-      ctx.clearRect(0, 0, f.w, f.h);
-      paint(ctx, { cx: f.w / 2, cy: f.h / 2, sc: sc, dpr: f.dpr }, rot(yaw, pitch), [{ idx: o.surf.idx, nx: o.surf.nx, ny: o.surf.ny, nz: o.surf.nz, ramp: SUN }]);
-    });
-  }
+  new IntersectionObserver((es) => { s.on = es[0].isIntersecting; if (s.on && !raf) raf = requestAnimationFrame(tick); }, { rootMargin: '120px' }).observe(el);
+  return s;
+}
+// Rotation au doigt : un glissement horizontal tourne (le défilement vertical de la page reste libre),
+// la souris tourne aussi en hauteur. Un peu d'inertie, puis une rotation lente si personne ne touche.
+function spinner(el, st, o) {
+  let p = null;
+  el.addEventListener('pointerdown', (e) => { p = { x: e.clientX, y: e.clientY, t: performance.now(), m: e.pointerType === 'mouse' }; st.held = true; st.vel = 0; st.touched = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} });
+  el.addEventListener('pointermove', (e) => {
+    if (!p) return;
+    const now = performance.now(), dx = e.clientX - p.x, dy = e.clientY - p.y;
+    st.yaw += dx * .011; st.vel = .6 * st.vel + .4 * (dx * .011) / Math.max(.008, (now - p.t) / 1000);
+    if (p.m) st.pitch = clamp(st.pitch + dy * .009, o.pmin, o.pmax);
+    p.x = e.clientX; p.y = e.clientY; p.t = now;
+  });
+  const up = () => { p = null; st.held = false; };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('lostpointercapture', up);
+}
+function coast(st, dt, auto) {
+  if (st.held) return;
+  st.yaw += st.vel * dt; st.vel *= Math.exp(-dt * 2.5);
+  if (!REDUCE && Math.abs(st.vel) < .3) st.yaw += auto * dt;
+}
+function glow(color) {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, color); r.addColorStop(.18, color.replace('1)', '.45)')); r.addColorStop(1, color.replace('1)', '0)'));
+  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  return new T.Sprite(new T.SpriteMaterial({ map: new T.CanvasTexture(c), blending: T.AdditiveBlending, depthWrite: false, transparent: true }));
+}
+function press(btns, attr, v) { btns.forEach((b) => b.setAttribute('aria-pressed', String(b.getAttribute(attr) === v))); }
+function wallMesh(w, h) {
+  const m = new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshStandardMaterial({ color: WALL, roughness: .95 }));
+  m.receiveShadow = true; return m;
+}
+function softShadow(light, half, size) {
+  light.castShadow = true;
+  const c = light.shadow.camera; c.left = c.bottom = -half; c.right = c.top = half; c.near = .5; c.far = 14;
+  light.shadow.mapSize.set(size, size); light.shadow.radius = 4; light.shadow.bias = -.0004; light.shadow.normalBias = .02;
+}
 
-  // =====================================================================================
-  // Figure 3 : reconstruire l'objet à partir des ombres des témoins.
-  // =====================================================================================
-  var RES = 40, EXT = 1.8, PIX = 2 * EXT / RES;
-  function basis(d) {
-    var u = Math.abs(d[1]) > .985 ? [1, 0, 0] : norm(cross([0, 1, 0], d));
-    return [u, cross(d, u)];
-  }
-  // A witness's shadow (mask) and, for every voxel of the grid, whether it falls inside it.
-  function shadow(occ, d, lie) {
-    var b = basis(d), u = b[0], v = b[1], mask = new Uint8Array(RES * RES), h = S * .72, n, pu, pv, i, j;
-    for (n = 0; n < NN; n++) {
-      if (!occ[n]) continue;
-      pu = u[0] * X[n] + u[1] * Y[n] + u[2] * Z[n]; pv = v[0] * X[n] + v[1] * Y[n] + v[2] * Z[n];
-      if (lie) { pu = pu * lie.k + lie.du; pv = pv * lie.k + lie.dv; }
-      var i0 = Math.max(0, Math.floor((pu - h + EXT) / PIX)), i1 = Math.min(RES - 1, Math.floor((pu + h + EXT) / PIX));
-      var j0 = Math.max(0, Math.floor((pv - h + EXT) / PIX)), j1 = Math.min(RES - 1, Math.floor((pv + h + EXT) / PIX));
-      for (j = j0; j <= j1; j++) for (i = i0; i <= i1; i++) mask[j * RES + i] = 1;
-    }
-    var ins = new Uint8Array(NN);
-    for (n = 0; n < NN; n++) {
-      pu = u[0] * X[n] + u[1] * Y[n] + u[2] * Z[n]; pv = v[0] * X[n] + v[1] * Y[n] + v[2] * Z[n];
-      i = Math.floor((pu + EXT) / PIX); j = Math.floor((pv + EXT) / PIX);
-      ins[n] = i >= 0 && j >= 0 && i < RES && j < RES ? mask[j * RES + i] : 0;
-    }
-    return { mask: mask, ins: ins };
-  }
-  function dirOf(az, el) { return [Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)]; }
+// =====================================================================================
+// Figure 1 : un objet, une lampe, un mur.
+// =====================================================================================
+function figOmbre(el) {
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, .1, 60);
+  const flatCam = new T.OrthographicCamera(-1.35, 1.35, 1.35, -1.35, .1, 20);
+  flatCam.position.set(5, 0, 0); flatCam.lookAt(0, 0, 0);
+  const wall = wallMesh(3.4, 2.6); wall.rotation.y = Math.PI / 2; wall.position.x = -1.9; scene.add(wall);
+  scene.add(new T.HemisphereLight(0x9aa6c4, 0x10141f, .55));
+  const sun = new T.DirectionalLight(0xfff1d6, 2.6); sun.position.set(6, 0, 0); softShadow(sun, 1.7, 1024); scene.add(sun);
+  const fill = new T.DirectionalLight(0xbcd0ff, .55); fill.position.set(1, 2, 4); scene.add(fill);
+  const lamp = new T.Mesh(new T.SphereGeometry(.07, 24, 16), new T.MeshBasicMaterial({ color: 0xfff3d6 }));
+  lamp.position.set(2.3, 0, 0); scene.add(lamp);
+  const halo = glow('rgba(255,201,119,1)'); halo.scale.setScalar(1.15); halo.position.copy(lamp.position); scene.add(halo);
+  const pivot = new T.Group(); scene.add(pivot);
+  const mesh = new T.Mesh(geo('cylindre'), solidMat(SUN)); mesh.castShadow = true; mesh.receiveShadow = true; pivot.add(mesh);
+  const black = new T.MeshBasicMaterial({ color: 0x07090e, side: T.DoubleSide }), wallColor = new T.Color(WALL).multiplyScalar(.85);
+  const frameEl = el.querySelector('.inset');
+  const st = { yaw: .6, pitch: .5, vel: 0, held: false };
+  const btns = [...el.querySelectorAll('[data-shape]')];
+  btns.forEach((b) => b.addEventListener('click', () => { mesh.geometry = geo(b.dataset.shape); press(btns, 'data-shape', b.dataset.shape); }));
+  let box = { x: 0, y: 0, s: 1 };
+  const s = stage(el, (dt, s) => {
+    coast(st, dt, .35);
+    if (!st.held && !REDUCE && !st.touched) st.pitch = .5 + .45 * Math.sin(performance.now() / 4200);
+    pivot.rotation.set(st.pitch, st.yaw, 0, 'YXZ');
+    const r = s.renderer;
+    r.setScissorTest(false); r.setViewport(0, 0, s.w, s.h); r.render(scene, cam);
+    // l'encart : le mur vu de face, c'est-à-dire la silhouette de l'objet le long de la lumière
+    wall.visible = lamp.visible = halo.visible = false; scene.overrideMaterial = black;
+    r.setScissorTest(true); r.setScissor(box.x, box.y, box.s, box.s); r.setViewport(box.x, box.y, box.s, box.s);
+    r.setClearColor(wallColor, 1); r.clear(); r.render(scene, flatCam);
+    r.setClearColor(0x000000, 0); r.setScissorTest(false);
+    wall.visible = lamp.visible = halo.visible = true; scene.overrideMaterial = null;
+  });
+  if (!s) return;
+  s.onResize = ({ w, h }) => {
+    cam.aspect = w / h;
+    const narrow = w < 480;
+    cam.position.set(narrow ? 3.9 : 3.3, 1.5, narrow ? 9.6 : 7.8); cam.lookAt(-.5, -.05, 0); cam.updateProjectionMatrix();
+    const side = Math.round(Math.min(w, h) * (narrow ? .3 : .27)), m = 10;
+    box = { x: w - side - m, y: h - side - m, s: side };
+    Object.assign(frameEl.style, { width: side + 'px', height: side + 'px', top: m + 'px', right: m + 'px' });
+  };
+  s.onResize(s);
+  spinner(s.canvas, st, { pmin: -1.4, pmax: 1.4 });
+}
 
-  function figTemoins(root) {
-    var cv = root.querySelector('canvas.hull'), ctx = cv.getContext('2d');
-    var ring = root.querySelector('svg.ring'), dots = root.querySelector('[data-o="dots"]'), thumbs = root.querySelector('[data-o="thumbs"]');
-    var out = {}; [].forEach.call(root.querySelectorAll('[data-o]'), function (e) { out[e.getAttribute('data-o')] = e; });
-    var objBtns = [].slice.call(root.querySelectorAll('[data-obj]'));
-    var ORDER = { 1: 'tore', 2: 'cone', 3: 'tasse' };
-    var name = 'tore', obj = solid(name), views = [], tol = 1, kept = new Uint8Array(NN), keptSurf = null, groupsHidden = null, groupsShown = null;
-    var fades = [], revealed = false, yaw = -.5, pitch = .42, held = false, toi = null;
+// =====================================================================================
+// Figure 2 : deux ombres qui se contredisent.
+// =====================================================================================
+function circlePoly(r) { return Array.from({ length: 120 }, (_, i) => { const a = i / 120 * 2 * Math.PI; return [r * Math.cos(a), r * Math.sin(a)]; }); }
+function radial(poly, a) {
+  const dx = Math.cos(a), dy = Math.sin(a); let best = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const p = poly[i], q = poly[(i + 1) % poly.length], ex = q[0] - p[0], ey = q[1] - p[1], den = dx * ey - dy * ex;
+    if (Math.abs(den) < 1e-9) continue;
+    const t = (p[0] * ey - p[1] * ex) / den, u = (p[0] * dy - p[1] * dx) / den;
+    if (t > 0 && u >= -1e-9 && u <= 1 + 1e-9 && t > best) best = t;
+  }
+  return best;
+}
+const pathOf = (poly) => 'M' + poly.map((p) => p[0].toFixed(3) + ' ' + p[1].toFixed(3)).join('L') + 'Z';
+const average = (A, B) => Array.from({ length: 180 }, (_, i) => { const a = i / 180 * 2 * Math.PI, r = (radial(A, a) + radial(B, a)) / 2; return [r * Math.cos(a), r * Math.sin(a)]; });
+const PAIRS = {
+  cylindre: { a: circlePoly(.63), b: [[-.63, -.63], [.63, -.63], [.63, .63], [-.63, .63]], la: 'disque', lb: 'carré',
+    v: 'Un <strong>cylindre</strong>. Vu d’en haut : un disque. Vu de face : un carré. Ana et Ben avaient raison tous les deux.' },
+  cone: { a: circlePoly(.75), b: [[0, -.7], [.75, .7], [-.75, .7]], la: 'disque', lb: 'triangle',
+    v: 'Un <strong>cône</strong>. Vu d’en haut : un disque. Vu de face : un triangle. Ana et Ben avaient raison tous les deux.' }
+};
+function figDeux(el) {
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, .1, 60);
+  const FLOOR = -1.05, BACK = -1.45;
+  const floor = wallMesh(3.4, 3.2); floor.rotation.x = -Math.PI / 2; floor.position.set(0, FLOOR, .15); scene.add(floor);
+  const back = wallMesh(3.4, 2.5); back.position.set(0, FLOOR + 1.25, BACK); scene.add(back);
+  scene.add(new T.HemisphereLight(0x9aa6c4, 0x10141f, .5));
+  const top = new T.DirectionalLight(0xfff1d6, 1.7); top.position.set(0, 7, 0); top.shadow.camera.up.set(0, 0, -1); softShadow(top, 1.4, 1024); scene.add(top);
+  const front = new T.DirectionalLight(0xfff1d6, 1.7); front.position.set(0, 0, 7); softShadow(front, 1.4, 1024); scene.add(front);
+  const mat = solidMat(SUN, { transparent: true, opacity: 0, depthWrite: false });
+  const mesh = new T.Mesh(geo('cylindre'), mat); mesh.castShadow = true; scene.add(mesh);
+  const pa = el.querySelector('[data-a]'), pb = el.querySelector('[data-b]'), pv = el.querySelector('[data-avg]');
+  const la = el.querySelectorAll('[data-la]'), lb = el.querySelectorAll('[data-lb]'), verdict = el.querySelector('[data-v]');
+  const tagA = el.querySelector('.tag.a'), tagB = el.querySelector('.tag.b');
+  const sb = [...el.querySelectorAll('[data-go]')], pbtn = [...el.querySelectorAll('[data-pair]')];
+  const st = { yaw: 0, pitch: 0, vel: 0, held: false };
+  let pair = 'cylindre', state = 'ombres', spin = 0;
+  const TXT = {
+    ombres: 'Chacun a la preuve sous les yeux. Qui a raison ?',
+    moyenne: 'Le compromis : la moyenne des deux ombres. Elle a l’air raisonnable, mais aucune lumière ne la projette. <strong>Fausse pour les deux.</strong>'
+  };
+  function show() {
+    const P = PAIRS[pair];
+    pa.setAttribute('d', pathOf(P.a)); pb.setAttribute('d', pathOf(P.b)); pv.setAttribute('d', pathOf(average(P.a, P.b)));
+    la.forEach((e) => { e.textContent = P.la; }); lb.forEach((e) => { e.textContent = P.lb; });
+    mesh.geometry = geo(pair);
+    el.dataset.state = state;
+    verdict.innerHTML = state === 'objet' ? P.v : TXT[state];
+    press(sb, 'data-go', state); press(pbtn, 'data-pair', pair);
+  }
+  sb.forEach((b) => b.addEventListener('click', () => { state = state === b.dataset.go ? 'ombres' : b.dataset.go; show(); }));
+  pbtn.forEach((b) => b.addEventListener('click', () => { pair = b.dataset.pair; state = 'ombres'; show(); }));
+  show();
+  const v = new T.Vector3();
+  const place = (tag, x, y, z, s) => { v.set(x, y, z).project(cam); tag.style.transform = `translate(${((v.x + 1) / 2 * s.w).toFixed(1)}px, ${((1 - v.y) / 2 * s.h).toFixed(1)}px) translate(-50%, -50%)`; };
+  const s = stage(el, (dt, s) => {
+    coast(st, dt, 0); st.yaw = clamp(st.yaw, -.75, .75);
+    if (!st.held) st.yaw *= Math.exp(-dt * .8);
+    const a = .62 + st.yaw, d = s.w < 480 ? 8.4 : 8.6;
+    cam.position.set(Math.sin(a) * d, 2.9, Math.cos(a) * d); cam.lookAt(0, -.15, -.3);
+    const target = state === 'objet' ? 1 : 0;
+    mat.opacity += (target - mat.opacity) * Math.min(1, dt * 5); mat.depthWrite = mat.opacity > .95;
+    if (state === 'objet' && !REDUCE) spin += dt * .5;
+    mesh.rotation.y = spin;
+    s.renderer.render(scene, cam);
+    place(tagA, 0, FLOOR + .01, 1.2, s); place(tagB, 0, 1.08, BACK, s);
+  });
+  if (!s) return;
+  s.onResize = ({ w, h }) => { cam.aspect = w / h; cam.fov = w < 480 ? 33 : 29; cam.updateProjectionMatrix(); };
+  s.onResize(s);
+  spinner(s.canvas, st, { pmin: 0, pmax: 0 });
+}
 
-    function add(az, el, kind) {
-      if (views.length >= 40) return;
-      var d = dirOf(az, el), lie = null;
-      if (kind === 'menteur') lie = { k: .55 + Math.random() * .1, du: (Math.random() < .5 ? -1 : 1) * (.2 + Math.random() * .15), dv: (Math.random() - .5) * .3 };
-      var sh = shadow(obj.occ, d, lie);
-      var v = { az: az, el: el, d: d, kind: kind, mask: sh.mask, ins: sh.ins };
-      views.push(v);
-      if (kind === 'toi') toi = v;
-      thumb(v);
-      update(true);
+// =====================================================================================
+// Figure 3 : reconstruire l'objet à partir des ombres des témoins.
+// =====================================================================================
+const G = 48, VS = 2 / G, NN = G * G * G, PAD = 2, F = G + 2 * PAD;
+const CX = new Float32Array(NN), CY = new Float32Array(NN), CZ = new Float32Array(NN);
+for (let k = 0, n = 0; k < G; k++) for (let j = 0; j < G; j++) for (let i = 0; i < G; i++, n++) {
+  CX[n] = -1 + (i + .5) * VS; CY[n] = -1 + (j + .5) * VS; CZ[n] = -1 + (k + .5) * VS;
+}
+const TRUTH = {};
+function truth(name) {
+  if (!TRUTH[name]) {
+    const occ = new Uint8Array(NN); let vol = 0;
+    for (let n = 0; n < NN; n++) { occ[n] = SHAPES[name].inside(CX[n], CY[n], CZ[n]) ? 1 : 0; vol += occ[n]; }
+    TRUTH[name] = { occ, vol };
+  }
+  return TRUTH[name];
+}
+// Distance euclidienne exacte (Felzenszwalb & Huttenlocher), au carré, en pixels.
+function edt1(f, n, d, v, z) {
+  let k = 0; v[0] = 0; z[0] = -Infinity; z[1] = Infinity;
+  for (let q = 1; q < n; q++) {
+    let s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+    while (s <= z[k]) { k--; s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]); }
+    k++; v[k] = q; z[k] = s; z[k + 1] = Infinity;
+  }
+  k = 0;
+  for (let q = 0; q < n; q++) { while (z[k + 1] < q) k++; d[q] = (q - v[k]) * (q - v[k]) + f[v[k]]; }
+}
+function edt(mask, R, target) {
+  const g = new Float64Array(R * R), f = new Float64Array(R), d = new Float64Array(R), v = new Int32Array(R), z = new Float64Array(R + 1);
+  for (let i = 0; i < R * R; i++) g[i] = mask[i] === target ? 0 : 1e12;
+  for (let x = 0; x < R; x++) { for (let y = 0; y < R; y++) f[y] = g[y * R + x]; edt1(f, R, d, v, z); for (let y = 0; y < R; y++) g[y * R + x] = d[y]; }
+  for (let y = 0; y < R; y++) { for (let x = 0; x < R; x++) f[x] = g[y * R + x]; edt1(f, R, d, v, z); for (let x = 0; x < R; x++) g[y * R + x] = d[x]; }
+  return g;
+}
+const dirOf = (az, el) => new T.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+
+function figTemoins(el) {
+  const out = {}; el.querySelectorAll('[data-o]').forEach((e) => { out[e.dataset.o] = e; });
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, .1, 60);
+  scene.add(new T.HemisphereLight(0xa9b4d0, 0x141826, .7));
+  const key = new T.DirectionalLight(0xfff4e0, 2.2); key.position.set(2.5, 5, 3); softShadow(key, 1.5, 1024); scene.add(key);
+  const rim = new T.DirectionalLight(0x9fdcff, .7); rim.position.set(-3, 1.5, -3); scene.add(rim);
+  const ground = new T.Mesh(new T.CircleGeometry(2.4, 64), new T.ShadowMaterial({ opacity: .35 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.y = -1.02; ground.receiveShadow = true; scene.add(ground);
+
+  const hullMat = solidMat(CREAM, { roughness: .5, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
+  const mc = new T.MarchingCubes(F, hullMat, false, false, 120000);
+  mc.isolation = 0; mc.scale.setScalar(F / G); mc.position.setScalar(1 / G); mc.castShadow = true; mc.frustumCulled = false;
+  scene.add(mc);
+  const truthMesh = new T.Mesh(geo('tore'), solidMat(TEAL)); truthMesh.visible = false; scene.add(truthMesh);
+  const marks = new T.Group(); scene.add(marks);
+  const ballGeo = new T.SphereGeometry(1, 20, 14);
+
+  // les ombres : on rend le vrai objet en blanc sur noir, vu de chaque témoin, dans une petite cible
+  const R = 160, E = 1.15, rt = new T.WebGLRenderTarget(R, R), px = new Uint8Array(R * R * 4);
+  const maskScene = new T.Scene(), maskMesh = new T.Mesh(geo('tore'), new T.MeshBasicMaterial({ color: 0xffffff, side: T.DoubleSide }));
+  maskScene.add(maskMesh);
+  const maskCam = new T.OrthographicCamera(-E, E, E, -E, .1, 10);
+
+  const ORDER = { 1: 'tore', 2: 'cone', 3: 'tasse' };
+  let name = 'tore', tr = truth(name), views = [], tol = 1, kept = new Uint8Array(NN).fill(1), toi = null, revealed = false;
+  let fieldNow = new Float32Array(NN).fill(.15), fieldFrom = fieldNow, fieldTo = fieldNow, tween = 1, dirty = true;
+  const st = { yaw: -.4, pitch: .42, vel: 0, held: false };
+  const s = stage(el, frame);
+  if (!s) return;
+  s.onResize = ({ w, h }) => { cam.aspect = w / h; cam.updateProjectionMatrix(); };
+  s.onResize(s);
+  spinner(s.canvas, st, { pmin: -.3, pmax: 1.35 });
+
+  function shadowOf(d) {
+    maskCam.position.copy(d).multiplyScalar(4);
+    maskCam.up.set(0, 1, 0); if (Math.abs(d.y) > .985) maskCam.up.set(0, 0, -1);
+    maskCam.lookAt(0, 0, 0); maskCam.updateMatrixWorld();
+    const r = s.renderer, prev = r.getRenderTarget();
+    r.setRenderTarget(rt); r.setClearColor(0x000000, 1); r.clear(); r.render(maskScene, maskCam);
+    r.readRenderTargetPixels(rt, 0, 0, R, R, px); r.setRenderTarget(prev); r.setClearColor(0x000000, 0);
+    const mask = new Uint8Array(R * R);
+    for (let i = 0; i < R * R; i++) mask[i] = px[i * 4] > 127 ? 1 : 0;
+    // distance signée au bord de l'ombre, en unités du monde (positive dedans) ; une marge d'un pixel
+    // compense le maillage, un peu plus petit que l'objet idéal
+    const dOut = edt(mask, R, 0), dIn = edt(mask, R, 1), sd = new Float32Array(R * R), PXW = 2 * E / R;
+    for (let i = 0; i < R * R; i++) sd[i] = (mask[i] ? Math.sqrt(dOut[i]) - .5 : .5 - Math.sqrt(dIn[i])) * PXW + PXW;
+    const e = maskCam.matrixWorld.elements;
+    return { mask, sd, right: [e[0], e[1], e[2]], up: [e[4], e[5], e[6]] };
+  }
+  function add(az, elev, kind) {
+    if (views.length >= 40) return;
+    const d = dirOf(az, elev), sh = shadowOf(d);
+    const lie = kind === 'menteur' ? { k: .55 + Math.random() * .1, du: (Math.random() < .5 ? -1 : 1) * (.2 + Math.random() * .15), dv: (Math.random() - .5) * .3 } : null;
+    // pour chaque voxel : sa distance signée à l'ombre de ce témoin (interpolée), < 0 = hors de l'ombre
+    const val = new Float32Array(NN), { mask, sd, right: u, up: w } = sh, k = lie ? lie.k : 1;
+    for (let n = 0; n < NN; n++) {
+      let pu = u[0] * CX[n] + u[1] * CY[n] + u[2] * CZ[n], pv = w[0] * CX[n] + w[1] * CY[n] + w[2] * CZ[n];
+      if (lie) { pu = (pu - lie.du) / k; pv = (pv - lie.dv) / k; }
+      const x = (pu + E) / (2 * E) * R - .5, y = (pv + E) / (2 * E) * R - .5;
+      if (x < 0 || y < 0 || x >= R - 1 || y >= R - 1) { val[n] = -.3; continue; }
+      const i = x | 0, j = y | 0, fx = x - i, fy = y - j, o = j * R + i;
+      val[n] = k * ((sd[o] * (1 - fx) + sd[o + 1] * fx) * (1 - fy) + (sd[o + R] * (1 - fx) + sd[o + R + 1] * fx) * fy);
     }
-    function thumb(v) {
-      var c = document.createElement('canvas'), g = c.getContext('2d');
-      c.width = c.height = RES * 2; c.className = 'th' + (v.kind === 'menteur' ? ' liar' : '') + (v.kind === 'toi' ? ' me' : '');
-      c.title = v.kind === 'toi' ? 'ton ombre' : 'une ombre';
-      g.fillStyle = '#262e41'; g.fillRect(0, 0, c.width, c.height); g.fillStyle = '#07090e';
-      for (var j = 0; j < RES; j++) for (var i = 0; i < RES; i++) if (v.mask[j * RES + i]) g.fillRect(i * 2, (RES - 1 - j) * 2, 2, 2);
-      thumbs.appendChild(c); thumbs.scrollLeft = thumbs.scrollWidth;
+    const v = { az, el: elev, d, kind, mask, lie, val };
+    views.push(v); if (kind === 'toi') toi = v;
+    const ball = new T.Mesh(ballGeo, new T.MeshBasicMaterial({ color: kind === 'toi' ? SUN : kind === 'voisin' ? 0xb9c2d6 : TEAL }));
+    ball.scale.setScalar(kind === 'toi' ? .06 : .032); ball.position.copy(d).multiplyScalar(1.7); ball.userData.kind = kind; marks.add(ball);
+    thumb(v); update(true);
+  }
+  function thumb(v) {
+    const c = document.createElement('canvas'), Rt = 64, g = c.getContext('2d');
+    c.width = c.height = Rt; c.className = 'th' + (v.kind === 'menteur' ? ' liar' : '') + (v.kind === 'toi' ? ' me' : '');
+    const img = g.createImageData(Rt, Rt);
+    for (let y = 0; y < Rt; y++) for (let x = 0; x < Rt; x++) {
+      let pu = ((x + .5) / Rt) * 2 * E - E, pv = ((Rt - 1 - y + .5) / Rt) * 2 * E - E;
+      if (v.lie) { pu = (pu - v.lie.du) / v.lie.k; pv = (pv - v.lie.dv) / v.lie.k; }
+      const i = Math.floor((pu + E) / (2 * E) * R), j = Math.floor((pv + E) / (2 * E) * R);
+      const on = i >= 0 && j >= 0 && i < R && j < R && v.mask[j * R + i], o = (y * Rt + x) * 4;
+      img.data[o] = on ? 7 : 201; img.data[o + 1] = on ? 9 : 191; img.data[o + 2] = on ? 14 : 169; img.data[o + 3] = 255;
     }
-    function update(animate) {
-      var n, nv = views.length, need = nv ? Math.max(1, Math.ceil(tol * nv - 1e-9)) : 0, prev = kept;
-      var cnt = new Uint8Array(NN);
-      views.forEach(function (v) { for (var n = 0; n < NN; n++) cnt[n] += v.ins[n]; });
-      kept = new Uint8Array(NN);
-      var inter = 0, extra = 0, lost = 0, removed = [];
-      for (n = 0; n < NN; n++) {
-        kept[n] = cnt[n] >= need ? 1 : 0;
-        if (kept[n] && obj.occ[n]) inter++; else if (kept[n]) extra++; else if (obj.occ[n]) lost++;
-        if (animate && prev[n] && !kept[n]) removed.push(n);
+    g.putImageData(img, 0, 0);
+    out.thumbs.appendChild(c); out.thumbs.scrollLeft = out.thumbs.scrollWidth;
+  }
+  function update(animate) {
+    // l'enveloppe : un point reste s'il est dans l'ombre d'au moins « need » témoins, c'est-à-dire si la
+    // need-ième plus grande distance signée est positive (need = tous : simple minimum)
+    const nv = views.length, need = nv ? Math.max(1, Math.ceil(tol * nv - 1e-9)) : 0, m = nv - need + 1;
+    const field = new Float32Array(NN).fill(.3), buf = new Float32Array(m);
+    if (nv) for (let n = 0; n < NN; n++) {
+      let c = 0;
+      for (let t = 0; t < nv; t++) { // garde les m plus petites valeurs, triées
+        const x = views[t].val[n];
+        if (c < m) { let i = c++; while (i > 0 && buf[i - 1] > x) { buf[i] = buf[i - 1]; i--; } buf[i] = x; }
+        else if (x < buf[m - 1]) { let i = m - 1; while (i > 0 && buf[i - 1] > x) { buf[i] = buf[i - 1]; i--; } buf[i] = x; }
       }
-      if (removed.length) fades.push({ idx: Int32Array.from(removed), t: 0 });
-      keptSurf = surface(kept);
-      var ks = keptSurf;
-      groupsHidden = [{ idx: ks.idx, nx: ks.nx, ny: ks.ny, nz: ks.nz, ramp: CREAM }];
-      var bad = pick(ks, function (n) { return !obj.occ[n]; });
-      var miss = pick(obj.surf, function (n) { return !kept[n]; });
-      // revealed: the object itself in teal (lost parts outlined), the excess as a thin orange veil around it
-      var core = pick(obj.surf, function (n) { return kept[n]; });
-      groupsShown = [
-        { idx: core.idx, nx: core.nx, ny: core.ny, nz: core.nz, ramp: TEAL },
-        { idx: miss.idx, nx: miss.nx, ny: miss.ny, nz: miss.nz, ramp: TEAL, alpha: .6, stroke: true },
-        { idx: bad.idx, nx: bad.nx, ny: bad.ny, nz: bad.nz, ramp: HOT, alpha: .16 }
-      ];
-      var iou = inter / (inter + extra + lost);
-      out.iou.textContent = Math.round(iou * 100) + ' %';
-      var trop = extra / obj.vol, perdu = lost / obj.vol;
-      out.trop.style.width = Math.min(100, trop * 50) + '%'; out.tropn.textContent = '+' + Math.round(trop * 100) + ' %';
-      out.perdu.style.width = Math.min(100, perdu * 100) + '%'; out.perdun.textContent = '−' + Math.round(perdu * 100) + ' %';
-      out.n.textContent = nv + (nv > 1 ? ' ombres' : ' ombre');
-      out.tolv.textContent = nv ? need + ' sur ' + nv : '–';
-      drawDots();
+      field[n] = Math.max(-.15, Math.min(.15, buf[m - 1]));
     }
-    function drawDots() {
-      var html = '';
-      views.forEach(function (v) {
-        var x = v.d[0], y = v.d[2], cls = 'dot ' + v.kind + (v.el < 0 ? ' below' : '');
-        html += '<circle class="' + cls + '" cx="' + x.toFixed(3) + '" cy="' + y.toFixed(3) + '" r="' + (v.kind === 'toi' ? .09 : .06) + '"/>';
-      });
-      if (toi) html += '<text class="me" x="' + toi.d[0].toFixed(3) + '" y="' + (toi.d[2] + .24).toFixed(3) + '">toi</text>';
-      dots.innerHTML = html;
+    kept = new Uint8Array(NN);
+    let inter = 0, extra = 0, lost = 0;
+    for (let n = 0; n < NN; n++) {
+      kept[n] = field[n] >= 0 ? 1 : 0;
+      if (kept[n] && tr.occ[n]) inter++; else if (kept[n]) extra++; else if (tr.occ[n]) lost++;
     }
-    function reset(newName) {
-      if (newName) { name = newName; obj = solid(name); }
-      views = []; fades = []; toi = null; thumbs.innerHTML = ''; kept = new Uint8Array(NN).fill(1);
-      revealed = false; root.classList.remove('revealed'); out.name.textContent = 'Objet mystère'; out.reveal.textContent = 'Révéler l’objet';
-      add(.55, .12, 'toi');
+    fieldFrom = fieldNow; fieldTo = field; tween = animate && !REDUCE ? 0 : 1; dirty = true;
+    out.iou.textContent = Math.round(inter / (inter + extra + lost) * 100) + ' %';
+    const trop = extra / tr.vol, perdu = lost / tr.vol;
+    out.trop.style.width = Math.min(100, trop * 40) + '%'; out.tropn.textContent = '+' + Math.round(trop * 100) + ' %';
+    out.perdu.style.width = Math.min(100, perdu * 100) + '%'; out.perdun.textContent = '−' + Math.round(perdu * 100) + ' %';
+    out.n.textContent = nv + (nv > 1 ? ' ombres' : ' ombre');
+    out.tolv.textContent = nv ? need + ' sur ' + nv : '–';
+    dots();
+  }
+  function dots() {
+    let h = '';
+    for (const v of views) h += `<circle class="dot ${v.kind}${v.el < 0 ? ' below' : ''}" cx="${v.d.x.toFixed(3)}" cy="${v.d.z.toFixed(3)}" r="${v.kind === 'toi' ? .1 : .07}"/>`;
+    if (toi) h += `<text class="me" x="${toi.d.x.toFixed(3)}" y="${(toi.d.z + .27).toFixed(3)}">toi</text>`;
+    out.dots.innerHTML = h;
+  }
+  function reveal(on) {
+    revealed = on; el.classList.toggle('revealed', on); truthMesh.visible = on;
+    Object.assign(hullMat, on ? { transparent: true, opacity: .32, depthWrite: false } : { transparent: false, opacity: 1, depthWrite: true });
+    hullMat.color.set(on ? HOT : CREAM); hullMat.needsUpdate = true;
+    mc.scale.setScalar(F / G * (on ? .975 : 1)); // là où l'enveloppe colle à l'objet, l'objet passe devant mc.castShadow = !on; truthMesh.castShadow = on;
+    marks.children.forEach((b) => { if (b.userData.kind === 'menteur') b.material.color.set(on ? HOT : TEAL); });
+    out.name.textContent = on ? 'C’était ' + SHAPES[name].name + '.' : 'Objet mystère';
+    out.reveal.textContent = on ? 'Cacher l’objet' : 'Révéler l’objet';
+  }
+  function reset(newName) {
+    if (newName) { name = newName; tr = truth(name); truthMesh.geometry = maskMesh.geometry = geo(name); }
+    views = []; toi = null; out.thumbs.innerHTML = ''; marks.clear(); kept = new Uint8Array(NN).fill(1);
+    fieldNow = new Float32Array(NN).fill(.15); reveal(false);
+    add(.55, .12, 'toi');
+  }
+  function frame(dt, s) {
+    coast(st, dt, .22);
+    const d = 6.1;
+    cam.position.set(Math.sin(st.yaw) * Math.cos(st.pitch) * d, Math.sin(st.pitch) * d - .1, Math.cos(st.yaw) * Math.cos(st.pitch) * d);
+    cam.lookAt(0, -.08, 0);
+    if (tween < 1) {
+      tween = Math.min(1, tween + dt / .7);
+      const e = 1 - Math.pow(1 - tween, 3), a = fieldFrom, b = fieldTo, f = new Float32Array(NN);
+      for (let n = 0; n < NN; n++) f[n] = a[n] + (b[n] - a[n]) * e;
+      fieldNow = f; dirty = true;
+    } else if (fieldNow !== fieldTo) { fieldNow = fieldTo; dirty = true; }
+    if (dirty) {
+      const fld = mc.field; fld.fill(-.15);
+      for (let k = 0, n = 0; k < G; k++) for (let j = 0; j < G; j++) {
+        const row = (k + PAD) * F * F + (j + PAD) * F + PAD;
+        for (let i = 0; i < G; i++, n++) fld[row + i] = fieldNow[n];
+      }
+      mc.update(); dirty = false;
     }
-    function setReveal(on) {
-      revealed = on; root.classList.toggle('revealed', on);
-      out.name.textContent = on ? 'C’était ' + NAMES[name] + '.' : 'Objet mystère';
-      out.reveal.textContent = on ? 'Cacher l’objet' : 'Révéler l’objet';
-    }
-
-    ring.addEventListener('click', function (e) {
-      var r = ring.getBoundingClientRect(), x = ((e.clientX - r.left) / r.width - .5) * 2.5, y = ((e.clientY - r.top) / r.height - .5) * 2.5;
-      var rr = Math.min(1, Math.hypot(x, y));
-      add(Math.atan2(x, y), Math.acos(rr), 'temoin');
-    });
-    root.querySelector('[data-do="voisin"]').addEventListener('click', function () {
-      var base = toi || { az: 0, el: .1 };
-      add(base.az + (Math.random() - .5) * .3, Math.max(-.2, Math.min(1.4, base.el + (Math.random() - .5) * .16)), 'voisin');
-    });
-    root.querySelector('[data-do="inconnu"]').addEventListener('click', function () {
-      add(Math.random() * 2 * Math.PI, Math.asin(Math.random() * 1.3 - .3), 'inconnu');
-    });
-    root.querySelector('[data-do="menteur"]').addEventListener('click', function () {
-      add(Math.random() * 2 * Math.PI, Math.asin(Math.random() * 1.1 - .2), 'menteur');
-    });
-    root.querySelector('[data-do="reset"]').addEventListener('click', function () { reset(); });
-    out.reveal.addEventListener('click', function () { setReveal(!revealed); });
-    out.tol.addEventListener('input', function () { tol = out.tol.value / 100; out.tolp.textContent = out.tol.value + ' %'; update(false); });
-    objBtns.forEach(function (b) {
-      b.addEventListener('click', function () { press(objBtns, 'data-obj', b.getAttribute('data-obj')); reset(ORDER[b.getAttribute('data-obj')]); });
-    });
-    drag(cv, function (dx, dy) { yaw += dx * .012; pitch = Math.max(-1.4, Math.min(1.4, pitch + dy * .012)); }, function () { held = true; }, function () { held = false; });
-
-    reset();
-    run(root, function (dt) {
-      if (!held && !REDUCE) yaw += dt * .3;
-      var f = fit(cv), sc = Math.min(f.w, f.h) / 2.9, M = rot(yaw, pitch), gs = (revealed ? groupsShown : groupsHidden).slice();
-      fades = fades.filter(function (fd) { fd.t += dt / .8; return fd.t < 1; });
-      fades.forEach(function (fd) { gs.push({ idx: fd.idx, ramp: HOT, alpha: (1 - fd.t) * .9 }); });
-      ctx.clearRect(0, 0, f.w, f.h);
-      paint(ctx, { cx: f.w / 2, cy: f.h / 2, sc: sc, dpr: f.dpr }, M, gs);
-    });
+    s.renderer.render(scene, cam);
   }
 
-  var a = document.getElementById('fig-ombre'), b = document.getElementById('fig-deux'), c = document.getElementById('fig-temoins');
-  if (a) figOmbre(a);
-  if (b) figDeux(b);
-  if (c) figTemoins(c);
-})();
+  el.querySelector('svg.ring').addEventListener('click', (e) => {
+    const r = e.currentTarget.getBoundingClientRect(), x = ((e.clientX - r.left) / r.width - .5) * 2.5, y = ((e.clientY - r.top) / r.height - .5) * 2.5;
+    add(Math.atan2(x, y), Math.acos(Math.min(1, Math.hypot(x, y))), 'temoin');
+  });
+  const on = (sel, fn) => el.querySelector(sel).addEventListener('click', fn);
+  on('[data-do="voisin"]', () => { const b = toi || { az: 0, el: .1 }; add(b.az + (Math.random() - .5) * .3, clamp(b.el + (Math.random() - .5) * .16, -.2, 1.4), 'voisin'); });
+  on('[data-do="inconnu"]', () => add(Math.random() * 2 * Math.PI, Math.asin(Math.random() * 1.3 - .3), 'inconnu'));
+  on('[data-do="menteur"]', () => add(Math.random() * 2 * Math.PI, Math.asin(Math.random() * 1.1 - .2), 'menteur'));
+  on('[data-do="reset"]', () => reset());
+  out.reveal.addEventListener('click', () => reveal(!revealed));
+  out.tol.addEventListener('input', () => { tol = out.tol.value / 100; out.tolp.textContent = out.tol.value + ' %'; update(false); });
+  const objBtns = [...el.querySelectorAll('[data-obj]')];
+  objBtns.forEach((b) => b.addEventListener('click', () => { press(objBtns, 'data-obj', b.dataset.obj); reset(ORDER[b.dataset.obj]); }));
+  reset();
+}
+
+const a = document.getElementById('fig-ombre'), b = document.getElementById('fig-deux'), c = document.getElementById('fig-temoins');
+if (a) figOmbre(a);
+if (b) figDeux(b);
+if (c) figTemoins(c);
