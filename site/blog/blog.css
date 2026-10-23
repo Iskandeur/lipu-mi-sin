@@ -157,3 +157,11 @@ figcaption b { color: var(--ink); font-weight: 600; }
 /* language switcher in the article bar */
 .bar .lang { margin-inline-start: .7rem; display: inline-flex; align-items: center; }
 .bar .lang select { font-size: .8rem; padding: .32rem 1.5rem .32rem .7rem; }
+[dir="rtl"] .bar .lang select { padding: .32rem .7rem .32rem 1.5rem; }
+
+/* Arabic joins letters and CJK has no word shapes: tracking breaks both, and the
+   Latin display line-height (1) clips tall glyphs and diacritics. */
+html[lang="ar"] *, html[lang="ja"] *, html[lang="zh"] * { letter-spacing: 0 !important; }
+html[lang="ar"] .prose h1, html[lang="ja"] .prose h1, html[lang="zh"] .prose h1 { line-height: 1.25; }
+html[lang="ja"] .prose h1, html[lang="zh"] .prose h1 { word-break: auto-phrase; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.3rem); }
+html[lang="ar"] .prose,html[lang="ja"] .prose, html[lang="zh"] .prose { line-height: 1.75; }
