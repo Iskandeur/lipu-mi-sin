@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Chacun ne voit qu'une ombre · Alexandre Pinoteau</title>
-<meta name="description" content="Un avis, c'est l'ombre d'un objet qu'on ne voit jamais en entier. En assemblant les ombres des autres, on sculpte un modèle plus juste. Un essai à manipuler : trois scènes 3D, ce qui tient dans l'image, et cinq endroits où elle casse.">
+<meta name="description" content="Un avis, c'est l'ombre d'un objet qu'on ne voit jamais en entier. En assemblant les ombres des autres, on sculpte un modèle plus juste. Un essai à manipuler : quatre scènes 3D, ce qui tient dans l'image, et cinq endroits où elle casse.">
 <meta name="theme-color" content="#0e121c">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Chacun ne voit qu'une ombre">
@@ -14,8 +14,8 @@
 <link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css?v=62">
 <link rel="stylesheet" href="blog.css?v=3">
-<link rel="modulepreload" href="vendor/three-ombres.min.js?v=1">
-<script>window.__ARTICLE={slug:"ombres",lang:"fr",langs:["fr","en","es","it","id"]};</script>
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"fr",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js?v=1"></script>
 <style>
   /* scènes de cet essai uniquement */
@@ -89,7 +89,14 @@
   #fig-temoins.revealed .legend { display: block; }
   .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
   .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
   @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
     .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
     #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
     #fig-temoins .grid { grid-template-columns: 1fr; }
@@ -112,7 +119,7 @@
   <p class="kicker">Essai · à manipuler</p>
   <h1>Chacun ne voit qu'<span class="qt">une ombre</span></h1>
   <p class="lede">Un avis sur un sujet, c'est l'ombre d'un objet qu'on ne voit jamais en entier : plate, partielle, et dessinée par l'endroit où l'on se tient. Les autres voient d'autres ombres. C'est en les assemblant qu'on devine l'objet. Une idée à manipuler plutôt qu'à croire, avec ce qui la rend solide et les endroits où elle casse.</p>
-  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>3 scènes à manipuler</span></p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>4 scènes à manipuler</span></p>
 
   <article>
 
@@ -263,7 +270,18 @@
       </ul>
     </div>
 
-    <p>Une sixième faille ? <a href="../#hello">Elle est bienvenue</a> : c'est exactement le genre d'ombre qui manque à ce texte.</p>
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="La première scène de l'article, en maquette dans une pièce, qui projette ses propres ombres au sol et au mur. Glisse pour la tourner."></canvas>
+          <p class="swipe">↔ glisse pour tourner la maquette</p>
+        </div>
+      </figure>
+      <div>
+        <p>Ce texte n'y échappe pas. Ici, la première scène de l'article devenue un objet : posée dans une pièce, elle projette à son tour ses ombres. Son mur n'est plus qu'un trait, son objet une tache, sa lampe un point. Chaque schéma est l'ombre d'une idée, et cet article en est une de plus.</p>
+        <p>Une sixième faille ? <a href="../#hello">Elle est bienvenue</a> : c'est exactement le genre d'ombre qui manque à ce texte.</p>
+      </div>
+    </div>
 
     <hr>
     <h3>Sources</h3>
@@ -273,6 +291,7 @@
       <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
       <li>R. Henderson, « Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise », <em>PNAS</em>, 2013.</li>
       <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+      <li>Joni Mitchell, « Both Sides Now » (enregistrée d'abord par Judy Collins en 1967, puis par Joni Mitchell sur <em>Clouds</em>, 1969) : les nuages, l'amour et la vie regardés des deux côtés, pour conclure qu'on ne les connaît toujours pas.</li>
     </ol>
     <p class="note">Les scènes sont calculées dans le navigateur avec three.js, servi depuis ce site : ombres portées réelles, reconstruction par sculpture de l'enveloppe visuelle sur une grille de 48 × 48 × 48 voxels, surface lissée par <em>marching cubes</em>.</p>
   </article>
@@ -280,7 +299,7 @@
 
 <footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Haut">↑</a></div></footer>
 <script src="blog.js?v=1"></script>
-<script src="ombres-txt.js?v=1"></script>
-<script type="module" src="ombres.js?v=3"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
 </body>
 </html>

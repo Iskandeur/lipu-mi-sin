@@ -1,13 +1,15 @@
 // « Chacun ne voit qu'une ombre » : trois scènes 3D (Three.js, servi depuis vendor/, aucune requête tierce).
 // 1. un objet, une lampe, un mur ; 2. deux ombres qui se contredisent ; 3. reconstruire un objet à partir des
 // ombres de plusieurs témoins (sculpture de l'enveloppe visuelle sur une grille de voxels, surface par marching cubes).
-import * as T from './vendor/three-ombres.min.js?v=1';
+import * as T from './vendor/three-ombres.min.js?v=2';
 
 // Textes que le script affiche lui-même, par langue (le reste est dans la page) : ombres-txt.js. Le français sert de repli.
 const L = window.OMBRES_TXT;
 const LANG = document.documentElement.lang || 'fr';
 const tx = (k) => (L[LANG] || L.fr)[k];
 const fmt = (k, v) => tx(k).replace(/\{(\w)\}/g, (m, x) => v[x]);
+// « one » ou « many » selon les règles de pluriel de la langue (en russe, 21 est un singulier ; en anglais, 0 est un pluriel)
+const plural = (n) => { let c = 'other'; try { c = new Intl.PluralRules(LANG).select(n); } catch (e) {} return c === 'one' ? 'one' : 'many'; };
 
 const SUN = 0xffc977, TEAL = 0x6fe3cc, HOT = 0xff8f52, CREAM = 0xf1ead9, WALL = 0xc9bfa9;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -353,7 +355,7 @@ function figTemoins(el) {
     const trop = extra / tr.vol, perdu = lost / tr.vol;
     out.trop.style.width = Math.min(100, trop * 40) + '%'; out.tropn.textContent = '+' + Math.round(trop * 100) + tx('pct');
     out.perdu.style.width = Math.min(100, perdu * 100) + '%'; out.perdun.textContent = '−' + Math.round(perdu * 100) + tx('pct');
-    out.n.textContent = fmt(nv > 1 ? 'many' : 'one', { n: nv });
+    out.n.textContent = fmt(plural(nv), { n: nv });
     out.tolv.textContent = nv ? fmt('need', { k: need, n: nv }) : '–';
     dots();
   }
@@ -367,7 +369,8 @@ function figTemoins(el) {
     revealed = on; el.classList.toggle('revealed', on); truthMesh.visible = on;
     Object.assign(hullMat, on ? { transparent: true, opacity: .32, depthWrite: false } : { transparent: false, opacity: 1, depthWrite: true });
     hullMat.color.set(on ? HOT : CREAM); hullMat.needsUpdate = true;
-    mc.scale.setScalar(F / G * (on ? .975 : 1)); // là où l'enveloppe colle à l'objet, l'objet passe devant mc.castShadow = !on; truthMesh.castShadow = on;
+    mc.scale.setScalar(F / G * (on ? .975 : 1)); // là où l'enveloppe colle à l'objet, l'objet passe devant
+    mc.castShadow = !on; truthMesh.castShadow = on;
     marks.children.forEach((b) => { if (b.userData.kind === 'menteur') b.material.color.set(on ? HOT : TEAL); });
     out.name.textContent = on ? fmt('was', { o: SHAPES[name].name }) : tx('mystery');
     out.reveal.textContent = on ? tx('hide') : tx('reveal');
@@ -416,7 +419,53 @@ function figTemoins(el) {
   reset();
 }
 
+// =====================================================================================
+// Figure 4 : le schéma n° 1 devient l'objet. Posé dans le coin de pièce de la figure 2, il projette à son tour :
+// vu par la tranche, son mur n'est plus qu'un trait, son objet une tache, sa lampe un point.
+// =====================================================================================
+function figMeta(el) {
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, .1, 60);
+  const FLOOR = -1.05, BACK = -1.45;
+  const floor = wallMesh(3.4, 3.2); floor.rotation.x = -Math.PI / 2; floor.position.set(0, FLOOR, .15); scene.add(floor);
+  const back = wallMesh(3.4, 2.5); back.position.set(0, FLOOR + 1.25, BACK); scene.add(back);
+  scene.add(new T.HemisphereLight(0x9aa6c4, 0x10141f, .5));
+  const top = new T.DirectionalLight(0xfff1d6, 1.6); top.position.set(0, 7, 0); top.shadow.camera.up.set(0, 0, -1); softShadow(top, 1.4, 1024); scene.add(top);
+  const front = new T.DirectionalLight(0xfff1d6, 1.6); front.position.set(0, 0, 7); softShadow(front, 1.4, 1024); scene.add(front);
+
+  // la maquette : le mur, l'objet et la lampe de la figure 1, à l'échelle 0,7
+  const model = new T.Group(); model.scale.setScalar(.8); model.position.y = .05; scene.add(model);
+  const miniWall = new T.Mesh(new T.BoxGeometry(.05, 1.5, 1.5), new T.MeshStandardMaterial({ color: WALL, roughness: .95 }));
+  miniWall.position.x = -1.05; miniWall.castShadow = miniWall.receiveShadow = true; model.add(miniWall);
+  const spin = new T.Group(); model.add(spin);
+  const obj = new T.Mesh(geo('cylindre'), solidMat(SUN)); obj.scale.setScalar(.8); obj.castShadow = obj.receiveShadow = true; spin.add(obj);
+  const bulb = new T.Mesh(new T.SphereGeometry(.09, 24, 16), new T.MeshBasicMaterial({ color: 0xfff3d6 }));
+  bulb.position.x = 1.05; bulb.castShadow = true; model.add(bulb);
+  const halo = glow('rgba(255,201,119,1)'); halo.scale.setScalar(.7); halo.position.copy(bulb.position); model.add(halo);
+  // sa propre lumière : son ombre s'arrête à son petit mur (far), elle n'atteint pas les murs de la pièce
+  const own = new T.DirectionalLight(0xfff1d6, 2.2); own.position.set(2.4, 0, 0); model.add(own); model.add(own.target);
+  softShadow(own, .7, 512); own.shadow.camera.near = .1; own.shadow.camera.far = 2.8;
+
+  const st = { yaw: 0, pitch: 0, vel: 0, held: false };
+  let t = 0;
+  const s = stage(el, (dt, s) => {
+    coast(st, dt, 0); st.yaw = clamp(st.yaw, -.55, .55);
+    if (!st.held) st.yaw *= Math.exp(-dt * .6);
+    if (!REDUCE) t += dt;
+    model.rotation.y = st.yaw + (REDUCE ? 0 : .22 * Math.sin(t / 3.1));
+    spin.rotation.set(.5 + .4 * Math.sin(t / 4.2), t * .35, 0, 'YXZ');
+    const a = .62, d = s.w < 480 ? 7.6 : 7.4;
+    cam.position.set(Math.sin(a) * d, 2.9, Math.cos(a) * d); cam.lookAt(0, -.15, -.3);
+    s.renderer.render(scene, cam);
+  });
+  if (!s) return;
+  s.onResize = ({ w, h }) => { cam.aspect = w / h; cam.fov = w < 480 ? 33 : 30; cam.updateProjectionMatrix(); };
+  s.onResize(s);
+  spinner(s.canvas, st, { pmin: 0, pmax: 0 });
+}
+
 const a = document.getElementById('fig-ombre'), b = document.getElementById('fig-deux'), c = document.getElementById('fig-temoins');
 if (a) figOmbre(a);
 if (b) figDeux(b);
 if (c) figTemoins(c);
+const m = document.getElementById('fig-meta');
+if (m) figMeta(m);

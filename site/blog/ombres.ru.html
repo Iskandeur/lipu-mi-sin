@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ru" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Каждый видит лишь одну тень · Alexandre Pinoteau</title>
+<meta name="description" content="Мнение — это тень объекта, который никогда не виден целиком. Складывая тени других, можно вылепить более точную модель. Интерактивное эссе: четыре 3D-сцены, то, на чём держится образ, и пять мест, где он ломается.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Каждый видит лишь одну тень">
+<meta property="og:description" content="Мнение — это тень объекта, который никогда не виден целиком. Интерактивное эссе — с его сильными сторонами и слабыми местами.">
+<meta property="og:locale" content="ru_RU">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"ru",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+<style>
+  /* scènes de cet essai uniquement */
+  .fig { margin: 2rem 0; border: 1px solid var(--line); border-radius: 18px; padding: .7rem; background: radial-gradient(120% 90% at 70% 15%, #1b2440, var(--bg2) 70%); }
+  .fig .stage { position: relative; border-radius: 12px; overflow: hidden; }
+  .fig canvas.gl { display: block; width: 100%; touch-action: pan-y; cursor: grab; -webkit-tap-highlight-color: transparent; }
+  .fig canvas.gl:active { cursor: grabbing; }
+  .fig .swipe { position: absolute; left: 50%; bottom: .5rem; transform: translateX(-50%); margin: 0; font: 400 .7rem/1 var(--mono); color: var(--mute); background: rgba(14,18,28,.6); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; white-space: nowrap; }
+  .fig.nogl .stage::after { content: "3D-графика (WebGL) недоступна в этом браузере."; position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; text-align: center; font: 400 .85rem/1.4 var(--mono); color: var(--mute); }
+  .fig figcaption { margin-top: .8rem; }
+  .ctl { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .7rem 0 0; }
+  .ctl .lbl { font: 400 .74rem/1.2 var(--mono); color: var(--mute); margin-inline-end: .1rem; }
+  .ctl button { font: 600 .86rem/1 var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 .95rem; min-height: 2.6rem; cursor: pointer; transition: border-color .2s, color .2s, background .2s; touch-action: manipulation; }
+  .ctl button:hover { border-color: var(--hot); color: var(--hot); }
+  .ctl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ctl button.hot { border-color: color-mix(in srgb, var(--hot) 60%, var(--line)); }
+  .ctl button.go { background: var(--hot); color: var(--bg); border-color: var(--hot); }
+  .ctl button.go:hover { background: var(--sun); border-color: var(--sun); color: var(--bg); }
+
+  /* 1 */
+  #fig-ombre canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-ombre .inset { position: absolute; border: 1px solid rgba(241,234,217,.35); border-radius: 8px; pointer-events: none; }
+  #fig-ombre .inset span { position: absolute; top: 100%; left: 0; right: 0; margin-top: .3rem; font: 400 .66rem/1.2 var(--mono); color: var(--mute); text-align: center; }
+
+  /* 2 */
+  #fig-deux canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-deux .tag { position: absolute; left: 0; top: 0; font: 400 .74rem/1.2 var(--mono); color: var(--ink); background: rgba(14,18,28,.72); padding: .35rem .55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  #fig-deux .tag b { color: var(--sun); font-weight: 700; }
+  #fig-deux .sum { position: absolute; left: .6rem; top: .6rem; display: flex; align-items: center; gap: .35rem; background: rgba(14,18,28,.82); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem;
+    font: 600 1rem/1 var(--mono); color: var(--mute); transition: opacity .35s var(--ease), transform .35s var(--ease); }
+  #fig-deux .sum svg { width: 2.6rem; height: 2.6rem; }
+  #fig-deux .sum .s path { fill: #07090e; stroke: rgba(241,234,217,.4); stroke-width: .03; }
+  #fig-deux .sum .m { width: 3.6rem; height: 3.6rem; }
+  #fig-deux .sum .m path { fill: color-mix(in srgb, var(--hot) 25%, transparent); stroke: var(--hot); stroke-width: .03; stroke-dasharray: .08 .05; }
+  #fig-deux:not([data-state="moyenne"]) .sum { opacity: 0; transform: translateY(-.4rem); }
+  #fig-deux .verdict { text-align: center; margin: .9rem auto 0; max-width: 32rem; font-size: 1rem; line-height: 1.5; min-height: 3em; }
+  #fig-deux .ctl { justify-content: center; }
+
+  /* 3 */
+  #fig-temoins .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center; }
+  #fig-temoins canvas.gl { aspect-ratio: 1; }
+  #fig-temoins .name { position: absolute; top: .6rem; left: 0; right: 0; margin: 0; font: 600 .9rem/1.3 var(--mono); color: var(--sun); text-align: center; pointer-events: none; }
+  #fig-temoins .panel { display: grid; gap: .8rem; }
+  #fig-temoins .ring { display: block; width: 100%; max-width: 14rem; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+  #fig-temoins .ring .rim { fill: rgba(241,234,217,.04); stroke: var(--line); stroke-width: .02; }
+  #fig-temoins .ring .mid { fill: none; stroke: var(--line); stroke-width: .012; stroke-dasharray: .04 .04; }
+  #fig-temoins .ring .obj { fill: rgba(241,234,217,.14); stroke: rgba(241,234,217,.4); stroke-width: .015; }
+  #fig-temoins .ring text { font: 400 .12px var(--mono); fill: var(--mute); text-anchor: middle; }
+  #fig-temoins .ring text.me { fill: var(--sun); font-weight: 700; }
+  #fig-temoins .dot { fill: var(--teal); }
+  #fig-temoins .dot.toi { fill: var(--sun); }
+  #fig-temoins .dot.voisin { fill: #b9c2d6; }
+  #fig-temoins .dot.below { fill: none; stroke: var(--teal); stroke-width: .025; }
+  #fig-temoins.revealed .dot.menteur { fill: var(--hot); }
+  #fig-temoins .hint { font: 400 .7rem/1.45 var(--mono); color: var(--mute); text-align: center; margin: .3rem 0 0; }
+  #fig-temoins .score b { display: block; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 3rem)/1 var(--display); letter-spacing: -.03em; color: var(--sun); }
+  #fig-temoins .score span { font: 400 .76rem/1.3 var(--mono); color: var(--mute); }
+  #fig-temoins .g { display: grid; grid-template-columns: 6.6rem 1fr 3rem; gap: .5rem; align-items: center; margin-top: .5rem; font: 400 .72rem/1.2 var(--mono); color: var(--mute); }
+  #fig-temoins .g i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  #fig-temoins .g u { display: block; height: 100%; width: 0; transition: width .4s var(--ease); }
+  #fig-temoins .g.trop u { background: var(--hot); } #fig-temoins .g.perdu u { background: var(--teal); }
+  #fig-temoins .g em { font-style: normal; color: var(--ink); text-align: end; }
+  #fig-temoins .thumbs { display: flex; gap: .35rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+  #fig-temoins .th { width: 2.8rem; height: 2.8rem; flex: none; border-radius: 6px; border: 1px solid var(--line); }
+  #fig-temoins .th.me { border-color: var(--sun); }
+  #fig-temoins.revealed .th.liar { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot); }
+  #fig-temoins .conf { font: 400 .78rem/1.4 var(--mono); color: var(--mute); }
+  #fig-temoins .conf input { width: 9rem; accent-color: var(--hot); vertical-align: middle; height: 2rem; }
+  #fig-temoins .conf b { color: var(--ink); }
+  #fig-temoins .legend { display: none; font: 400 .72rem/1.4 var(--mono); color: var(--mute); margin: 0; }
+  #fig-temoins.revealed .legend { display: block; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
+  .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
+  @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
+    .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
+    #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
+    #fig-temoins .grid { grid-template-columns: 1fr; }
+    #fig-temoins .panel { grid-template-columns: 9.5rem 1fr; align-items: center; gap: .6rem; }
+    #fig-temoins .g { grid-template-columns: 1fr 2.6rem; }
+    #fig-temoins .g i { grid-column: 1 / -1; grid-row: 2; }
+    #fig-temoins .acts { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← блог</a></nav>
+  <label class="lang"><span class="sr">Язык</span><select id="blog-lang" aria-label="Язык"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">Эссе · интерактивное</p>
+  <h1>Каждый видит лишь <span class="qt">одну тень</span></h1>
+  <p class="lede">Мнение о каком-либо предмете — это тень объекта, который никогда не виден целиком: плоская, неполная, и её очертания зависят от того, где стоит смотрящий. Другие видят другие тени. Только сложив их вместе, можно угадать сам объект. Идея, которую стоит покрутить в руках, а не принять на веру, — с тем, что делает её прочной, и с местами, где она ломается.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>4 интерактивные сцены</span></p>
+
+  <article>
+
+    <h2><span class="n">01</span>Тень не лжёт, но и не говорит всего</h2>
+    <p>Объект, лампа, стена. Тень ничего не выдумывает: каждому тёмному участку соответствует настоящая часть объекта. Но она потеряла целое измерение, и её форма зависит от угла, под которым падает свет, не меньше, чем от самого объекта.</p>
+
+    <figure class="fig" id="fig-ombre">
+      <div class="stage">
+        <canvas class="gl" aria-label="Трёхмерный объект, освещённый лампой, и его тень на стене. Потяни, чтобы повернуть его."></canvas>
+        <div class="inset" aria-hidden="true"><span>стена, вид спереди</span></div>
+        <p class="swipe">↔ потяни, чтобы повернуть объект</p>
+      </div>
+      <div class="ctl"><span class="lbl">объект</span>
+        <button type="button" data-shape="cylindre" aria-pressed="true">цилиндр</button>
+        <button type="button" data-shape="cone" aria-pressed="false">конус</button>
+        <button type="button" data-shape="tore" aria-pressed="false">бублик</button>
+        <button type="button" data-shape="tasse" aria-pressed="false">кружка</button>
+      </div>
+      <figcaption><b>Объект не меняется, его тень — меняется.</b> Во врезке — всё, что знает тот, кто видит только стену.</figcaption>
+    </figure>
+
+    <p>С мнением то же самое. По любому вопросу (работа, деньги, любовь, жизнь вообще) каждый видит проекцию объекта, который больше его самого. Угол — это прожитое: страна, профессия, семья, раны, прочитанные книги. Это не ошибка рассуждения, это геометрия. <strong>Никто не смотрит из ниоткуда.</strong></p>
+
+    <h2><span class="n">02</span>Две тени, которые противоречат друг другу</h2>
+    <p>Ана смотрит на пол и видит круг. Бен смотрит на стену и видит квадрат. У каждого доказательство перед глазами, и каждый может годами называть другого слепым.</p>
+
+    <figure class="fig" id="fig-deux" data-state="ombres">
+      <div class="stage">
+        <canvas class="gl" aria-label="Угол комнаты: тень на полу, тень на стене и объект, который их отбрасывает, поначалу невидимый. Потяни, чтобы обойти его вокруг."></canvas>
+        <span class="tag a">Ана видит <b data-la>круг</b></span>
+        <span class="tag b">Бен видит <b data-lb>квадрат</b></span>
+        <div class="sum" aria-hidden="true">
+          <svg class="s" viewBox="-1 -1 2 2"><path data-a/></svg>+<svg class="s" viewBox="-1 -1 2 2"><path data-b/></svg>=<svg class="m" viewBox="-1 -1 2 2"><path data-avg/></svg>
+        </div>
+      </div>
+      <p class="verdict" data-v aria-live="polite"></p>
+      <div class="ctl">
+        <button type="button" data-go="moyenne" aria-pressed="false">Сойтись посередине</button>
+        <button type="button" data-go="objet" aria-pressed="false" class="hot">Искать объект</button>
+      </div>
+      <div class="ctl"><span class="lbl">другой спор</span>
+        <button type="button" data-pair="cylindre" aria-pressed="true">круг / квадрат</button>
+        <button type="button" data-pair="cone" aria-pressed="false">круг / треугольник</button>
+      </div>
+    </figure>
+
+    <p>Два рефлекса соблазнительны, третий работает. Первый — решить, кто прав. Второй — сойтись посередине, что даёт расплывчатую, на вид разумную форму, которую не видят ни Ана, ни Бен и которая неверна для обоих. Третий — искать, <strong>какой объект мог бы отбрасывать обе тени сразу</strong>. Правы были оба, и их противоречие как раз и было недостающей информацией: следом глубины, которую ни один из них не мог увидеть в одиночку.</p>
+
+    <h2><span class="n">03</span>Лепить, отсекая лишнее</h2>
+    <p>Тень говорит прежде всего о том, чем объект <em>не является</em>: всё, что выходило бы за её пределы, исключено. Поэтому начинают с цельного блока, каждый свидетель отсекает от него то, что не сходится с увиденным, и то, что остаётся, приближается к объекту. В компьютерном зрении такой вылепленный блок называется <em>визуальной оболочкой</em> (<em>visual hull</em>). Компьютерный томограф делает то же самое, только тоньше, по рентгеновским снимкам, сделанным со всех сторон вокруг пациента.</p>
+
+    <div class="box teal">
+      <p class="t">Твой ход</p>
+      <p>Объект спрятан. У тебя есть только твоя тень (жёлтая точка). Добавляй свидетелей, касаясь кольца: край — это уровень глаз, центр — вид сверху. Попробуй угадать объект, прежде чем его открыть.</p>
+    </div>
+
+    <figure class="fig wide" id="fig-temoins">
+      <div class="grid">
+        <div class="stage">
+          <canvas class="gl" aria-label="То, что осталось от блока после того, как каждый свидетель убрал всё, что выходит за пределы его тени. Потяни, чтобы повернуть."></canvas>
+          <p class="name" data-o="name">Загадочный объект</p>
+          <p class="swipe">↔ потяни, чтобы повернуть</p>
+        </div>
+        <div class="panel">
+          <div>
+            <svg class="ring" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="Свидетели, вид сверху. Коснись, чтобы поставить нового.">
+              <circle class="rim" r="1"/><circle class="mid" r=".5"/><circle class="obj" r=".15"/>
+              <text y="1.21">на уровне глаз</text><text y=".38">сверху</text>
+              <g data-o="dots"></g>
+            </svg>
+            <p class="hint">Коснись кольца, чтобы поставить свидетеля.</p>
+          </div>
+          <div>
+            <div class="score"><b data-o="iou">–</b><span>сходства по <span data-o="n">0 теням</span></span></div>
+            <div class="g trop"><span>лишний объём</span><i><u data-o="trop"></u></i><em data-o="tropn"></em></div>
+            <div class="g perdu"><span>потерянный объём</span><i><u data-o="perdu"></u></i><em data-o="perdun"></em></div>
+            <p class="legend"><i style="background:var(--teal)"></i>объект<i style="background:color-mix(in srgb, var(--hot) 45%, transparent)"></i>лишнее</p>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs" data-o="thumbs" aria-label="Собранные тени"></div>
+      <div class="ctl acts">
+        <button type="button" data-do="voisin">+ сосед</button>
+        <button type="button" data-do="inconnu">+ незнакомец</button>
+        <button type="button" data-do="menteur" class="hot">+ лжец</button>
+        <button type="button" data-do="reset">заново</button>
+      </div>
+      <div class="ctl conf">
+        <label>доверие <input type="range" min="50" max="100" value="100" data-o="tol"></label>
+        <span>оставляем то, что подтверждают <b data-o="tolp">100 %</b> теней (<span data-o="tolv">–</span>)</span>
+      </div>
+      <div class="ctl"><span class="lbl">объект</span>
+        <button type="button" data-obj="1" aria-pressed="true">1</button>
+        <button type="button" data-obj="2" aria-pressed="false">2</button>
+        <button type="button" data-obj="3" aria-pressed="false">3</button>
+        <button type="button" data-o="reveal" class="go">Показать объект</button>
+      </div>
+      <figcaption><b>Сосед</b> смотрит почти с того же места, что и ты. <b>Незнакомец</b> смотрит откуда угодно. <b>Лжец</b> показывает ложную тень (ошибается ли он сам или обманывает других), и до раскрытия его ничем не отличить. Когда объект показан, бирюзовое, что выступает из-под оранжевой вуали, — это потерянный объём.</figcaption>
+    </figure>
+
+    <p>Это не среднее. Тень не голосует, она <strong>ограничивает</strong>: ничего не добавляет, а отсекает возможное.</p>
+
+    <div class="box">
+      <p class="t">На чём держится образ</p>
+      <ul class="tldr">
+        <li><strong>Математика на его стороне.</strong> В 1917 году Иоганн Радон показал, что объект полностью определяется своими рентгеновскими проекциями, снятыми под всеми углами. На этом результате основана компьютерная томография (Нобелевская премия 1979 года, Кормак и Хаунсфилд).</li>
+        <li><strong>Рентгеновский снимок лучше тени.</strong> Тень двоична; снимок говорит, <em>сколько</em> вещества прошёл свет. Взвешенное мнение («в основном», «скорее», «кроме случаев, когда») несёт больше информации, чем «да» или «нет», и больше помогает восстановить объект.</li>
+        <li><strong>Разнообразие важнее количества.</strong> Когда толпа оценивает какое-то число, коллективная ошибка равна средней ошибке отдельных людей минус разнообразие их оценок («теорема о разнообразии» Скотта Пейджа). Далёкие друг от друга углы ценнее многочисленных.</li>
+        <li><strong>Образ объясняет несогласие, никого не выставляя дураком.</strong> Два честных и здравомыслящих человека могут противоречить друг другу, и при этом ни один не ошибается. Это более великодушная гипотеза, чем «другой глуп или недобросовестен», и чаще верная.</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">04</span>Где образ ломается</h2>
+    <p>Немногого стоит метафора, которую не знаешь, как атаковать. Эта трещит в пяти местах. Первые три можно проверить в сцене выше.</p>
+
+    <h3>1. Тысяча соседей стоят одного свидетеля</h3>
+    <p>Десять соседей добавляют несколько пунктов сходства. Один-единственный незнакомец часто даёт больше, чем все десять. Объект восстанавливает не число мнений, а разброс углов. Лента новостей, круг друзей, команда часто возвращают сто раз одну и ту же тень. Сто раз одна и та же тень прибавляет уверенности, а не точности.</p>
+
+    <h3>2. Пустоты не отбрасывают тени</h3>
+    <p>С объектом 3 сходство упирается в потолок, сколько бы ни было свидетелей. Это кружка, и её полость не выступает ни из одного силуэта, ни под каким углом. Хуже того: сплошной цилиндр отбрасывает в точности такие же тени. Можно собрать все внешние точки зрения и прийти, в полной уверенности, к неверному объекту. Некоторые вещи видны только изнутри: каково быть бедным, больным, изгнанником, родителем. Внешние свидетели, сколько бы их ни было, этого не восстановят. Нужно слушать тех, кто внутри.</p>
+
+    <h3>3. Одного лжеца достаточно</h3>
+    <p>Поскольку оставляют только то, что допускают <em>все</em> тени, лжец режет по живому, и ничто не приклеит обратно то, что он отсёк. Если понизить доверие, остаётся лишь то, что подтверждает большинство: лжец больше ничего не решает, но объект толстеет, потому что вместе с ним выбрасывается и часть того, что узнали честные свидетели. Универсально правильной настройки нет: между легковерием и глухотой каждый сам выбирает, какую цену платить.</p>
+
+    <h3>4. Неизвестно, откуда смотрят другие, да и откуда смотришь сам</h3>
+    <p>В сцене положение каждого свидетеля известно с точностью до градуса. В жизни приходится угадывать, откуда говорит другой, а собственный угол каждый знает плохо. Криоэлектронная микроскопия упирается в ту же проблему: она восстанавливает молекулы по тысячам зашумлённых изображений, снятых под неизвестными углами. Это работает, но со знаменитой ловушкой, «Einstein from noise»: выровняйте изображения чистого шума по портрету Эйнштейна, усредните их — и проступит Эйнштейн. Кто читает чужие тени через собственную модель, тот восстанавливает… собственную модель.</p>
+
+    <h3>5. А если объекта нет?</h3>
+    <p>Весь образ предполагает, что где-то там есть объект, один для всех, который не меняется, пока на него смотрят. Для вопроса о фактах (климат, авария, болезнь) это разумно. Для «жизни вообще» это ставка. Смысл, вкус, ценность жизни — возможно, не объекты, которые отбрасывают тени, а то, что отчасти создают сами взгляды. А общество меняется, когда на него смотрят. Даже итоговая реконструкция живёт в чьей-то голове, у которой свой угол: «взгляда из ниоткуда» не бывает. Тогда образ держится как дисциплина, а не как истина: действовать так, будто объект есть, чтобы продолжать его искать, не претендуя на то, что он уже в руках.</p>
+
+    <h2><span class="n">05</span>Что из этого стоит сохранить</h2>
+    <ol class="rules">
+      <li><span>Искать <strong>самый далёкий</strong> угол, а не самый людный.</span></li>
+      <li><span>Столкнувшись с противоречием, спрашивать «<strong>какой объект дал бы эти две тени?</strong>», прежде чем спрашивать «кто неправ?».</span></li>
+      <li><span>Спрашивать, откуда смотрит другой и откуда смотришь ты сам.</span></li>
+      <li><span>Приводить свои доводы, а не только вывод: <strong>рентгеновский снимок, а не тень</strong>.</span></li>
+      <li><span>Настраивать доверие: достаточное, чтобы каждый свидетель чему-то учил, но не такое, чтобы один лжец вылепил всё целиком.</span></li>
+      <li><span>Помнить о пустотах: <strong>слушать тех, кто видит изнутри</strong>.</span></li>
+    </ol>
+
+    <div class="box">
+      <p class="t">Уже сказано — по-другому</p>
+      <ul class="tldr">
+        <li><strong>Платон, пещера</strong> (<em>Государство</em>, книга VII): узники видят только тени. У Платона спасение в том, чтобы выйти наружу и увидеть объект. Здесь никто не выходит: есть только тени, и их сравнивают.</li>
+        <li><strong>Слепые и слон</strong>, индийская притча: каждый ощупывает одну часть и принимает её за целое. Джайны вывели из неё учение — <em>анекантаваду</em>, «неодносторонность».</li>
+        <li><strong>Обложка книги <em>Гёдель, Эшер, Бах</em></strong> (Хофштадтер, 1979): вырезанный блок, тени которого складываются в буквы G, E и B.</li>
+        <li><strong>Томас Нагель</strong>, <em>Взгляд из ниоткуда</em> (1986): объективность как усилие отстраниться от собственной точки зрения — усилие, которое никогда не доходит до конца.</li>
+      </ul>
+    </div>
+
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="Первая сцена статьи в виде макета в комнате; она отбрасывает собственные тени на пол и на стену. Потяни, чтобы повернуть её."></canvas>
+          <p class="swipe">↔ потяни, чтобы повернуть макет</p>
+        </div>
+      </figure>
+      <div>
+        <p>Этот текст тоже не исключение. Здесь первая сцена статьи стала объектом: помещённая в комнату, она в свою очередь отбрасывает тени. Её стена превратилась в черту, объект — в пятно, лампа — в точку. Каждая схема — тень идеи, и эта статья — ещё одна такая тень.</p>
+        <p>Шестая трещина? <a href="../#hello">Добро пожаловать</a>: это именно та тень, которой не хватает этому тексту.</p>
+      </div>
+    </div>
+
+    <hr>
+    <h3>Источники</h3>
+    <ol class="sources">
+      <li>J. Radon, «Über die Bestimmung von Funktionen durch ihre Integralwerte längs gewisser Mannigfaltigkeiten», 1917.</li>
+      <li>A. Laurentini, «The visual hull concept for silhouette-based image understanding», <em>IEEE PAMI</em>, 1994.</li>
+      <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
+      <li>R. Henderson, «Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise», <em>PNAS</em>, 2013.</li>
+      <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+      <li>Joni Mitchell, «Both Sides Now» (впервые записана Джуди Коллинз в 1967 году, затем самой Джони Митчелл на альбоме <em>Clouds</em>, 1969): облака, любовь и жизнь, увиденные с обеих сторон, — и вывод, что по-настоящему их всё ещё не знаешь.</li>
+    </ol>
+    <p class="note">Сцены рассчитываются в браузере с помощью three.js, который загружается с этого сайта: настоящие отбрасываемые тени, реконструкция вырезанием визуальной оболочки на сетке 48 × 48 × 48 вокселей, поверхность сглажена методом <em>marching cubes</em>.</p>
+  </article>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← блог</a><a class="up" href="#top" aria-label="Наверх">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
+</body>
+</html>

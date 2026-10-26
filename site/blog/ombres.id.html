@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Setiap orang hanya melihat satu bayangan · Alexandre Pinoteau</title>
-<meta name="description" content="Pendapat adalah bayangan dari sebuah objek yang tak pernah kita lihat utuh. Dengan menyatukan bayangan orang lain, kita memahat model yang lebih tepat. Sebuah esai untuk dimainkan: tiga adegan 3D, apa yang kokoh dalam gambaran ini, dan lima tempat ia retak.">
+<meta name="description" content="Pendapat adalah bayangan dari sebuah objek yang tak pernah kita lihat utuh. Dengan menyatukan bayangan orang lain, kita memahat model yang lebih tepat. Sebuah esai untuk dimainkan: empat adegan 3D, apa yang kokoh dalam gambaran ini, dan lima tempat ia retak.">
 <meta name="theme-color" content="#0e121c">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Setiap orang hanya melihat satu bayangan">
@@ -14,8 +14,8 @@
 <link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css?v=62">
 <link rel="stylesheet" href="blog.css?v=3">
-<link rel="modulepreload" href="vendor/three-ombres.min.js?v=1">
-<script>window.__ARTICLE={slug:"ombres",lang:"id",langs:["fr","en","es","it","id"]};</script>
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"id",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js?v=1"></script>
 <style>
   /* scènes de cet essai uniquement */
@@ -89,7 +89,14 @@
   #fig-temoins.revealed .legend { display: block; }
   .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
   .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
   @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
     .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
     #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
     #fig-temoins .grid { grid-template-columns: 1fr; }
@@ -112,7 +119,7 @@
   <p class="kicker">Esai · untuk dimainkan</p>
   <h1>Setiap orang hanya melihat <span class="qt">satu bayangan</span></h1>
   <p class="lede">Pendapat tentang suatu hal adalah bayangan dari sebuah objek yang tak pernah kita lihat utuh: datar, sebagian, dan bentuknya ditentukan oleh tempat kita berdiri. Orang lain melihat bayangan lain. Objeknya baru bisa ditebak kalau bayangan-bayangan itu disatukan. Sebuah gagasan untuk dimainkan, bukan untuk dipercaya begitu saja, lengkap dengan apa yang membuatnya kokoh dan di mana ia retak.</p>
-  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>3 adegan untuk dimainkan</span></p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>4 adegan untuk dimainkan</span></p>
 
   <article>
 
@@ -263,7 +270,18 @@
       </ul>
     </div>
 
-    <p>Celah keenam? <a href="../#hello">Silakan</a>: itu persis jenis bayangan yang kurang dari tulisan ini.</p>
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="Adegan pertama artikel ini sebagai maket di sebuah ruangan, memproyeksikan bayangannya sendiri ke lantai dan dinding. Geser untuk memutarnya."></canvas>
+          <p class="swipe">↔ geser untuk memutar maket</p>
+        </div>
+      </figure>
+      <div>
+        <p>Teks ini pun tidak luput. Di sini, adegan pertama artikel ini menjadi sebuah benda: diletakkan di sebuah ruangan, ia memproyeksikan bayangannya sendiri. Dindingnya tinggal sebuah garis, bendanya sebuah noda, lampunya sebuah titik. Setiap skema adalah bayangan sebuah gagasan, dan artikel ini adalah satu bayangan lagi.</p>
+        <p>Celah keenam? <a href="../#hello">Silakan</a>: itu persis jenis bayangan yang kurang dari tulisan ini.</p>
+      </div>
+    </div>
 
     <hr>
     <h3>Sumber</h3>
@@ -273,6 +291,7 @@
       <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
       <li>R. Henderson, « Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise », <em>PNAS</em>, 2013.</li>
       <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+      <li>Joni Mitchell, “Both Sides Now” (pertama direkam oleh Judy Collins pada 1967, lalu oleh Joni Mitchell di album <em>Clouds</em>, 1969): awan, cinta, dan hidup dilihat dari kedua sisi, hanya untuk menyimpulkan bahwa ia tetap tak benar-benar mengenalnya.</li>
     </ol>
     <p class="note">Adegan-adegannya dihitung di dalam peramban dengan three.js, disajikan dari situs ini: bayangan jatuh yang nyata, rekonstruksi dengan memahat <em>visual hull</em> pada grid 48 × 48 × 48 voxel, permukaan dihaluskan dengan <em>marching cubes</em>.</p>
   </article>
@@ -280,7 +299,7 @@
 
 <footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Atas">↑</a></div></footer>
 <script src="blog.js?v=1"></script>
-<script src="ombres-txt.js?v=1"></script>
-<script type="module" src="ombres.js?v=3"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
 </body>
 </html>
