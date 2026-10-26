@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>كلٌّ منّا لا يرى إلا ظلًّا · Alexandre Pinoteau</title>
+<meta name="description" content="الرأي هو ظلّ جسمٍ لا نراه كاملًا أبدًا. وبجمع ظلال الآخرين، ننحت نموذجًا أصدق. مقالة تفاعلية: أربعة مشاهد ثلاثية الأبعاد، وما يصمد في الصورة، وخمسة مواضع تنكسر فيها.">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="كلٌّ منّا لا يرى إلا ظلًّا">
+<meta property="og:description" content="الرأي هو ظلّ جسمٍ لا نراه كاملًا أبدًا. مقالة تفاعلية، بنقاط قوتها وثغراتها.">
+<meta property="og:locale" content="ar_AR">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"ar",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+<style>
+  /* scènes de cet essai uniquement */
+  .fig { margin: 2rem 0; border: 1px solid var(--line); border-radius: 18px; padding: .7rem; background: radial-gradient(120% 90% at 70% 15%, #1b2440, var(--bg2) 70%); }
+  .fig .stage { position: relative; border-radius: 12px; overflow: hidden; }
+  .fig canvas.gl { display: block; width: 100%; touch-action: pan-y; cursor: grab; -webkit-tap-highlight-color: transparent; }
+  .fig canvas.gl:active { cursor: grabbing; }
+  .fig .swipe { position: absolute; left: 50%; bottom: .5rem; transform: translateX(-50%); margin: 0; font: 400 .7rem/1 var(--mono); color: var(--mute); background: rgba(14,18,28,.6); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; white-space: nowrap; }
+  .fig.nogl .stage::after { content: "العرض ثلاثي الأبعاد (WebGL) غير متاح في هذا المتصفح."; position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; text-align: center; font: 400 .85rem/1.4 var(--mono); color: var(--mute); }
+  .fig figcaption { margin-top: .8rem; }
+  .ctl { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .7rem 0 0; }
+  .ctl .lbl { font: 400 .74rem/1.2 var(--mono); color: var(--mute); margin-inline-end: .1rem; }
+  .ctl button { font: 600 .86rem/1 var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 .95rem; min-height: 2.6rem; cursor: pointer; transition: border-color .2s, color .2s, background .2s; touch-action: manipulation; }
+  .ctl button:hover { border-color: var(--hot); color: var(--hot); }
+  .ctl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ctl button.hot { border-color: color-mix(in srgb, var(--hot) 60%, var(--line)); }
+  .ctl button.go { background: var(--hot); color: var(--bg); border-color: var(--hot); }
+  .ctl button.go:hover { background: var(--sun); border-color: var(--sun); color: var(--bg); }
+
+  /* 1 */
+  #fig-ombre canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-ombre .inset { position: absolute; border: 1px solid rgba(241,234,217,.35); border-radius: 8px; pointer-events: none; }
+  #fig-ombre .inset span { position: absolute; top: 100%; left: 0; right: 0; margin-top: .3rem; font: 400 .66rem/1.2 var(--mono); color: var(--mute); text-align: center; }
+
+  /* 2 */
+  #fig-deux canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-deux .tag { position: absolute; left: 0; top: 0; font: 400 .74rem/1.2 var(--mono); color: var(--ink); background: rgba(14,18,28,.72); padding: .35rem .55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  #fig-deux .tag b { color: var(--sun); font-weight: 700; }
+  #fig-deux .sum { position: absolute; left: .6rem; top: .6rem; display: flex; align-items: center; gap: .35rem; background: rgba(14,18,28,.82); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem;
+    font: 600 1rem/1 var(--mono); color: var(--mute); transition: opacity .35s var(--ease), transform .35s var(--ease); }
+  #fig-deux .sum svg { width: 2.6rem; height: 2.6rem; }
+  #fig-deux .sum .s path { fill: #07090e; stroke: rgba(241,234,217,.4); stroke-width: .03; }
+  #fig-deux .sum .m { width: 3.6rem; height: 3.6rem; }
+  #fig-deux .sum .m path { fill: color-mix(in srgb, var(--hot) 25%, transparent); stroke: var(--hot); stroke-width: .03; stroke-dasharray: .08 .05; }
+  #fig-deux:not([data-state="moyenne"]) .sum { opacity: 0; transform: translateY(-.4rem); }
+  #fig-deux .verdict { text-align: center; margin: .9rem auto 0; max-width: 32rem; font-size: 1rem; line-height: 1.5; min-height: 3em; }
+  #fig-deux .ctl { justify-content: center; }
+
+  /* 3 */
+  #fig-temoins .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center; }
+  #fig-temoins canvas.gl { aspect-ratio: 1; }
+  #fig-temoins .name { position: absolute; top: .6rem; left: 0; right: 0; margin: 0; font: 600 .9rem/1.3 var(--mono); color: var(--sun); text-align: center; pointer-events: none; }
+  #fig-temoins .panel { display: grid; gap: .8rem; }
+  #fig-temoins .ring { display: block; width: 100%; max-width: 14rem; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+  #fig-temoins .ring .rim { fill: rgba(241,234,217,.04); stroke: var(--line); stroke-width: .02; }
+  #fig-temoins .ring .mid { fill: none; stroke: var(--line); stroke-width: .012; stroke-dasharray: .04 .04; }
+  #fig-temoins .ring .obj { fill: rgba(241,234,217,.14); stroke: rgba(241,234,217,.4); stroke-width: .015; }
+  #fig-temoins .ring text { font: 400 .12px var(--mono); fill: var(--mute); text-anchor: middle; }
+  #fig-temoins .ring text.me { fill: var(--sun); font-weight: 700; }
+  #fig-temoins .dot { fill: var(--teal); }
+  #fig-temoins .dot.toi { fill: var(--sun); }
+  #fig-temoins .dot.voisin { fill: #b9c2d6; }
+  #fig-temoins .dot.below { fill: none; stroke: var(--teal); stroke-width: .025; }
+  #fig-temoins.revealed .dot.menteur { fill: var(--hot); }
+  #fig-temoins .hint { font: 400 .7rem/1.45 var(--mono); color: var(--mute); text-align: center; margin: .3rem 0 0; }
+  #fig-temoins .score b { display: block; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 3rem)/1 var(--display); letter-spacing: -.03em; color: var(--sun); }
+  #fig-temoins .score span { font: 400 .76rem/1.3 var(--mono); color: var(--mute); }
+  #fig-temoins .g { display: grid; grid-template-columns: 6.6rem 1fr 3rem; gap: .5rem; align-items: center; margin-top: .5rem; font: 400 .72rem/1.2 var(--mono); color: var(--mute); }
+  #fig-temoins .g i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  #fig-temoins .g u { display: block; height: 100%; width: 0; transition: width .4s var(--ease); }
+  #fig-temoins .g.trop u { background: var(--hot); } #fig-temoins .g.perdu u { background: var(--teal); }
+  #fig-temoins .g em { font-style: normal; color: var(--ink); text-align: end; }
+  #fig-temoins .thumbs { display: flex; gap: .35rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+  #fig-temoins .th { width: 2.8rem; height: 2.8rem; flex: none; border-radius: 6px; border: 1px solid var(--line); }
+  #fig-temoins .th.me { border-color: var(--sun); }
+  #fig-temoins.revealed .th.liar { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot); }
+  #fig-temoins .conf { font: 400 .78rem/1.4 var(--mono); color: var(--mute); }
+  #fig-temoins .conf input { width: 9rem; accent-color: var(--hot); vertical-align: middle; height: 2rem; }
+  #fig-temoins .conf b { color: var(--ink); }
+  #fig-temoins .legend { display: none; font: 400 .72rem/1.4 var(--mono); color: var(--mute); margin: 0; }
+  #fig-temoins.revealed .legend { display: block; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
+  .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
+  @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
+    .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
+    #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
+    #fig-temoins .grid { grid-template-columns: 1fr; }
+    #fig-temoins .panel { grid-template-columns: 9.5rem 1fr; align-items: center; gap: .6rem; }
+    #fig-temoins .g { grid-template-columns: 1fr 2.6rem; }
+    #fig-temoins .g i { grid-column: 1 / -1; grid-row: 2; }
+    #fig-temoins .acts { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">→ المدونة</a></nav>
+  <label class="lang"><span class="sr">اللغة</span><select id="blog-lang" aria-label="اللغة"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">مقالة · تفاعلية</p>
+  <h1>كلٌّ منّا لا يرى إلا <span class="qt">ظلًّا</span></h1>
+  <p class="lede">الرأي في موضوعٍ ما هو ظلّ جسمٍ لا نراه كاملًا أبدًا: مسطّح، وجزئي، ويرسمه المكان الذي نقف فيه. ويرى الآخرون ظلالًا أخرى. وبجمعها نخمّن الجسم. فكرة للتجريب لا للتصديق، مع ما يجعلها متينة والمواضع التي تنكسر فيها.</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>4 مشاهد تفاعلية</span></p>
+
+  <article>
+
+    <h2><span class="n">01</span>الظل لا يكذب، لكنه لا يقول كل شيء</h2>
+    <p>جسم، ومصباح، وجدار. الظل لا يختلق شيئًا: كل منطقة معتمة فيه تقابل جزءًا حقيقيًا من الجسم. لكنه فقد بُعدًا كاملًا، وشكله يتوقف على زاوية الضوء بقدر ما يتوقف على الجسم نفسه.</p>
+
+    <figure class="fig" id="fig-ombre">
+      <div class="stage">
+        <canvas class="gl" aria-label="جسم ثلاثي الأبعاد يضيئه مصباح، وظله الملقى على جدار. اسحب لتدويره."></canvas>
+        <div class="inset" aria-hidden="true"><span>الجدار، من الأمام</span></div>
+        <p class="swipe">↔ اسحب لتدوير الجسم</p>
+      </div>
+      <div class="ctl"><span class="lbl">الجسم</span>
+        <button type="button" data-shape="cylindre" aria-pressed="true">أسطوانة</button>
+        <button type="button" data-shape="cone" aria-pressed="false">مخروط</button>
+        <button type="button" data-shape="tore" aria-pressed="false">دونات</button>
+        <button type="button" data-shape="tasse" aria-pressed="false">كوب</button>
+      </div>
+      <figcaption><b>الجسم لا يتغير، أما ظله فيتغير.</b> يعرض الإطار الصغير كل ما يعرفه من لا يرى إلا الجدار.</figcaption>
+    </figure>
+
+    <p>والرأي يعمل بالطريقة نفسها. في أي موضوع (العمل، المال، الحب، الحياة عمومًا)، يرى كلٌّ منا إسقاطَ جسمٍ أكبر منه. والزاوية هي ما عشناه: بلد، ومهنة، وعائلة، وجراح، وقراءات. ليس هذا عيبًا في التفكير، بل هو هندسة. <strong>لا أحد ينظر من اللامكان.</strong></p>
+
+    <h2><span class="n">02</span>ظلّان يتناقضان</h2>
+    <p>تنظر آنا إلى الأرض فترى قرصًا. وينظر بن إلى الجدار فيرى مربعًا. لكلٍّ منهما الدليل أمام عينيه، ويستطيع كلٌّ منهما أن يرمي الآخر بالعمى سنواتٍ طويلة.</p>
+
+    <figure class="fig" id="fig-deux" data-state="ombres">
+      <div class="stage">
+        <canvas class="gl" aria-label="ركن غرفة: ظلّ على الأرض، وظلّ على الجدار، والجسم الذي يُسقطهما، وهو غير مرئي في البداية. اسحب لتدور حوله."></canvas>
+        <span class="tag a">آنا ترى <b data-la>قرصًا</b></span>
+        <span class="tag b">بن يرى <b data-lb>مربعًا</b></span>
+        <div class="sum" aria-hidden="true">
+          <svg class="s" viewBox="-1 -1 2 2"><path data-a/></svg>+<svg class="s" viewBox="-1 -1 2 2"><path data-b/></svg>=<svg class="m" viewBox="-1 -1 2 2"><path data-avg/></svg>
+        </div>
+      </div>
+      <p class="verdict" data-v aria-live="polite"></p>
+      <div class="ctl">
+        <button type="button" data-go="moyenne" aria-pressed="false">اقسم الخلاف مناصفةً</button>
+        <button type="button" data-go="objet" aria-pressed="false" class="hot">ابحث عن الجسم</button>
+      </div>
+      <div class="ctl"><span class="lbl">خلاف آخر</span>
+        <button type="button" data-pair="cylindre" aria-pressed="true">قرص / مربع</button>
+        <button type="button" data-pair="cone" aria-pressed="false">قرص / مثلث</button>
+      </div>
+    </figure>
+
+    <p>ثمة ردّا فعلٍ مغريان، وثالث ينجح. الأول: أن نحسم من على حق. الثاني: أن نقسم الخلاف مناصفةً، فنحصل على شكل رخو، معقول في الظاهر، لا تراه آنا ولا يراه بن، وهو خاطئ عند كليهما. الثالث: أن نبحث عن <strong>الجسم الذي يمكن أن يُسقط الظلّين معًا</strong>. كان كلاهما على حق، وكان تناقضهما بالضبط هو المعلومة الناقصة: أثر عمقٍ لم يكن أيٌّ منهما يستطيع أن يراه وحده.</p>
+
+    <h2><span class="n">03</span>النحت بالحذف</h2>
+    <p>الظل يقول قبل كل شيء ما <em>ليس</em> عليه الجسم: كل ما قد يتجاوز الظل مستبعَد. لذا ننطلق من كتلة، فيقتطع منها كل شاهد ما لا يتفق مع ما يراه، ويقترب ما يتبقى من الجسم. في الرؤية الحاسوبية، تُسمّى هذه الكتلة المنحوتة <em>الغلاف البصري</em> (<em>visual hull</em>). ويفعل الماسح الطبي الشيء نفسه بدقة أكبر، بصور شعاعية تُلتقط من كل الجهات حول المريض.</p>
+
+    <div class="box teal">
+      <p class="t">دورك</p>
+      <p>الجسم مخفي. ليس لديك إلا ظلك (النقطة الصفراء). أضف شهودًا بلمس الحلقة: الحافة هي النظر من مستوى العين، والمركز هو النظر من الأعلى. حاول أن تخمّن الجسم قبل أن تكشفه.</p>
+    </div>
+
+    <figure class="fig wide" id="fig-temoins">
+      <div class="grid">
+        <div class="stage">
+          <canvas class="gl" aria-label="ما يتبقى من الكتلة بعد أن يزيل كل شاهد ما يخرج عن ظله. اسحب للتدوير."></canvas>
+          <p class="name" data-o="name">جسم غامض</p>
+          <p class="swipe">↔ اسحب للتدوير</p>
+        </div>
+        <div class="panel">
+          <div>
+            <svg class="ring" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="الشهود، من الأعلى. المس لتضع شاهدًا.">
+              <circle class="rim" r="1"/><circle class="mid" r=".5"/><circle class="obj" r=".15"/>
+              <text y="1.21">من مستوى العين</text><text y=".38">من الأعلى</text>
+              <g data-o="dots"></g>
+            </svg>
+            <p class="hint">المس الحلقة لتضع شاهدًا.</p>
+          </div>
+          <div>
+            <div class="score"><b data-o="iou">–</b><span>نسبة التشابه، <span data-o="n">عدد الظلال: 0</span></span></div>
+            <div class="g trop"><span>مادة زائدة</span><i><u data-o="trop"></u></i><em data-o="tropn" dir="ltr"></em></div>
+            <div class="g perdu"><span>مادة مفقودة</span><i><u data-o="perdu"></u></i><em data-o="perdun" dir="ltr"></em></div>
+            <p class="legend"><i style="background:var(--teal)"></i>الجسم<i style="background:color-mix(in srgb, var(--hot) 45%, transparent)"></i>الزائد</p>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs" data-o="thumbs" aria-label="الظلال المجمَّعة"></div>
+      <div class="ctl acts">
+        <button type="button" data-do="voisin">+ جار</button>
+        <button type="button" data-do="inconnu">+ غريب</button>
+        <button type="button" data-do="menteur" class="hot">+ كاذب</button>
+        <button type="button" data-do="reset">ابدأ من جديد</button>
+      </div>
+      <div class="ctl conf">
+        <label>الثقة <input type="range" min="50" max="100" value="100" data-o="tol"></label>
+        <span>نحتفظ بما تؤكده <b data-o="tolp">100٪</b> من الظلال (<span data-o="tolv">–</span>)</span>
+      </div>
+      <div class="ctl"><span class="lbl">الجسم</span>
+        <button type="button" data-obj="1" aria-pressed="true">1</button>
+        <button type="button" data-obj="2" aria-pressed="false">2</button>
+        <button type="button" data-obj="3" aria-pressed="false">3</button>
+        <button type="button" data-o="reveal" class="go">اكشف الجسم</button>
+      </div>
+      <figcaption><b>الجار</b> ينظر من المكان نفسه تقريبًا الذي تنظر منه. <b>الغريب</b> ينظر من أي مكان. <b>الكاذب</b> يُظهر ظلًّا زائفًا (سواء أخطأ أم خدع)، ولا شيء يميّزه قبل الكشف. وبعد كشف الجسم، يكون الفيروزي الذي يبرز من تحت الغلالة البرتقالية هو المادة المفقودة.</figcaption>
+    </figure>
+
+    <p>ليس هذا متوسطًا. الظل لا يصوّت، بل <strong>يقيّد</strong>: لا يضيف شيئًا، بل يُقصي احتمالات.</p>
+
+    <div class="box">
+      <p class="t">لماذا تصمد الصورة</p>
+      <ul class="tldr">
+        <li><strong>الرياضيات في صفّها.</strong> في عام 1917، بيّن يوهان رادون أن الجسم يتحدد تمامًا بصوره الشعاعية الملتقطة من كل الزوايا. وعلى هذه النتيجة تقوم أجهزة التصوير المقطعي (جائزة نوبل 1979، كورماك وهاونسفيلد).</li>
+        <li><strong>الصورة الشعاعية خير من الظل.</strong> الظل ثنائي القيمة؛ أما الصورة الشعاعية فتقول <em>كم</em> من المادة اخترق الضوء. والرأي المتدرّج (« غالبًا »، « إلى حدٍّ ما »، « إلا حين ») يحمل معلومات أكثر من نعم أو لا، ويساعد أكثر على إعادة البناء.</li>
+        <li><strong>التنوع أهم من العدد.</strong> حين يقدّر حشدٌ رقمًا ما، يساوي الخطأ الجماعي متوسطَ أخطاء الأفراد ناقصًا تنوّع تقديراتهم (« مبرهنة التنوع » لسكوت بيج). الزوايا المتباعدة أثمن من الزوايا الكثيرة.</li>
+        <li><strong>تفسّر الخلاف من دون أن تنعت أحدًا بالغباء.</strong> يمكن لشخصين صادقين ومتبصّرين أن يتناقضا من دون أن يخطئ أيٌّ منهما. وهذه فرضية أكثر سماحةً من « الآخر غبي أو سيئ النية »، وأصحّ في أغلب الأحيان.</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">04</span>حيث تنكسر الصورة</h2>
+    <p>الاستعارة التي لا نعرف كيف نهاجمها لا تساوي الكثير. وهذه تتصدّع في خمسة مواضع. الثلاثة الأولى يمكن اختبارها في المشهد أعلاه.</p>
+
+    <h3>1. ألف جار يساوون شاهدًا واحدًا</h3>
+    <p>عشرة جيران يرفعون التشابه بضع نقاط. وغريبٌ واحد كثيرًا ما يفعل أفضل من العشرة. ما يعيد البناء ليس عدد الآراء، بل التباعد بين الزوايا. موجز الأخبار، ودائرة الأصدقاء، وفريق العمل، كثيرًا ما تعيد إلينا الظلّ نفسه مئة مرة. ومئة نسخة من الظل نفسه تجعلنا أكثر ثقةً بأنفسنا، لا أكثر صوابًا.</p>
+
+    <h3>2. التجاويف لا تُلقي ظلًّا</h3>
+    <p>مع الجسم 3، يبلغ التشابه سقفًا لا يتجاوزه، مهما كان عدد الشهود. إنه كوب، وتجويفه لا يبرز من أي صورة ظلية، من أي زاوية. والأسوأ: أسطوانة مصمتة تُلقي الظلال نفسها بالضبط. يمكن جمع كل وجهات النظر الخارجية والخلوص، بثقة تامة، إلى جسم خاطئ. بعض الأشياء لا تُرى إلا من الداخل: ما يعنيه أن تكون فقيرًا، أو مريضًا، أو منفيًّا، أو والدًا. والشهود الخارجيون، مهما كثروا، لا يعيدون بناءها. لا بد من الإصغاء إلى من هم في الداخل.</p>
+
+    <h3>3. كاذبٌ واحد يكفي</h3>
+    <p>بما أننا لا نحتفظ إلا بما تسمح به الظلال <em>كلها</em>، فإن الكاذب يقتطع من الحقيقي، ولا شيء يعيد لصق ما أزاله. وإذا خفّضنا الثقة، لم نعد نحتفظ إلا بما تؤكده أغلبية: فلا يعود للكاذب وزن، لكن الجسم يزداد سُمكًا، لأننا نرمي أيضًا جزءًا مما كان الشهود الصادقون يعلّموننا إياه. لا يوجد ضبطٌ صائب للجميع: بين السذاجة والصمم، يختار كلٌّ الثمن الذي يدفعه.</p>
+
+    <h3>4. لا نعرف من أين ينظر الآخرون، ولا من أين ننظر نحن</h3>
+    <p>في المشهد، موقع كل شاهد معروف بدقة الدرجة. أما في الحياة، فعلينا أن نخمّن من أين يتكلم الآخر، وكلٌّ منا يعرف زاويته معرفةً ضعيفة. ويصطدم المجهر الإلكتروني بالتبريد بالمشكلة نفسها: فهو يعيد بناء الجزيئات انطلاقًا من آلاف الصور المشوَّشة الملتقطة من زوايا مجهولة. وهو ينجح، لكن مع فخٍّ شهير، « Einstein from noise »: رتّب صورًا من تشويشٍ خالص على صورة لأينشتاين، واحسب متوسطها، فيظهر أينشتاين. ومن يقرأ ظلال الآخرين من خلال نموذجه الخاص يعيد بناء… نموذجه الخاص.</p>
+
+    <h3>5. وماذا لو لم يكن هناك جسم؟</h3>
+    <p>الصورة كلها تفترض جسمًا هناك في الخارج، هو نفسه للجميع، ولا يتحرك بينما ننظر إليه. في مسألة وقائع (المناخ، حادث، مرض)، هذا افتراض معقول. أما في « الحياة عمومًا »، فهو رهان. فالمعنى والذوق وقيمة الحياة قد لا تكون أجسامًا تُسقط ظلالها، بل أشياء تصنعها النظرات جزئيًا. والمجتمع يتغير حين ننظر إليه. وحتى إعادة البناء النهائية تعيش في رأس، له زاويته الخاصة: لا توجد « نظرة من اللامكان ». فتصمد الصورة عندئذٍ بوصفها انضباطًا لا حقيقة: أن نتصرف كما لو كان هناك جسم، لنواصل البحث عنه، من دون أن ندّعي الإمساك به.</p>
+
+    <h2><span class="n">05</span>ما يمكن أن نحتفظ به</h2>
+    <ol class="rules">
+      <li><span>البحث عن الزاوية <strong>الأبعد</strong>، لا الأكثر عددًا.</span></li>
+      <li><span>أمام التناقض، السؤال: « <strong>أيّ جسمٍ يُسقط هذين الظلّين؟</strong> » قبل « من المخطئ؟ ».</span></li>
+      <li><span>السؤال من أين ينظر الآخر، ومن أين ننظر نحن.</span></li>
+      <li><span>تقديم الأسباب، لا الخلاصة وحدها: <strong>صورة شعاعية بدل الظل</strong>.</span></li>
+      <li><span>ضبط الثقة: بما يكفي ليعلّمنا كل شاهد شيئًا، لا إلى حدّ أن ينحت كاذبٌ واحد الكلَّ.</span></li>
+      <li><span>تذكّر التجاويف: <strong>الإصغاء إلى من يرون من الداخل</strong>.</span></li>
+    </ol>
+
+    <div class="box">
+      <p class="t">قيل من قبل، بطريقة أخرى</p>
+      <ul class="tldr">
+        <li><strong>أفلاطون، الكهف</strong> (<em>الجمهورية</em>، الكتاب السابع): سجناء لا يرون إلا الظلال. عند أفلاطون، الخلاص هو الخروج لرؤية الجسم. أما هنا، فلا أحد يخرج: لا يوجد إلا ظلال، ونقارن بينها.</li>
+        <li><strong>العميان والفيل</strong>، حكاية رمزية هندية: يلمس كلٌّ منهم جزءًا ويظنه الكل. واستخلص منها الجاينيون عقيدة، <em>anekāntavāda</em>، أي « اللاأحادية ».</li>
+        <li><strong>غلاف كتاب <em>Gödel, Escher, Bach</em></strong> (هوفستادتر، 1979): كتلة منحوتة ترسم ظلالها الحروف G وE وB.</li>
+        <li><strong>توماس ناغل</strong>، <em>The View from Nowhere</em> (1986): الموضوعية بوصفها جهدًا للتحرر من وجهة النظر الخاصة، جهدًا لا يبلغ نهايته أبدًا.</li>
+      </ul>
+    </div>
+
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="المشهد الأول من المقال، في هيئة نموذج مصغّر داخل غرفة، يُسقط ظلاله الخاصة على الأرض وعلى الجدار. اسحب لتدويره."></canvas>
+          <p class="swipe">↔ اسحب لتدوير النموذج المصغّر</p>
+        </div>
+      </figure>
+      <div>
+        <p>وهذا النص لا يفلت من ذلك. هنا، صار المشهد الأول من المقال جسمًا: موضوعًا في غرفة، يُسقط بدوره ظلاله. لم يعد جداره إلا خطًّا، ولا جسمه إلا بقعة، ولا مصباحه إلا نقطة. كل مخطط هو ظلّ لفكرة، وهذا المقال ظلٌّ آخر منها.</p>
+        <p>ثغرة سادسة؟ <a href="../#hello">مرحَّبٌ بها</a>: إنها بالضبط نوع الظل الذي ينقص هذا النص.</p>
+      </div>
+    </div>
+
+    <hr>
+    <h3>المصادر</h3>
+    <ol class="sources">
+      <li>J. Radon، « <bdi dir="ltr">Über die Bestimmung von Funktionen durch ihre Integralwerte längs gewisser Mannigfaltigkeiten</bdi> »، 1917.</li>
+      <li>A. Laurentini، « <bdi dir="ltr">The visual hull concept for silhouette-based image understanding</bdi> »، <em dir="ltr">IEEE PAMI</em>، 1994.</li>
+      <li>S. E. Page، <em dir="ltr">The Difference</em>، Princeton University Press، 2007.</li>
+      <li>R. Henderson، « <bdi dir="ltr">Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise</bdi> »، <em dir="ltr">PNAS</em>، 2013.</li>
+      <li>T. Nagel، <em dir="ltr">The View from Nowhere</em>، Oxford University Press، 1986.</li>
+      <li>Joni Mitchell، « <bdi dir="ltr">Both Sides Now</bdi> » (سجّلتها أولًا Judy Collins عام 1967، ثم Joni Mitchell في ألبوم <em dir="ltr">Clouds</em>، 1969): الغيوم والحب والحياة منظورًا إليها من الجانبين، لتخلص إلى أننا ما زلنا لا نعرفها.</li>
+    </ol>
+    <p class="note">تُحسب المشاهد في المتصفح باستخدام three.js، المستضافة على هذا الموقع: ظلال ملقاة حقيقية، وإعادة بناء بنحت الغلاف البصري على شبكة من 48 × 48 × 48 فوكسل، وسطح منعَّم بطريقة <em>marching cubes</em>.</p>
+  </article>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">→ المدونة</a><a class="up" href="#top" aria-label="إلى الأعلى">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
+</body>
+</html>
