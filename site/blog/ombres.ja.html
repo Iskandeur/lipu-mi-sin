@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ja" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>誰もが見ているのは、ひとつの影だけ · Alexandre Pinoteau</title>
+<meta name="description" content="意見とは、決して全体を見ることのできない物体の影です。他の人たちの影を組み合わせることで、より正確なモデルを彫り出せます。手で動かしながら読むエッセイ：4つの3Dシーン、このイメージの確かな点、そしてそれが破綻する5つの箇所。">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="誰もが見ているのは、ひとつの影だけ">
+<meta property="og:description" content="意見とは、決して全体を見ることのできない物体の影です。手で動かしながら読むエッセイを、その強みと弱点とともに。">
+<meta property="og:locale" content="ja_JP">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"ja",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+<style>
+  /* scènes de cet essai uniquement */
+  .fig { margin: 2rem 0; border: 1px solid var(--line); border-radius: 18px; padding: .7rem; background: radial-gradient(120% 90% at 70% 15%, #1b2440, var(--bg2) 70%); }
+  .fig .stage { position: relative; border-radius: 12px; overflow: hidden; }
+  .fig canvas.gl { display: block; width: 100%; touch-action: pan-y; cursor: grab; -webkit-tap-highlight-color: transparent; }
+  .fig canvas.gl:active { cursor: grabbing; }
+  .fig .swipe { position: absolute; left: 50%; bottom: .5rem; transform: translateX(-50%); margin: 0; font: 400 .7rem/1 var(--mono); color: var(--mute); background: rgba(14,18,28,.6); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; white-space: nowrap; }
+  .fig.nogl .stage::after { content: "このブラウザでは3D（WebGL）を利用できません。"; position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; text-align: center; font: 400 .85rem/1.4 var(--mono); color: var(--mute); }
+  .fig figcaption { margin-top: .8rem; }
+  .ctl { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .7rem 0 0; }
+  .ctl .lbl { font: 400 .74rem/1.2 var(--mono); color: var(--mute); margin-inline-end: .1rem; }
+  .ctl button { font: 600 .86rem/1 var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 .95rem; min-height: 2.6rem; cursor: pointer; transition: border-color .2s, color .2s, background .2s; touch-action: manipulation; }
+  .ctl button:hover { border-color: var(--hot); color: var(--hot); }
+  .ctl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ctl button.hot { border-color: color-mix(in srgb, var(--hot) 60%, var(--line)); }
+  .ctl button.go { background: var(--hot); color: var(--bg); border-color: var(--hot); }
+  .ctl button.go:hover { background: var(--sun); border-color: var(--sun); color: var(--bg); }
+
+  /* 1 */
+  #fig-ombre canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-ombre .inset { position: absolute; border: 1px solid rgba(241,234,217,.35); border-radius: 8px; pointer-events: none; }
+  #fig-ombre .inset span { position: absolute; top: 100%; left: 0; right: 0; margin-top: .3rem; font: 400 .66rem/1.2 var(--mono); color: var(--mute); text-align: center; }
+
+  /* 2 */
+  #fig-deux canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-deux .tag { position: absolute; left: 0; top: 0; font: 400 .74rem/1.2 var(--mono); color: var(--ink); background: rgba(14,18,28,.72); padding: .35rem .55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  #fig-deux .tag b { color: var(--sun); font-weight: 700; }
+  #fig-deux .sum { position: absolute; left: .6rem; top: .6rem; display: flex; align-items: center; gap: .35rem; background: rgba(14,18,28,.82); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem;
+    font: 600 1rem/1 var(--mono); color: var(--mute); transition: opacity .35s var(--ease), transform .35s var(--ease); }
+  #fig-deux .sum svg { width: 2.6rem; height: 2.6rem; }
+  #fig-deux .sum .s path { fill: #07090e; stroke: rgba(241,234,217,.4); stroke-width: .03; }
+  #fig-deux .sum .m { width: 3.6rem; height: 3.6rem; }
+  #fig-deux .sum .m path { fill: color-mix(in srgb, var(--hot) 25%, transparent); stroke: var(--hot); stroke-width: .03; stroke-dasharray: .08 .05; }
+  #fig-deux:not([data-state="moyenne"]) .sum { opacity: 0; transform: translateY(-.4rem); }
+  #fig-deux .verdict { text-align: center; margin: .9rem auto 0; max-width: 32rem; font-size: 1rem; line-height: 1.5; min-height: 3em; }
+  #fig-deux .ctl { justify-content: center; }
+
+  /* 3 */
+  #fig-temoins .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center; }
+  #fig-temoins canvas.gl { aspect-ratio: 1; }
+  #fig-temoins .name { position: absolute; top: .6rem; left: 0; right: 0; margin: 0; font: 600 .9rem/1.3 var(--mono); color: var(--sun); text-align: center; pointer-events: none; }
+  #fig-temoins .panel { display: grid; gap: .8rem; }
+  #fig-temoins .ring { display: block; width: 100%; max-width: 14rem; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+  #fig-temoins .ring .rim { fill: rgba(241,234,217,.04); stroke: var(--line); stroke-width: .02; }
+  #fig-temoins .ring .mid { fill: none; stroke: var(--line); stroke-width: .012; stroke-dasharray: .04 .04; }
+  #fig-temoins .ring .obj { fill: rgba(241,234,217,.14); stroke: rgba(241,234,217,.4); stroke-width: .015; }
+  #fig-temoins .ring text { font: 400 .12px var(--mono); fill: var(--mute); text-anchor: middle; }
+  #fig-temoins .ring text.me { fill: var(--sun); font-weight: 700; }
+  #fig-temoins .dot { fill: var(--teal); }
+  #fig-temoins .dot.toi { fill: var(--sun); }
+  #fig-temoins .dot.voisin { fill: #b9c2d6; }
+  #fig-temoins .dot.below { fill: none; stroke: var(--teal); stroke-width: .025; }
+  #fig-temoins.revealed .dot.menteur { fill: var(--hot); }
+  #fig-temoins .hint { font: 400 .7rem/1.45 var(--mono); color: var(--mute); text-align: center; margin: .3rem 0 0; }
+  #fig-temoins .score b { display: block; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 3rem)/1 var(--display); letter-spacing: -.03em; color: var(--sun); }
+  #fig-temoins .score span { font: 400 .76rem/1.3 var(--mono); color: var(--mute); }
+  #fig-temoins .g { display: grid; grid-template-columns: 6.6rem 1fr 3rem; gap: .5rem; align-items: center; margin-top: .5rem; font: 400 .72rem/1.2 var(--mono); color: var(--mute); }
+  #fig-temoins .g i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  #fig-temoins .g u { display: block; height: 100%; width: 0; transition: width .4s var(--ease); }
+  #fig-temoins .g.trop u { background: var(--hot); } #fig-temoins .g.perdu u { background: var(--teal); }
+  #fig-temoins .g em { font-style: normal; color: var(--ink); text-align: end; }
+  #fig-temoins .thumbs { display: flex; gap: .35rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+  #fig-temoins .th { width: 2.8rem; height: 2.8rem; flex: none; border-radius: 6px; border: 1px solid var(--line); }
+  #fig-temoins .th.me { border-color: var(--sun); }
+  #fig-temoins.revealed .th.liar { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot); }
+  #fig-temoins .conf { font: 400 .78rem/1.4 var(--mono); color: var(--mute); }
+  #fig-temoins .conf input { width: 9rem; accent-color: var(--hot); vertical-align: middle; height: 2rem; }
+  #fig-temoins .conf b { color: var(--ink); }
+  #fig-temoins .legend { display: none; font: 400 .72rem/1.4 var(--mono); color: var(--mute); margin: 0; }
+  #fig-temoins.revealed .legend { display: block; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
+  .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
+  @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
+    .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
+    #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
+    #fig-temoins .grid { grid-template-columns: 1fr; }
+    #fig-temoins .panel { grid-template-columns: 9.5rem 1fr; align-items: center; gap: .6rem; }
+    #fig-temoins .g { grid-template-columns: 1fr 2.6rem; }
+    #fig-temoins .g i { grid-column: 1 / -1; grid-row: 2; }
+    #fig-temoins .acts { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← ブログ</a></nav>
+  <label class="lang"><span class="sr">言語</span><select id="blog-lang" aria-label="言語"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">エッセイ · インタラクティブ</p>
+  <h1>誰もが見ているのは、<span class="qt">ひとつの影</span>だけ</h1>
+  <p class="lede">ある問題についての意見とは、決して全体を見ることのできない物体の影です。平らで、部分的で、自分の立っている場所によって形が決まります。他の人たちには別の影が見えています。それらを組み合わせることで、物体の姿が推し量れるのです。信じるよりも手で動かしてみるべき考えとして、それを確かなものにしている点と、それが破綻する箇所とともに紹介します。</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>動かせる4つのシーン</span></p>
+
+  <article>
+
+    <h2><span class="n">01</span>影は嘘をつかないが、すべてを語るわけでもない</h2>
+    <p>物体、ランプ、壁。影は何も作り出しません。暗い部分の一つひとつが、物体の実際の一部に対応しています。しかし影は次元をまるごと一つ失っており、その形は物体そのものと同じくらい、光の角度にも左右されます。</p>
+
+    <figure class="fig" id="fig-ombre">
+      <div class="stage">
+        <canvas class="gl" aria-label="ランプに照らされた3Dの物体と、壁に映るその影。ドラッグすると回転します。"></canvas>
+        <div class="inset" aria-hidden="true"><span>正面から見た壁</span></div>
+        <p class="swipe">↔ ドラッグして物体を回転</p>
+      </div>
+      <div class="ctl"><span class="lbl">物体</span>
+        <button type="button" data-shape="cylindre" aria-pressed="true">円柱</button>
+        <button type="button" data-shape="cone" aria-pressed="false">円錐</button>
+        <button type="button" data-shape="tore" aria-pressed="false">ドーナツ</button>
+        <button type="button" data-shape="tasse" aria-pressed="false">カップ</button>
+      </div>
+      <figcaption><b>物体は変わりませんが、影は変わります。</b>右上の小窓は、壁しか見えない人が知りうるすべてを示しています。</figcaption>
+    </figure>
+
+    <p>意見も同じように働きます。どんな問題についても（仕事、お金、愛、人生全般）、人は誰でも、自分より大きな物体の投影を見ています。角度とは、その人が生きてきたものです。国、職業、家族、傷、読んできた本。それは推論の欠陥ではなく、幾何学です。<strong>どこでもないところから見ている人はいません。</strong></p>
+
+    <h2><span class="n">02</span>食い違う二つの影</h2>
+    <p>アナは床を見て、円を見ます。ベンは壁を見て、正方形を見ます。どちらも目の前に証拠があり、どちらも相手を何年でも「見えていない」と責め続けることができます。</p>
+
+    <figure class="fig" id="fig-deux" data-state="ombres">
+      <div class="stage">
+        <canvas class="gl" aria-label="部屋の隅。床に一つの影、壁に一つの影、そしてそれらを投げかける物体（最初は見えない）。ドラッグすると周りを回れます。"></canvas>
+        <span class="tag a">アナには<b data-la>円</b>が見える</span>
+        <span class="tag b">ベンには<b data-lb>正方形</b>が見える</span>
+        <div class="sum" aria-hidden="true">
+          <svg class="s" viewBox="-1 -1 2 2"><path data-a/></svg>+<svg class="s" viewBox="-1 -1 2 2"><path data-b/></svg>=<svg class="m" viewBox="-1 -1 2 2"><path data-avg/></svg>
+        </div>
+      </div>
+      <p class="verdict" data-v aria-live="polite"></p>
+      <div class="ctl">
+        <button type="button" data-go="moyenne" aria-pressed="false">足して二で割る</button>
+        <button type="button" data-go="objet" aria-pressed="false" class="hot">物体を探す</button>
+      </div>
+      <div class="ctl"><span class="lbl">別の言い争い</span>
+        <button type="button" data-pair="cylindre" aria-pressed="true">円 / 正方形</button>
+        <button type="button" data-pair="cone" aria-pressed="false">円 / 三角形</button>
+      </div>
+    </figure>
+
+    <p>つい取りたくなる反応が二つあり、うまくいくのは三つ目です。一つ目は、どちらが正しいかを決めること。二つ目は、足して二で割ること。すると、もっともらしく見えるぼんやりした形ができますが、それはアナにもベンにも見えておらず、二人のどちらにとっても間違っています。三つ目は、<strong>どんな物体なら二つの影を同時に投げかけられるか</strong>を探すことです。二人とも正しかったのであり、二人の矛盾こそが欠けていた情報でした。どちらも一人では見ることのできなかった、奥行きの痕跡だったのです。</p>
+
+    <h2><span class="n">03</span>引き算で彫る</h2>
+    <p>影が主に語るのは、物体が何で<em>ない</em>かです。影からはみ出すものはすべて除外されます。そこで、一つのブロックから出発し、目撃者がそれぞれ、自分に見えるものと合わない部分を削っていくと、残ったものが物体に近づいていきます。コンピュータビジョンでは、この彫られたブロックを<em>視体積</em>（<em>visual hull</em>）と呼びます。医療用のスキャナーも、患者の周囲のあらゆる方向から撮ったX線像を使って、同じことをもっと精密に行っています。</p>
+
+    <div class="box teal">
+      <p class="t">あなたの番です</p>
+      <p>物体は隠されています。手元にあるのは自分の影（黄色い点）だけです。リングに触れて目撃者を加えてください。外縁は目の高さ、中心は真上からの視点です。明かす前に、物体を当ててみましょう。</p>
+    </div>
+
+    <figure class="fig wide" id="fig-temoins">
+      <div class="grid">
+        <div class="stage">
+          <canvas class="gl" aria-label="それぞれの目撃者が、自分の影からはみ出す部分を取り除いた後に残るブロック。ドラッグすると回転します。"></canvas>
+          <p class="name" data-o="name">謎の物体</p>
+          <p class="swipe">↔ ドラッグして回転</p>
+        </div>
+        <div class="panel">
+          <div>
+            <svg class="ring" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="上から見た目撃者たち。触れると一人配置できます。">
+              <circle class="rim" r="1"/><circle class="mid" r=".5"/><circle class="obj" r=".15"/>
+              <text y="1.21">目の高さ</text><text y=".38">真上から</text>
+              <g data-o="dots"></g>
+            </svg>
+            <p class="hint">リングに触れると目撃者を配置できます。</p>
+          </div>
+          <div>
+            <div class="score"><b data-o="iou">–</b><span>類似度（<span data-o="n">影0個</span>）</span></div>
+            <div class="g trop"><span>余分な部分</span><i><u data-o="trop"></u></i><em data-o="tropn"></em></div>
+            <div class="g perdu"><span>失われた部分</span><i><u data-o="perdu"></u></i><em data-o="perdun"></em></div>
+            <p class="legend"><i style="background:var(--teal)"></i>物体<i style="background:color-mix(in srgb, var(--hot) 45%, transparent)"></i>余分</p>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs" data-o="thumbs" aria-label="集まった影"></div>
+      <div class="ctl acts">
+        <button type="button" data-do="voisin">+ 隣人</button>
+        <button type="button" data-do="inconnu">+ 見知らぬ人</button>
+        <button type="button" data-do="menteur" class="hot">+ 嘘つき</button>
+        <button type="button" data-do="reset">やり直す</button>
+      </div>
+      <div class="ctl conf">
+        <label>信頼度 <input type="range" min="50" max="100" value="100" data-o="tol"></label>
+        <span>影の<b data-o="tolp">100%</b>が認める部分を残す（<span data-o="tolv">–</span>）</span>
+      </div>
+      <div class="ctl"><span class="lbl">物体</span>
+        <button type="button" data-obj="1" aria-pressed="true">1</button>
+        <button type="button" data-obj="2" aria-pressed="false">2</button>
+        <button type="button" data-obj="3" aria-pressed="false">3</button>
+        <button type="button" data-o="reveal" class="go">物体を明かす</button>
+      </div>
+      <figcaption><b>隣人</b>は、あなたとほぼ同じ場所から見ています。<b>見知らぬ人</b>は、どこからでも見ています。<b>嘘つき</b>は偽の影を見せます（本人が間違えているにせよ、人をだましているにせよ）。そして明かすまでは、それを見分ける手がかりは何もありません。物体を明かしたあと、オレンジのベールからはみ出しているターコイズの部分が、失われた部分です。</figcaption>
+    </figure>
+
+    <p>これは平均ではありません。影は投票するのではなく、<strong>制約する</strong>のです。何も付け加えず、可能性を消していきます。</p>
+
+    <div class="box">
+      <p class="t">このイメージが成り立つ理由</p>
+      <ul class="tldr">
+        <li><strong>数学が味方についています。</strong>1917年、ヨハン・ラドンは、物体はあらゆる角度から撮ったX線像によって完全に決まることを示しました。これがCTスキャナーの土台となっている結果です（1979年ノーベル賞、コーマックとハウンズフィールド）。</li>
+        <li><strong>X線像は影にまさります。</strong>影は二値です。一方X線像は、光がどれ<em>だけ</em>の物質を通り抜けたかを教えてくれます。ニュアンスのある意見（「主に」「どちらかといえば」「ただし〜のときは別」）は、イエスかノーかよりも多くの情報を運び、再構成にいっそう役立ちます。</li>
+        <li><strong>数よりも多様性が大事です。</strong>群衆がある数値を推定するとき、集団の誤差は、個人の誤差の平均から推定の多様性を引いたものに等しくなります（スコット・ペイジの「多様性予測定理」）。離れた角度は、数の多い角度よりも価値があります。</li>
+        <li><strong>誰も愚か者扱いせずに、意見の不一致を説明できます。</strong>誠実で明晰な二人が、どちらも間違っていないのに食い違うことはありえます。「相手は愚かか、悪意がある」よりも寛大な仮説であり、しかも当たっていることが多いのです。</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">04</span>イメージが破綻するところ</h2>
+    <p>攻め方のわからない比喩には、たいした価値はありません。この比喩には5か所のひびがあります。最初の3つは、上のシーンで試せます。</p>
+
+    <h3>1. 千人の隣人は、一人の目撃者に等しい</h3>
+    <p>隣人を10人加えても、類似度は数ポイント上がるだけです。見知らぬ人が一人いれば、その10人よりよい結果になることがよくあります。再構成をもたらすのは意見の数ではなく、角度どうしの隔たりです。ニュースフィードも、友人の輪も、チームも、同じ影を百回送り返してくることがよくあります。同じ影を百回見ても、自信が増すだけで、正しくなるわけではありません。</p>
+
+    <h3>2. くぼみは影を作らない</h3>
+    <p>物体3では、目撃者を何人加えても類似度は頭打ちになります。これはカップで、そのくぼみはどの角度から見てもシルエットからはみ出さないのです。さらに悪いことに、中身の詰まった円柱がまったく同じ影を投げかけます。外からの視点をすべて集めたうえで、自信満々に、間違った物体だと結論づけることもありうるのです。内側からしか見えないものがあります。貧しいこと、病気であること、故国を追われていること、親であることが、どういうことか。外の目撃者は、どれほど多くても、それを再構成できません。内側にいる人たちの声に耳を傾ける必要があります。</p>
+
+    <h3>3. 嘘つきは一人で十分</h3>
+    <p><em>すべての</em>影が許すものしか残さないので、嘘つきは本物の部分まで削り取り、削られたものは何をしても元に戻りません。信頼度を下げると、多数が認めるものだけが残ります。嘘つきの影響はなくなりますが、物体は太ってしまいます。正直な目撃者たちが教えてくれていたことの一部まで捨ててしまうからです。万人にとって正しい設定などありません。騙されやすさと耳をふさぐことのあいだで、それぞれが自分の払う代償を選ぶのです。</p>
+
+    <h3>4. 他人がどこから見ているのかも、自分がどこから見ているのかもわからない</h3>
+    <p>シーンでは、各目撃者の位置は1度単位でわかっています。現実では、相手がどこから話しているのかを推し量らなければならず、自分自身の角度も、誰もがよくわかっていません。クライオ電子顕微鏡法も同じ問題にぶつかります。未知の角度から撮影された何千枚ものノイズだらけの画像から、分子を再構成するのです。この方法はうまくいきますが、有名な落とし穴があります。「Einstein from noise（ノイズから現れるアインシュタイン）」です。純粋なノイズの画像をアインシュタインの肖像に合わせて位置をそろえ、平均をとると、アインシュタインが現れます。他人の影を自分のモデルを通して読む人が再構成するのは……自分自身のモデルなのです。</p>
+
+    <h3>5. もし物体などなかったら？</h3>
+    <p>このイメージ全体は、外のどこかに、誰にとっても同じで、見ているあいだ動かない物体があることを前提にしています。事実の問題（気候、事故、病気）なら、それは妥当です。「人生全般」となると、それは賭けです。人生の意味、味わい、価値は、投影される物体ではなく、まなざしが部分的に作り出すものなのかもしれません。そして社会は、見られることで変わります。最終的な再構成でさえ一つの頭の中に存在し、その頭には固有の角度があります。「どこでもないところからの眺め」は存在しないのです。そうなると、このイメージは真理としてではなく、一つの規律として成り立ちます。物体があるかのようにふるまうこと。それを手にしたと主張することなく、探し続けるために。</p>
+
+    <h2><span class="n">05</span>ここから持ち帰れること</h2>
+    <ol class="rules">
+      <li><span>いちばん多い角度ではなく、<strong>いちばん遠い</strong>角度を探す。</span></li>
+      <li><span>矛盾に出会ったら、「誰が間違っているのか」と問う前に、「<strong>どんな物体ならこの二つの影を作るのか</strong>」と問う。</span></li>
+      <li><span>相手がどこから見ているのか、そして自分がどこから見ているのかを問う。</span></li>
+      <li><span>結論だけでなく、理由も示す。<strong>影よりもX線像を</strong>。</span></li>
+      <li><span>信頼度を調整する。どの目撃者からも何かを学べる程度には高く、たった一人の嘘つきが全体を彫ってしまうほどには高くなく。</span></li>
+      <li><span>くぼみを忘れない。<strong>内側から見ている人たちに耳を傾ける</strong>。</span></li>
+    </ol>
+
+    <div class="box">
+      <p class="t">別のかたちで、すでに語られていたこと</p>
+      <ul class="tldr">
+        <li><strong>プラトンの洞窟</strong>（『<em>国家</em>』第7巻）：囚人たちには影しか見えません。プラトンにとって、救いは外に出て物体を見ることです。ここでは誰も外に出ません。あるのは影だけで、それを比べ合うのです。</li>
+        <li><strong>目の見えない人たちと象</strong>、インドの寓話：それぞれが一部に触れ、それを全体だと思い込みます。ジャイナ教徒はそこから一つの教義を引き出しました。<em>anekāntavāda</em>、すなわち「非一面性」です。</li>
+        <li><strong>『<em>ゲーデル、エッシャー、バッハ</em>』の表紙</strong>（ホフスタッター、1979年）：影がG、E、Bの文字を描く、彫られたブロック。</li>
+        <li><strong>トマス・ネーゲル</strong>、<em>The View from Nowhere</em>（1986年、邦題『どこでもないところからの眺め』）：自分の視点から離れようとする努力としての客観性。その努力は決して終わりにたどりつきません。</li>
+      </ul>
+    </div>
+
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="この記事の最初のシーンを模型にして部屋に置いたもの。床と壁に自分自身の影を投げかけている。ドラッグすると回転します。"></canvas>
+          <p class="swipe">↔ ドラッグして模型を回転</p>
+        </div>
+      </figure>
+      <div>
+        <p>この文章も例外ではありません。ここでは、記事の最初のシーンが一つの物体になっています。部屋の中に置かれ、今度はそれ自身が影を投げかけます。その壁はただの線に、物体はしみに、ランプは点になっています。どの図も一つの考えの影であり、この記事もまた、そうした影の一つです。</p>
+        <p>6つ目の弱点がありますか？<a href="../#hello">大歓迎です</a>。それこそ、この文章に欠けている種類の影なのですから。</p>
+      </div>
+    </div>
+
+    <hr>
+    <h3>出典</h3>
+    <ol class="sources">
+      <li>J. Radon, « Über die Bestimmung von Funktionen durch ihre Integralwerte längs gewisser Mannigfaltigkeiten », 1917.</li>
+      <li>A. Laurentini, « The visual hull concept for silhouette-based image understanding », <em>IEEE PAMI</em>, 1994.</li>
+      <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
+      <li>R. Henderson, « Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise », <em>PNAS</em>, 2013.</li>
+      <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+      <li>Joni Mitchell, « Both Sides Now »（最初の録音は1967年のJudy Collins、続いて1969年にJoni Mitchell自身がアルバム<em>Clouds</em>に収録）：雲、愛、人生を両側から眺めたうえで、自分はまだそれらを知らないと結ぶ歌。</li>
+    </ol>
+    <p class="note">シーンは、このサイトから配信しているthree.jsを使ってブラウザ内で計算しています。本物の投影影、48 × 48 × 48ボクセルのグリッド上で視体積を彫り出す再構成、<em>marching cubes</em>法で滑らかにした表面。</p>
+  </article>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← ブログ</a><a class="up" href="#top" aria-label="トップへ">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
+</body>
+</html>

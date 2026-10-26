@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="zh" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>每个人只看到一个影子 · Alexandre Pinoteau</title>
+<meta name="description" content="观点是一个物体的影子，而这个物体永远无法被看全。把别人的影子拼在一起，就能雕出一个更准确的模型。一篇可以动手操作的随笔：四个 3D 场景，这个比喻站得住的地方，以及它失效的五处。">
+<meta name="theme-color" content="#0e121c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="每个人只看到一个影子">
+<meta property="og:description" content="观点是一个物体的影子，而这个物体永远无法被看全。一篇可以动手操作的随笔，有它的长处，也有它的漏洞。">
+<meta property="og:locale" content="zh_CN">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css?v=62">
+<link rel="stylesheet" href="blog.css?v=3">
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"zh",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
+<script src="blog-i18n.js?v=1"></script>
+<style>
+  /* scènes de cet essai uniquement */
+  .fig { margin: 2rem 0; border: 1px solid var(--line); border-radius: 18px; padding: .7rem; background: radial-gradient(120% 90% at 70% 15%, #1b2440, var(--bg2) 70%); }
+  .fig .stage { position: relative; border-radius: 12px; overflow: hidden; }
+  .fig canvas.gl { display: block; width: 100%; touch-action: pan-y; cursor: grab; -webkit-tap-highlight-color: transparent; }
+  .fig canvas.gl:active { cursor: grabbing; }
+  .fig .swipe { position: absolute; left: 50%; bottom: .5rem; transform: translateX(-50%); margin: 0; font: 400 .7rem/1 var(--mono); color: var(--mute); background: rgba(14,18,28,.6); padding: .35rem .6rem; border-radius: 999px; pointer-events: none; white-space: nowrap; }
+  .fig.nogl .stage::after { content: "此浏览器不支持 3D（WebGL）。"; position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; text-align: center; font: 400 .85rem/1.4 var(--mono); color: var(--mute); }
+  .fig figcaption { margin-top: .8rem; }
+  .ctl { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin: .7rem 0 0; }
+  .ctl .lbl { font: 400 .74rem/1.2 var(--mono); color: var(--mute); margin-inline-end: .1rem; }
+  .ctl button { font: 600 .86rem/1 var(--sans); color: var(--ink); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 .95rem; min-height: 2.6rem; cursor: pointer; transition: border-color .2s, color .2s, background .2s; touch-action: manipulation; }
+  .ctl button:hover { border-color: var(--hot); color: var(--hot); }
+  .ctl button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ctl button.hot { border-color: color-mix(in srgb, var(--hot) 60%, var(--line)); }
+  .ctl button.go { background: var(--hot); color: var(--bg); border-color: var(--hot); }
+  .ctl button.go:hover { background: var(--sun); border-color: var(--sun); color: var(--bg); }
+
+  /* 1 */
+  #fig-ombre canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-ombre .inset { position: absolute; border: 1px solid rgba(241,234,217,.35); border-radius: 8px; pointer-events: none; }
+  #fig-ombre .inset span { position: absolute; top: 100%; left: 0; right: 0; margin-top: .3rem; font: 400 .66rem/1.2 var(--mono); color: var(--mute); text-align: center; }
+
+  /* 2 */
+  #fig-deux canvas.gl { aspect-ratio: 16 / 10; }
+  #fig-deux .tag { position: absolute; left: 0; top: 0; font: 400 .74rem/1.2 var(--mono); color: var(--ink); background: rgba(14,18,28,.72); padding: .35rem .55rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  #fig-deux .tag b { color: var(--sun); font-weight: 700; }
+  #fig-deux .sum { position: absolute; left: .6rem; top: .6rem; display: flex; align-items: center; gap: .35rem; background: rgba(14,18,28,.82); border: 1px solid var(--line); border-radius: 12px; padding: .5rem .6rem;
+    font: 600 1rem/1 var(--mono); color: var(--mute); transition: opacity .35s var(--ease), transform .35s var(--ease); }
+  #fig-deux .sum svg { width: 2.6rem; height: 2.6rem; }
+  #fig-deux .sum .s path { fill: #07090e; stroke: rgba(241,234,217,.4); stroke-width: .03; }
+  #fig-deux .sum .m { width: 3.6rem; height: 3.6rem; }
+  #fig-deux .sum .m path { fill: color-mix(in srgb, var(--hot) 25%, transparent); stroke: var(--hot); stroke-width: .03; stroke-dasharray: .08 .05; }
+  #fig-deux:not([data-state="moyenne"]) .sum { opacity: 0; transform: translateY(-.4rem); }
+  #fig-deux .verdict { text-align: center; margin: .9rem auto 0; max-width: 32rem; font-size: 1rem; line-height: 1.5; min-height: 3em; }
+  #fig-deux .ctl { justify-content: center; }
+
+  /* 3 */
+  #fig-temoins .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; align-items: center; }
+  #fig-temoins canvas.gl { aspect-ratio: 1; }
+  #fig-temoins .name { position: absolute; top: .6rem; left: 0; right: 0; margin: 0; font: 600 .9rem/1.3 var(--mono); color: var(--sun); text-align: center; pointer-events: none; }
+  #fig-temoins .panel { display: grid; gap: .8rem; }
+  #fig-temoins .ring { display: block; width: 100%; max-width: 14rem; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+  #fig-temoins .ring .rim { fill: rgba(241,234,217,.04); stroke: var(--line); stroke-width: .02; }
+  #fig-temoins .ring .mid { fill: none; stroke: var(--line); stroke-width: .012; stroke-dasharray: .04 .04; }
+  #fig-temoins .ring .obj { fill: rgba(241,234,217,.14); stroke: rgba(241,234,217,.4); stroke-width: .015; }
+  #fig-temoins .ring text { font: 400 .12px var(--mono); fill: var(--mute); text-anchor: middle; }
+  #fig-temoins .ring text.me { fill: var(--sun); font-weight: 700; }
+  #fig-temoins .dot { fill: var(--teal); }
+  #fig-temoins .dot.toi { fill: var(--sun); }
+  #fig-temoins .dot.voisin { fill: #b9c2d6; }
+  #fig-temoins .dot.below { fill: none; stroke: var(--teal); stroke-width: .025; }
+  #fig-temoins.revealed .dot.menteur { fill: var(--hot); }
+  #fig-temoins .hint { font: 400 .7rem/1.45 var(--mono); color: var(--mute); text-align: center; margin: .3rem 0 0; }
+  #fig-temoins .score b { display: block; font: 800 clamp(2.2rem, 1.8rem + 1.6vw, 3rem)/1 var(--display); letter-spacing: -.03em; color: var(--sun); }
+  #fig-temoins .score span { font: 400 .76rem/1.3 var(--mono); color: var(--mute); }
+  #fig-temoins .g { display: grid; grid-template-columns: 6.6rem 1fr 3rem; gap: .5rem; align-items: center; margin-top: .5rem; font: 400 .72rem/1.2 var(--mono); color: var(--mute); }
+  #fig-temoins .g i { display: block; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  #fig-temoins .g u { display: block; height: 100%; width: 0; transition: width .4s var(--ease); }
+  #fig-temoins .g.trop u { background: var(--hot); } #fig-temoins .g.perdu u { background: var(--teal); }
+  #fig-temoins .g em { font-style: normal; color: var(--ink); text-align: end; }
+  #fig-temoins .thumbs { display: flex; gap: .35rem; overflow-x: auto; padding: .7rem 0 .2rem; scrollbar-width: thin; }
+  #fig-temoins .th { width: 2.8rem; height: 2.8rem; flex: none; border-radius: 6px; border: 1px solid var(--line); }
+  #fig-temoins .th.me { border-color: var(--sun); }
+  #fig-temoins.revealed .th.liar { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot); }
+  #fig-temoins .conf { font: 400 .78rem/1.4 var(--mono); color: var(--mute); }
+  #fig-temoins .conf input { width: 9rem; accent-color: var(--hot); vertical-align: middle; height: 2rem; }
+  #fig-temoins .conf b { color: var(--ink); }
+  #fig-temoins .legend { display: none; font: 400 .72rem/1.4 var(--mono); color: var(--mute); margin: 0; }
+  #fig-temoins.revealed .legend { display: block; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
+  .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
+  @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
+    .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
+    #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
+    #fig-temoins .grid { grid-template-columns: 1fr; }
+    #fig-temoins .panel { grid-template-columns: 9.5rem 1fr; align-items: center; gap: .6rem; }
+    #fig-temoins .g { grid-template-columns: 1fr 2.6rem; }
+    #fig-temoins .g i { grid-column: 1 / -1; grid-row: 2; }
+    #fig-temoins .acts { display: grid; grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body class="post">
+<div class="progress" aria-hidden="true"></div>
+<header class="bar solid">
+  <a class="mark" href="../#blog" aria-label="Alexandre Pinoteau">AP<span class="dot">.</span></a>
+  <nav><a href="../#blog">← 博客</a></nav>
+  <label class="lang"><span class="sr">语言</span><select id="blog-lang" aria-label="语言"></select></label>
+</header>
+
+<main class="sec prose inv">
+  <p class="kicker">随笔 · 可交互</p>
+  <h1>每个人只看到<span class="qt">一个影子</span></h1>
+  <p class="lede">对一个话题的看法，是一个永远无法被看全的物体投下的影子：扁平、残缺，形状由观看者所站的位置决定。别人看到的是别的影子。把这些影子拼在一起，才能猜出那个物体。这是一个拿来摆弄、而不是拿来相信的想法，附上让它站得住的理由，以及它失效的地方。</p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>4 个可交互场景</span></p>
+
+  <article>
+
+    <h2><span class="n">01</span>影子不会说谎，但它不会说出全部</h2>
+    <p>一个物体，一盏灯，一面墙。影子不会凭空捏造：每一块暗区都对应着物体真实的一部分。但它丢掉了整整一个维度，而且它的形状既取决于物体本身，也同样取决于光线的角度。</p>
+
+    <figure class="fig" id="fig-ombre">
+      <div class="stage">
+        <canvas class="gl" aria-label="一个被灯照亮的 3D 物体，以及它投在墙上的影子。拖动可以旋转它。"></canvas>
+        <div class="inset" aria-hidden="true"><span>墙，正面看</span></div>
+        <p class="swipe">↔ 拖动以旋转物体</p>
+      </div>
+      <div class="ctl"><span class="lbl">物体</span>
+        <button type="button" data-shape="cylindre" aria-pressed="true">圆柱体</button>
+        <button type="button" data-shape="cone" aria-pressed="false">圆锥体</button>
+        <button type="button" data-shape="tore" aria-pressed="false">甜甜圈</button>
+        <button type="button" data-shape="tasse" aria-pressed="false">杯子</button>
+      </div>
+      <figcaption><b>物体没有变，变的是它的影子。</b>小图展示的，就是一个只看得到墙的人所知道的一切。</figcaption>
+    </figure>
+
+    <p>观点也是这样运作的。在任何话题上（工作、金钱、爱情、整个人生），每个人看到的都是一个比自己更大的物体的投影。角度，就是各自的经历：一个国家、一份职业、一个家庭、一些伤痛、一些阅读。这不是推理上的缺陷，而是几何。<strong>没有人是从“无处”观看的。</strong></p>
+
+    <h2><span class="n">02</span>两个互相矛盾的影子</h2>
+    <p>Ana 看着地面，看到一个圆盘。Ben 看着墙，看到一个正方形。两人的证据都摆在眼前，各自都可以骂对方瞎了眼，一骂就是好几年。</p>
+
+    <figure class="fig" id="fig-deux" data-state="ombres">
+      <div class="stage">
+        <canvas class="gl" aria-label="房间的一角：地上一个影子，墙上一个影子，还有投下它们的物体，起初是看不见的。拖动可以绕着它转。"></canvas>
+        <span class="tag a">Ana 看到一个<b data-la>圆盘</b></span>
+        <span class="tag b">Ben 看到一个<b data-lb>正方形</b></span>
+        <div class="sum" aria-hidden="true">
+          <svg class="s" viewBox="-1 -1 2 2"><path data-a/></svg>+<svg class="s" viewBox="-1 -1 2 2"><path data-b/></svg>=<svg class="m" viewBox="-1 -1 2 2"><path data-avg/></svg>
+        </div>
+      </div>
+      <p class="verdict" data-v aria-live="polite"></p>
+      <div class="ctl">
+        <button type="button" data-go="moyenne" aria-pressed="false">各让一半</button>
+        <button type="button" data-go="objet" aria-pressed="false" class="hot">寻找物体</button>
+      </div>
+      <div class="ctl"><span class="lbl">换一个争论</span>
+        <button type="button" data-pair="cylindre" aria-pressed="true">圆盘 / 正方形</button>
+        <button type="button" data-pair="cone" aria-pressed="false">圆盘 / 三角形</button>
+      </div>
+    </figure>
+
+    <p>有两种本能反应很诱人，第三种才管用。第一种：判定谁对。第二种：各让一半，结果得到一个软塌塌、看似合理的形状，Ana 和 Ben 谁也没看到它，而且对两人来说它都是错的。第三种：去找<strong>哪个物体能同时投下这两个影子</strong>。他们俩都是对的，而他们之间的矛盾，恰恰就是缺失的那条信息：一种深度留下的痕迹，这种深度两人谁也无法独自看见。</p>
+
+    <h2><span class="n">03</span>用减法来雕刻</h2>
+    <p>影子说出的，主要是物体<em>不是</em>什么：凡是会超出影子的部分，都被排除了。所以先从一整块材料出发，每个目击者削去与自己所见不符的部分，剩下的就会接近那个物体。在计算机视觉中，这块被雕出来的东西叫作<em>视觉外壳</em>（<em>visual hull</em>）。医学 CT 扫描做的是同一件事，只是更精细，用的是围绕病人一圈拍下的 X 光片。</p>
+
+    <div class="box teal">
+      <p class="t">轮到你了</p>
+      <p>物体被藏起来了。你只有自己的影子（那个黄点）。点按圆环来添加目击者：边缘代表平视，中心代表从正上方往下看。试着在揭晓之前猜出这个物体。</p>
+    </div>
+
+    <figure class="fig wide" id="fig-temoins">
+      <div class="grid">
+        <div class="stage">
+          <canvas class="gl" aria-label="每个目击者削去超出自己影子的部分之后，这块材料剩下的样子。拖动可以旋转。"></canvas>
+          <p class="name" data-o="name">神秘物体</p>
+          <p class="swipe">↔ 拖动以旋转</p>
+        </div>
+        <div class="panel">
+          <div>
+            <svg class="ring" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="目击者，从上方俯视。点按即可放置一个。">
+              <circle class="rim" r="1"/><circle class="mid" r=".5"/><circle class="obj" r=".15"/>
+              <text y="1.21">平视</text><text y=".38">俯视</text>
+              <g data-o="dots"></g>
+            </svg>
+            <p class="hint">点按圆环来放置目击者。</p>
+          </div>
+          <div>
+            <div class="score"><b data-o="iou">–</b><span>相似度，基于 <span data-o="n">0 个影子</span></span></div>
+            <div class="g trop"><span>多出的材料</span><i><u data-o="trop"></u></i><em data-o="tropn"></em></div>
+            <div class="g perdu"><span>丢失的材料</span><i><u data-o="perdu"></u></i><em data-o="perdun"></em></div>
+            <p class="legend"><i style="background:var(--teal)"></i>物体<i style="background:color-mix(in srgb, var(--hot) 45%, transparent)"></i>多出部分</p>
+          </div>
+        </div>
+      </div>
+      <div class="thumbs" data-o="thumbs" aria-label="收集到的影子"></div>
+      <div class="ctl acts">
+        <button type="button" data-do="voisin">+ 一个邻居</button>
+        <button type="button" data-do="inconnu">+ 一个陌生人</button>
+        <button type="button" data-do="menteur" class="hot">+ 一个说谎者</button>
+        <button type="button" data-do="reset">重新开始</button>
+      </div>
+      <div class="ctl conf">
+        <label>信任度 <input type="range" min="50" max="100" value="100" data-o="tol"></label>
+        <span>只保留 <b data-o="tolp">100%</b> 的影子都认可的部分（<span data-o="tolv">–</span>）</span>
+      </div>
+      <div class="ctl"><span class="lbl">物体</span>
+        <button type="button" data-obj="1" aria-pressed="true">1</button>
+        <button type="button" data-obj="2" aria-pressed="false">2</button>
+        <button type="button" data-obj="3" aria-pressed="false">3</button>
+        <button type="button" data-o="reveal" class="go">揭晓物体</button>
+      </div>
+      <figcaption><b>邻居</b>几乎和你从同一个位置看过去。<b>陌生人</b>可能从任何位置看。<b>说谎者</b>给出一个假影子（不管是他自己弄错了，还是有意骗人），在揭晓之前，没有任何东西能把他区分出来。物体揭晓后，从橙色薄纱下露出来的青绿色，就是丢失的材料。</figcaption>
+    </figure>
+
+    <p>这不是求平均。影子不投票，它<strong>施加约束</strong>：它不添加任何东西，只排除可能性。</p>
+
+    <div class="box">
+      <p class="t">这个比喻为什么站得住</p>
+      <ul class="tldr">
+        <li><strong>数学站在它这一边。</strong>1917 年，Johann Radon 证明：一个物体完全由它在所有角度下的 X 光投影所决定。CT 扫描仪所依据的正是这个结果（1979 年诺贝尔奖，Cormack 和 Hounsfield）。</li>
+        <li><strong>X 光片胜过影子。</strong>影子是非黑即白的；X 光片却能说出光穿过了<em>多少</em>物质。一个有分寸的观点（“大多”“相对来说”“除非……”）比一句是或否携带更多信息，也更有助于重建。</li>
+        <li><strong>多样性比数量更重要。</strong>当一群人估计一个数字时，群体误差等于个体的平均误差减去他们估计值的多样性（Scott Page 的“多样性预测定理”）。相距遥远的角度，比数量众多的角度更有价值。</li>
+        <li><strong>它解释了分歧，而不必把任何人当成傻瓜。</strong>两个诚实而清醒的人可以互相矛盾，而谁都没有错。这个假设比“对方不是蠢就是不诚实”更宽厚，也更常常是对的。</li>
+      </ul>
+    </div>
+
+    <h2><span class="n">04</span>比喻失效的地方</h2>
+    <p>一个找不到地方攻击的比喻，没多大价值。这个比喻有五处裂缝。前三处可以在上面的场景里亲手验证。</p>
+
+    <h3>1. 一千个邻居，只抵一个目击者</h3>
+    <p>十个邻居能让相似度提高几个百分点。一个陌生人往往就比这十个人加起来做得更好。起重建作用的不是观点的数量，而是角度之间的差距。一条信息流、一个朋友圈子、一个团队，常常把同一个影子反射回来一百次。同一个影子看上一百遍，只会让人更自信，而不会更正确。</p>
+
+    <h3>2. 凹陷投不出影子</h3>
+    <p>换成物体 3，无论有多少目击者，相似度都会卡在一个上限。它是一只杯子，而杯子的凹陷从任何角度看，都不会在轮廓上显露出来。更糟的是：一个实心圆柱体投下的影子一模一样。可以集齐所有外部视角，然后满怀信心地得出一个错误的物体。有些东西只能从内部看见：贫穷、生病、流亡、为人父母，究竟是什么滋味。外部的目击者再多，也重建不出这些。必须倾听身处其中的人。</p>
+
+    <h3>3. 一个说谎者就够了</h3>
+    <p>由于只保留<em>所有</em>影子都允许的部分，一个说谎者就会削掉真实的部分，而被他削掉的东西，再也没有什么能粘回去。调低信任度，就只保留多数影子认可的部分：说谎者不再有分量，但物体会变得臃肿，因为诚实的目击者带来的信息也被丢掉了一部分。不存在放之四海而皆准的设置：在轻信与充耳不闻之间，每个人都在选择自己愿意付出的代价。</p>
+
+    <h3>4. 不知道别人从哪里看，也不知道自己从哪里看</h3>
+    <p>在场景里，每个目击者的位置都精确到度。在生活中，却得去猜对方是站在什么位置说话，而每个人对自己的角度也知之甚少。冷冻电子显微镜碰到的是同一个问题：它要从成千上万张角度未知、充满噪声的图像中重建分子。这行得通，但有一个著名的陷阱，叫“Einstein from noise”（噪声里的爱因斯坦）：把一堆纯噪声图像对准一张爱因斯坦的肖像对齐，再取平均，爱因斯坦就出现了。透过自己的模型去解读别人影子的人，重建出来的……是自己的模型。</p>
+
+    <h3>5. 如果根本没有物体呢？</h3>
+    <p>整个比喻都假定外面有一个物体，对所有人都一样，在被观看时也不会移动。对于事实问题（气候、一场事故、一种疾病），这个假定是合理的。对于“整个人生”，它就是一场赌注。一个人生命的意义、滋味和价值，也许并不是被投下影子的物体，而是在一定程度上由目光造就的东西。而且，一个社会在被观看时就会改变。就连最后的重建，也存在于某个人的脑子里，而这个脑子有它自己的角度：不存在“来自无处的视角”。于是，这个比喻与其说是真理，不如说是一种自我约束：假装有一个物体，好继续寻找它，但不自称已经把它握在手中。</p>
+
+    <h2><span class="n">05</span>可以留下些什么</h2>
+    <ol class="rules">
+      <li><span>去找<strong>离得最远</strong>的角度，而不是人数最多的角度。</span></li>
+      <li><span>面对矛盾，先问“<strong>什么物体能投下这两个影子？</strong>”，再问“谁错了？”。</span></li>
+      <li><span>问清对方从哪里看，也问问自己从哪里看。</span></li>
+      <li><span>给出理由，而不只是结论：<strong>宁做 X 光片，不做影子</strong>。</span></li>
+      <li><span>调好自己的信任度：高到足以让每个目击者都带来些新东西，又不至于让一个说谎者雕出整个物体。</span></li>
+      <li><span>记住那些凹陷：<strong>倾听从内部去看的人</strong>。</span></li>
+    </ol>
+
+    <div class="box">
+      <p class="t">早有人说过，换了说法</p>
+      <ul class="tldr">
+        <li><strong>柏拉图的洞穴</strong>（<em>《理想国》</em>第七卷）：囚徒们只看得到影子。在柏拉图那里，得救之道是走出洞穴，去看那个物体本身。而在这里，谁也出不去：只有影子，只能把它们互相比较。</li>
+        <li><strong>盲人摸象</strong>，印度寓言：每个人摸到一部分，就把它当成了整体。耆那教由此发展出一种学说，<em>anekāntavāda</em>，即“非片面性”。</li>
+        <li><strong><em>Gödel, Escher, Bach</em>（《集异璧》）的封面</strong>（Hofstadter，1979）：一块雕刻出来的实体，它的影子分别构成 G、E、B 三个字母。</li>
+        <li><strong>Thomas Nagel</strong>，<em>The View from Nowhere</em>（1986）：客观性是一种努力，努力摆脱自己的视角，而这种努力永远走不到终点。</li>
+      </ul>
+    </div>
+
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="本文的第一个场景被做成模型，放进一个房间里，向地面和墙上投下它自己的影子。拖动可以旋转它。"></canvas>
+          <p class="swipe">↔ 拖动以旋转模型</p>
+        </div>
+      </figure>
+      <div>
+        <p>本文也逃不过这一点。这里，文章的第一个场景变成了一个物体：放在一个房间里，它也投下了自己的影子。它的墙只剩一道线，它的物体只剩一团斑块，它的灯只剩一个点。每一张示意图都是某个想法的影子，而这篇文章也不过是又一个影子。</p>
+        <p>发现了第六处漏洞？<a href="../#hello">非常欢迎</a>：这正是本文所缺的那种影子。</p>
+      </div>
+    </div>
+
+    <hr>
+    <h3>Sources</h3>
+    <ol class="sources">
+      <li>J. Radon，“Über die Bestimmung von Funktionen durch ihre Integralwerte längs gewisser Mannigfaltigkeiten”，1917。</li>
+      <li>A. Laurentini，“The visual hull concept for silhouette-based image understanding”，<em>IEEE PAMI</em>，1994。</li>
+      <li>S. E. Page，<em>The Difference</em>，Princeton University Press，2007。</li>
+      <li>R. Henderson，“Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise”，<em>PNAS</em>，2013。</li>
+      <li>T. Nagel，<em>The View from Nowhere</em>，Oxford University Press，1986。</li>
+      <li>Joni Mitchell，“Both Sides Now”（先由 Judy Collins 于 1967 年录制，后由 Joni Mitchell 收入专辑 <em>Clouds</em>，1969）：从正反两面去看云、爱情和人生，最后的结论却是：依然不了解它们。</li>
+    </ol>
+    <p class="note">这些场景都在浏览器中用 three.js 实时计算（three.js 由本站自行托管）：真实的投射阴影；在 48 × 48 × 48 的体素网格上雕刻视觉外壳来完成重建；表面用 <em>marching cubes</em> 算法平滑。</p>
+  </article>
+</main>
+
+<footer class="foot"><div class="foot-row"><a href="../#blog">← 博客</a><a class="up" href="#top" aria-label="返回顶部">↑</a></div></footer>
+<script src="blog.js?v=1"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
+</body>
+</html>

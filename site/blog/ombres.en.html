@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Everyone sees only one shadow ·Alexandre Pinoteau</title>
-<meta name="description" content="An opinion is the shadow of an object you never see whole. By putting other people's shadows together, you sculpt a truer model. A hands-on essay: three 3D scenes, what holds up in the image, and five places where it breaks.">
+<meta name="description" content="An opinion is the shadow of an object you never see whole. By putting other people's shadows together, you sculpt a truer model. A hands-on essay: four 3D scenes, what holds up in the image, and five places where it breaks.">
 <meta name="theme-color" content="#0e121c">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Everyone sees only one shadow">
@@ -14,8 +14,8 @@
 <link rel="preload" href="../fonts/bricolage.woff2?v=62" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css?v=62">
 <link rel="stylesheet" href="blog.css?v=3">
-<link rel="modulepreload" href="vendor/three-ombres.min.js?v=1">
-<script>window.__ARTICLE={slug:"ombres",lang:"en",langs:["fr","en","es","it","id"]};</script>
+<link rel="modulepreload" href="vendor/three-ombres.min.js?v=2">
+<script>window.__ARTICLE={slug:"ombres",lang:"en",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js?v=1"></script>
 <style>
   /* scènes de cet essai uniquement */
@@ -89,7 +89,14 @@
   #fig-temoins.revealed .legend { display: block; }
   .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; vertical-align: -.05rem; margin: 0 .3rem 0 .7rem; }
   .legend i:first-child { margin-inline-start: 0; }
+  /* 4 */
+  .meta-end { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.3rem; align-items: center; margin: 2.4rem 0; }
+  .meta-end .fig { margin: 0; }
+  .meta-end p { margin: 0 0 1rem; }
+  .meta-end p:last-child { margin-bottom: 0; }
+  #fig-meta canvas.gl { aspect-ratio: 1; }
   @media (max-width: 40rem) {
+    .meta-end { grid-template-columns: 1fr; }
     .fig { padding: .45rem; margin-inline: calc(-.6 * var(--pad)); }
     #fig-ombre canvas.gl, #fig-deux canvas.gl { aspect-ratio: 4 / 3.4; }
     #fig-temoins .grid { grid-template-columns: 1fr; }
@@ -112,7 +119,7 @@
   <p class="kicker">Essay · hands-on</p>
   <h1>Everyone sees only <span class="qt">one shadow</span></h1>
   <p class="lede">An opinion on a subject is the shadow of an object you never see whole: flat, partial, and drawn by the spot where you happen to stand. Other people see other shadows. Putting them together is how you guess the object. An idea to play with rather than believe, with what makes it solid and the places where it breaks.</p>
-  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>3 interactive scenes</span></p>
+  <p class="byline"><span>Alexandre Pinoteau</span><span><time datetime="2026-10-23">23.10.2026</time></span><span>4 interactive scenes</span></p>
 
   <article>
 
@@ -263,7 +270,18 @@
       </ul>
     </div>
 
-    <p>A sixth flaw? <a href="../#hello">It's welcome</a>: it's exactly the kind of shadow this text is missing.</p>
+    <div class="meta-end">
+      <figure class="fig" id="fig-meta">
+        <div class="stage">
+          <canvas class="gl" aria-label="The article's first scene as a small model in a room, casting its own shadows on the floor and the wall. Swipe to turn it."></canvas>
+          <p class="swipe">↔ swipe to turn the model</p>
+        </div>
+      </figure>
+      <div>
+        <p>This text is no exception. Here, the article's first scene has become an object: set in a room, it casts shadows of its own. Its wall is now a line, its object a blot, its lamp a dot. Every diagram is the shadow of an idea, and this article is one more.</p>
+        <p>A sixth flaw? <a href="../#hello">It's welcome</a>: it's exactly the kind of shadow this text is missing.</p>
+      </div>
+    </div>
 
     <hr>
     <h3>Sources</h3>
@@ -273,6 +291,7 @@
       <li>S. E. Page, <em>The Difference</em>, Princeton University Press, 2007.</li>
       <li>R. Henderson, « Avoiding the pitfalls of single particle cryo-electron microscopy: Einstein from noise », <em>PNAS</em>, 2013.</li>
       <li>T. Nagel, <em>The View from Nowhere</em>, Oxford University Press, 1986.</li>
+      <li>Joni Mitchell, “Both Sides Now” (first recorded by Judy Collins in 1967, then by Joni Mitchell on <em>Clouds</em>, 1969): clouds, love and life seen from both sides, only to conclude that she still doesn't really know them.</li>
     </ol>
     <p class="note">The scenes are computed in the browser with three.js, served from this site: real cast shadows, reconstruction by carving the visual hull on a 48 × 48 × 48 voxel grid, surface smoothed with <em>marching cubes</em>.</p>
   </article>
@@ -280,7 +299,7 @@
 
 <footer class="foot"><div class="foot-row"><a href="../#blog">← blog</a><a class="up" href="#top" aria-label="Top">↑</a></div></footer>
 <script src="blog.js?v=1"></script>
-<script src="ombres-txt.js?v=1"></script>
-<script type="module" src="ombres.js?v=3"></script>
+<script src="ombres-txt.js?v=2"></script>
+<script type="module" src="ombres.js?v=4"></script>
 </body>
 </html>
