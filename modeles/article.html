@@ -1,12 +1,14 @@
 <!doctype html>
-<!-- Article template. RULE: a new post is born in 5 languages (fr = canonical <slug>.html, then <slug>.en.html, .es, .it, .id),
-     or the missing ones are listed in a ticket that says so. Checklist, all in the same pull request:
+<!-- Article template. RULE: a new post is born in 9 languages (fr = canonical <slug>.html, then <slug>.en.html, .es, .it,
+     .ru, .ar, .ja, .zh, .id), or the missing ones are listed in a ticket that says so. Checklist, all in the same pull request:
        1. copy this file to site/blog/<slug>.html (French), fill TITLE / DATE / the body; for each other language copy it to
-          site/blog/<slug>.<lang>.html and translate it (set lang, title, og:*, and window.__ARTICLE below to that language);
+          site/blog/<slug>.<lang>.html and translate it (set lang, title, og:*, and window.__ARTICLE below to that language;
+          Arabic also takes dir="rtl" on <html>, see brixhub.ar.html);
        2. in site/index.html add one <li> to #posts (newest first), with data-post="<slug>" and data-langs listing the
           languages that exist, and the title as <span data-i="post_<slug>">;
-       3. in site/i18n.js add "post_<slug>" to the en, fr, es, it and id blocks (the title as shown in each translation).
-          Languages without a translation (ru, ar, ja, zh) fall back to the French title, and the link goes to the French page;
+       3. in site/i18n.js add "post_<slug>" to the en, fr, es, it, ru, ar, ja, zh and id blocks (the title as shown in each
+          translation), and raise the ?v= of i18n.js in site/index.html. A language without a translation falls back to the
+          French title, and the link goes to the French page;
        4. if the post has interactive scripts with their own text, translate them too (see site/blog/ombres-txt.js).
      Markdown: write it, convert once (pandoc -f markdown -t html), paste the HTML between the <article> tags. -->
 <html lang="fr" dir="ltr">
@@ -21,7 +23,7 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../style.css">
-<script>window.__ARTICLE={slug:"SLUG",lang:"fr",langs:["fr","en","es","it","id"]};</script>
+<script>window.__ARTICLE={slug:"SLUG",lang:"fr",langs:["fr","en","es","it","ru","ar","ja","zh","id"]};</script>
 <script src="blog-i18n.js"></script>
 </head>
 <body class="post">
