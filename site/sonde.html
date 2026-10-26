@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><pre id="o"></pre><iframe id="a" style="width:900px;height:600px"></iframe><iframe id="b" style="width:900px;height:600px"></iframe>
+<script>
+const o = (m) => { document.getElementById("o").textContent += m + "\n"; };
+const a = document.getElementById("a"), b = document.getElementById("b");
+a.src = "index.html";
+a.addEventListener("load", () => {
+  const d = a.contentDocument;
+  const li = [...d.querySelectorAll("#stuff li")];
+  o("projets: " + li.length + " ; dernier: " + li[li.length - 1].textContent.replace(/\s+/g, " ").trim());
+  o("dernier lien: " + li[li.length - 1].querySelector("a").getAttribute("href"));
+  b.src = "age/index.html?lang=fr&defi=s5-abc123";
+});
+b.addEventListener("load", () => {
+  if (!b.src.includes("age/")) return;
+  const d = b.contentDocument;
+  o("jeu: tab defi visible=" + !d.getElementById("vue-defi").hidden + " ; " + d.getElementById("d-recu").textContent);
+  o("bouton doute cache=" + d.getElementById("doute").hidden + " ; config=" + b.contentWindow.AGE_CONFIG.signalement);
+  o("portraits=" + b.contentWindow.PORTRAITS.length);
+});
+</script>

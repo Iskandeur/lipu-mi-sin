@@ -7,6 +7,9 @@ Hand-written HTML, CSS and a little JavaScript in [`site/`](site/) (one blog pos
 the domain, adds its cookieless Web Analytics script to the pages. On every push to `main`, [`.github/workflows/pages.yml`](.github/workflows/pages.yml)
 uploads `site/` to GitHub Pages as it is.
 
+[`site/age/`](site/age/) is a separate game ("Quel âge ?", served at `/age/`): a generated build of a private project, copied here as is
+(`node scripts/build.mjs --public` there), so edit it in its own repository rather than by hand.
+
 Preview locally: `python3 -m http.server -d site 8000`.
 
 ## Writing a post (rule: five languages, or a ticket that says which are missing)

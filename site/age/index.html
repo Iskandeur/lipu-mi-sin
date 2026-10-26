@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Quel âge ? · entraînement</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Les textes portent une clé `data-i18n` (src/i18n.js) : l'appli les pose dans la langue choisie au démarrage. -->
+<header class="haut">
+  <h1 data-i18n="h1">Quel âge&nbsp;?</h1>
+  <nav class="onglets" role="tablist">
+    <button role="tab" id="tab-jouer" aria-controls="vue-jouer" aria-selected="true" data-i18n="tab.jouer">S'entraîner</button>
+    <button role="tab" id="tab-defi" aria-controls="vue-defi" aria-selected="false" data-i18n="tab.defi">Défi</button>
+    <button role="tab" id="tab-apprendre" aria-controls="vue-apprendre" aria-selected="false" data-i18n="tab.apprendre">Apprendre</button>
+    <button role="tab" id="tab-bilan" aria-controls="vue-bilan" aria-selected="false" data-i18n="tab.bilan">Mes stats</button>
+  </nav>
+  <label class="langue"><span class="sr" data-i18n="langue.libelle">Langue</span>
+    <select id="langue"><option value="fr">FR</option><option value="en">EN</option></select>
+  </label>
+</header>
+
+<main>
+  <section id="vue-jouer" class="vue" role="tabpanel" aria-labelledby="tab-jouer">
+    <div class="jeu">
+      <figure class="photo">
+        <div class="cadre"><div id="recadre" class="recadre"><img id="img" alt="Portrait à estimer" data-i18n-alt="img.alt"></div><div id="img-erreur" class="img-erreur" hidden><p id="img-erreur-texte">Image indisponible, on passe à la suivante…</p><button id="reessayer" class="discret" hidden data-i18n="reessayer">Réessayer</button></div></div>
+        <figcaption id="attribution" class="attribution"></figcaption>
+      </figure>
+
+      <div class="panneau">
+        <div class="reglage">
+          <label for="tranche" data-i18n="travailler">Travailler</label>
+          <select id="tranche"></select>
+        </div>
+        <p class="niveau" id="niveau"></p>
+        <p class="compteur" id="compteur"></p>
+
+        <div id="saisie" class="saisie">
+          <label for="curseur" class="question" data-i18n="question">Quel âge avait cette personne sur la photo&nbsp;?</label>
+          <output id="valeur" class="valeur vierge" for="curseur">?</output>
+          <div class="ligne-curseur">
+            <button id="moins" class="pas" aria-label="Un an de moins" data-i18n-aria-label="moins">−</button>
+            <input id="curseur" class="curseur vierge" type="range" min="1" max="100" step="1" value="50" aria-describedby="aide">
+            <button id="plus" class="pas" aria-label="Un an de plus" data-i18n-aria-label="plus">+</button>
+          </div>
+          <div class="graduations" aria-hidden="true"><span>1</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <p id="aide" class="aide" data-i18n="aide">Glisse le curseur, ou tape l'âge au clavier, puis Entrée.</p>
+          <div class="boutons">
+            <button id="valider" class="principal" disabled data-i18n="valider">Valider</button>
+            <button id="inutilisable" class="discret" title="Groupe, statue, tableau, pas de visage…" data-i18n="inutilisable" data-i18n-title="inutilisable.titre">Photo inutilisable</button>
+          </div>
+        </div>
+
+        <div id="reponse" class="reponse" hidden>
+          <p class="verdict" id="verdict"></p>
+          <p class="detail" id="detail"></p>
+          <p class="qui" id="qui"></p>
+          <p class="montee" id="montee" hidden></p>
+          <div class="indice" id="indice" hidden></div>
+          <p class="conseil" id="conseil" hidden></p>
+          <div class="ligne-suivante">
+            <button id="suivante" class="principal" data-i18n="suivante">Suivante (Entrée)</button>
+            <button id="doute" class="discret petit" type="button" data-i18n="doute.bouton" data-i18n-title="doute.titre">Âge douteux ?</button>
+          </div>
+          <!-- Pas de <form> : la CSP des aperçus pose `form-action 'none'`, qui bloque toute soumission. -->
+          <div id="doute-form" class="doute-form" role="group" hidden>
+            <fieldset>
+              <legend data-i18n="doute.question">Pourquoi ?</legend>
+              <label><input type="radio" name="motif" value="date-photo" checked> <span data-i18n="doute.motif.date-photo">date de photo douteuse</span></label>
+              <label><input type="radio" name="motif" value="personne"> <span data-i18n="doute.motif.personne">mauvaise personne</span></label>
+              <label><input type="radio" name="motif" value="autre"> <span data-i18n="doute.motif.autre">autre</span></label>
+            </fieldset>
+            <input id="doute-note" type="text" maxlength="200" autocomplete="off" placeholder="Un mot (facultatif)" data-i18n-placeholder="doute.note">
+            <div class="boutons">
+              <button id="doute-envoyer" class="principal petit" type="button" data-i18n="doute.envoyer">Signaler</button>
+              <button id="doute-annuler" class="discret petit" type="button" data-i18n="doute.annuler">Annuler</button>
+            </div>
+          </div>
+          <p id="doute-etat" class="doute-etat" role="status" hidden></p>
+        </div>
+
+        <div class="mini" id="mini"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vue-defi" class="vue" role="tabpanel" aria-labelledby="tab-defi" hidden>
+    <div id="d-accueil" class="d-accueil">
+      <p id="d-recu" class="d-recu" hidden></p>
+      <h2 data-i18n="d.titre">Défi entre amis</h2>
+      <p class="intro" data-i18n="d.intro">Un score sur 100 points par photo (moins 5 par année d'écart). Tu envoies le lien : tes amis jouent les mêmes photos, dans le même ordre, et tentent de te battre.</p>
+      <fieldset class="d-choix">
+        <legend data-i18n="d.mode">Mode</legend>
+        <label><input type="radio" name="d-mode" value="s" checked> <span data-i18n="d.serie">Série de photos</span></label>
+        <label><input type="radio" name="d-mode" value="c"> <span data-i18n="d.chrono">Contre la montre</span></label>
+      </fieldset>
+      <div class="reglage"><label for="d-taille" id="d-taille-lib" data-i18n="d.nb">Nombre de photos</label><select id="d-taille"></select></div>
+      <p id="d-regle" class="aide"></p>
+      <p id="d-meilleur" class="aide" hidden></p>
+      <div class="boutons"><button id="d-jouer" class="principal" data-i18n="d.jouer">Jouer</button></div>
+    </div>
+
+    <div id="d-jeu" class="jeu" hidden>
+      <figure class="photo">
+        <div class="cadre"><div id="d-recadre" class="recadre"><img id="d-img" alt="Portrait à estimer" data-i18n-alt="img.alt"></div><div id="d-img-erreur" class="img-erreur" hidden><p id="d-img-erreur-texte">Image indisponible, on passe à la suivante…</p><button id="d-reessayer" class="discret" hidden data-i18n="reessayer">Réessayer</button></div></div>
+        <figcaption id="d-attribution" class="attribution"></figcaption>
+      </figure>
+      <div class="panneau">
+        <div class="d-barre"><span id="d-progres"></span><span id="d-score" class="d-score"></span><span id="d-temps" class="d-temps"></span></div>
+        <div id="d-saisie" class="saisie">
+          <label for="d-curseur" class="question" data-i18n="question">Quel âge avait cette personne sur la photo&nbsp;?</label>
+          <output id="d-valeur" class="valeur vierge" for="d-curseur">?</output>
+          <div class="ligne-curseur">
+            <button id="d-moins" class="pas" aria-label="Un an de moins" data-i18n-aria-label="moins">−</button>
+            <input id="d-curseur" class="curseur vierge" type="range" min="1" max="100" step="1" value="50">
+            <button id="d-plus" class="pas" aria-label="Un an de plus" data-i18n-aria-label="plus">+</button>
+          </div>
+          <div class="graduations" aria-hidden="true"><span>1</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <div class="boutons"><button id="d-valider" class="principal" disabled data-i18n="valider">Valider</button></div>
+        </div>
+        <div id="d-reponse" class="reponse" hidden>
+          <p class="verdict" id="d-verdict"></p>
+          <p class="detail" id="d-detail"></p>
+          <p class="qui" id="d-qui"></p>
+          <div class="ligne-suivante"><button id="d-suivante" class="principal" data-i18n="suivante">Suivante (Entrée)</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="d-fin" class="d-fin" hidden>
+      <h2 id="d-fin-titre"></h2>
+      <p id="d-fin-score" class="d-fin-score"></p>
+      <p id="d-fin-detail" class="detail"></p>
+      <p id="d-fin-carres" class="d-carres" aria-hidden="true"></p>
+      <textarea id="d-partage" class="d-partage" readonly rows="4" aria-label="Texte à partager" data-i18n-aria-label="d.partage.lib"></textarea>
+      <div class="boutons">
+        <button id="d-copier" class="principal" data-i18n="d.copier">Copier pour envoyer</button>
+        <button id="d-envoyer" class="discret" hidden data-i18n="d.envoyer">Partager…</button>
+        <button id="d-rejouer" class="discret" data-i18n="d.rejouer">Rejouer ce défi</button>
+        <button id="d-nouveau" class="discret" data-i18n="d.nouveau">Nouveau défi</button>
+      </div>
+      <p id="d-etat" class="doute-etat" role="status" hidden></p>
+      <p id="d-liste" class="d-liste"></p>
+    </div>
+  </section>
+
+  <section id="vue-apprendre" class="vue" role="tabpanel" aria-labelledby="tab-apprendre" hidden>
+    <p class="intro" data-i18n="intro.apprendre">Huit fiches courtes. Chaque affirmation renvoie à une étude dont j'ai vérifié la référence et le résumé ; ce n'est pas un état de l'art complet, et ce qui n'a pas de source le dit.</p>
+    <div id="fiches" class="fiches"></div>
+  </section>
+
+  <section id="vue-bilan" class="vue" role="tabpanel" aria-labelledby="tab-bilan" hidden>
+    <div id="bilan"></div>
+  </section>
+</main>
+
+<footer class="bas">
+  <p id="pied"></p>
+</footer>
+
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<script src="portraits.js"></script>
+<script src="stats.js"></script>
+<script src="fiches.js"></script>
+<script src="app.js"></script>
+<script src="defi.js"></script>
+</body>
+</html>

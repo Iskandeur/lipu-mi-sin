@@ -1,0 +1,202 @@
+:root {
+  --fond: #f6f3ee;
+  --carte: #ffffff;
+  --encre: #1f1d1a;
+  --doux: #6b655d;
+  --trait: #e2ddd4;
+  --accent: #2f5d8a;
+  --vieux: #b4562d;   /* tu as vieilli : estimation trop haute */
+  --jeune: #2f7d6a;   /* tu as rajeuni : estimation trop basse */
+  --rayon: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #171614;
+    --carte: #22211e;
+    --encre: #eeeae3;
+    --doux: #a39d93;
+    --trait: #37352f;
+    --accent: #7fb0e0;
+    --vieux: #e08a5f;
+    --jeune: #62c2a8;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--fond);
+  color: var(--encre);
+}
+a { color: var(--accent); }
+.haut {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: .8rem 1.2rem; border-bottom: 1px solid var(--trait);
+}
+.haut h1 { margin: 0; font-size: 1.3rem; letter-spacing: .01em; }
+.onglets { display: flex; gap: .3rem; }
+.onglets button {
+  font: inherit; border: 1px solid var(--trait); background: transparent; color: var(--encre);
+  padding: .4rem .9rem; border-radius: 999px; cursor: pointer;
+}
+.onglets button[aria-selected="true"] { background: var(--encre); color: var(--fond); border-color: var(--encre); }
+main { max-width: 1100px; margin: 0 auto; padding: 1.2rem; }
+
+.jeu { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.4rem; align-items: start; }
+@media (max-width: 760px) { .jeu { grid-template-columns: 1fr; gap: .8rem; } main { padding: .8rem; } }
+
+.photo { margin: 0; }
+.cadre {
+  background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon);
+  height: min(62vh, 560px); display: grid; place-items: center; overflow: hidden; position: relative;
+}
+@media (max-width: 760px) {
+  .haut { padding: .5rem .8rem; }
+  .haut h1 { font-size: 1.1rem; }
+  .onglets button { padding: .3rem .7rem; }
+  .cadre { height: 36vh; }
+  .panneau { padding: .8rem 1rem; }
+  .compteur { margin-bottom: .2rem; }
+  .valeur { font-size: 2.4rem; }
+  .aide { display: none; }
+  .graduations { margin-bottom: .6rem; }
+}
+.cadre img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+/* Sans cadrage : l'image entière, centrée. Avec (classe .actif) : une fenêtre 4:5 sur le visage. La largeur de l'image
+   est fixée en % de la fenêtre et sa hauteur suit (auto) : elle n'est jamais déformée. */
+.recadre { width: 100%; height: 100%; display: grid; place-items: center; }
+.recadre.actif { position: relative; width: auto; height: 100%; aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; display: block; }
+.recadre.actif img { position: absolute; max-width: none; max-height: none; height: auto; }
+.recadre:has(img[hidden]) { display: none; }
+.img-erreur { color: var(--doux); padding: 1rem; text-align: center; }
+.attribution { font-size: .78rem; color: var(--doux); margin-top: .4rem; overflow-wrap: anywhere; }
+
+.panneau {
+  background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon); padding: 1.2rem;
+}
+.compteur { margin: 0 0 .6rem; color: var(--doux); font-size: .9rem; }
+.question { display: block; font-weight: 600; margin-bottom: .4rem; }
+.valeur { display: block; font-size: 3.2rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.valeur.vierge { color: var(--trait); }
+/* Piste uniforme, sans remplissage : un curseur vierge ne doit rien suggérer (ancrage sur 50 ans). */
+.curseur { width: 100%; margin: .6rem 0 .1rem; height: 2rem; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+.curseur::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: var(--trait); }
+.curseur::-moz-range-track { height: 8px; border-radius: 4px; background: var(--trait); }
+.curseur::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -10px; border-radius: 50%; background: var(--accent); border: 3px solid var(--carte); box-shadow: 0 0 0 1px var(--accent); }
+.curseur::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); border: 3px solid var(--carte); }
+.curseur:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+.curseur.vierge::-webkit-slider-thumb { opacity: 0; }
+.curseur.vierge::-moz-range-thumb { opacity: 0; }
+.graduations { display: flex; justify-content: space-between; font-size: .75rem; color: var(--doux); padding: 0 52px; }
+.ligne-curseur { display: flex; align-items: center; gap: .5rem; }
+.ligne-curseur .curseur { flex: 1; min-width: 0; }
+button.pas {
+  font: inherit; font-size: 1.3rem; line-height: 1; width: 44px; height: 44px; flex: none;
+  border: 1px solid var(--trait); background: transparent; color: var(--encre); border-radius: 50%; cursor: pointer;
+}
+.reglage { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin: 0 0 .5rem; font-size: .9rem; }
+.reglage label { color: var(--doux); }
+.reglage select {
+  font: inherit; color: var(--encre); background: var(--carte); border: 1px solid var(--trait);
+  border-radius: 10px; padding: .45rem .6rem; min-height: 44px; flex: 1; min-width: 0;
+}
+.niveau { margin: 0 0 .4rem; font-size: .85rem; color: var(--doux); }
+.niveau b { color: var(--encre); font-weight: 600; }
+.montee { font-weight: 600; color: var(--accent); margin: 0 0 .6rem; }
+.indice { font-size: .9rem; border-left: 3px solid var(--accent); padding: .1rem 0 .1rem .8rem; margin: 0 0 1rem; }
+.indice p { margin: 0 0 .3rem; }
+.indice .indice-cadre { font-size: .8rem; color: var(--doux); }
+.img-erreur p { margin: 0 0 .6rem; }
+.conseil { font-size: .9rem; background: var(--fond); border-radius: 10px; padding: .6rem .8rem; margin: 0 0 1rem; }
+.aide { font-size: .85rem; color: var(--doux); }
+.boutons { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
+button.principal {
+  font: inherit; font-weight: 600; background: var(--accent); color: #fff; border: 0;
+  padding: .7rem 1.3rem; border-radius: 10px; cursor: pointer; min-height: 44px;
+}
+@media (prefers-color-scheme: dark) { button.principal { color: #10161c; } }
+button.principal:disabled { opacity: .35; cursor: default; }
+button.discret {
+  font: inherit; font-size: .85rem; background: transparent; color: var(--doux);
+  border: 1px solid var(--trait); padding: .5rem .8rem; border-radius: 10px; cursor: pointer; min-height: 44px;
+}
+.reponse .verdict { font-size: 1.6rem; font-weight: 700; margin: 0 0 .2rem; }
+.reponse .detail { margin: 0 0 .4rem; }
+.reponse .qui { color: var(--doux); font-size: .9rem; margin: 0 0 1rem; }
+.plus { color: var(--vieux); }
+.moins { color: var(--jeune); }
+
+.mini { margin-top: 1.2rem; border-top: 1px solid var(--trait); padding-top: .8rem; font-size: .9rem; }
+.mini .chiffres { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+.mini .chiffres b { font-size: 1.2rem; display: block; font-variant-numeric: tabular-nums; }
+
+.tranches { width: 100%; border-collapse: collapse; margin-top: .6rem; font-variant-numeric: tabular-nums; }
+.tranches th, .tranches td { text-align: left; padding: .35rem .3rem; border-bottom: 1px solid var(--trait); font-size: .9rem; }
+.tranches th { font-weight: 600; color: var(--doux); }
+.barre { position: relative; height: 12px; background: transparent; min-width: 120px; }
+.barre::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--doux); }
+.barre span { position: absolute; top: 0; height: 100%; border-radius: 3px; }
+
+.intro { color: var(--doux); max-width: 70ch; }
+.fiches { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.fiche { background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon); padding: 1rem 1.1rem; }
+.fiche h2 { font-size: 1.05rem; margin: 0 0 .5rem; }
+.fiche p { margin: 0 0 .5rem; font-size: .95rem; }
+.fiche .note { color: var(--doux); font-size: .85rem; font-style: italic; }
+.fiche .sources { font-size: .8rem; color: var(--doux); margin: .6rem 0 0; padding-left: 1rem; }
+
+.bilan-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.bloc { background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon); padding: 1rem 1.1rem; }
+.bloc h2 { font-size: 1rem; margin: 0 0 .5rem; }
+.grand { font-size: 2.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.precision { margin-bottom: 1rem; }
+.courbe { width: 100%; height: auto; display: block; }
+.courbe .grille { stroke: var(--trait); stroke-width: 1; }
+.courbe .axe { stroke: var(--doux); stroke-width: 1; }
+.courbe .etiquette { font-size: 11px; fill: var(--doux); font-variant-numeric: tabular-nums; }
+.courbe .trace { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.courbe .point { fill: var(--accent); stroke: var(--carte); stroke-width: 2; }
+.courbe .valeur-fin { font-size: 13px; font-weight: 600; fill: var(--encre); paint-order: stroke; stroke: var(--carte); stroke-width: 4px; stroke-linejoin: round; }
+.courbe .montee-trait { stroke: var(--doux); stroke-width: 1; stroke-dasharray: 3 4; }
+.vide { color: var(--doux); }
+
+.bas { max-width: 1100px; margin: 1rem auto 2rem; padding: 0 1.2rem; font-size: .8rem; color: var(--doux); }
+
+/* v3 : sélecteur de langue, « Âge douteux ? ». */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.langue select {
+  font: inherit; font-size: .85rem; color: var(--encre); background: transparent; border: 1px solid var(--trait);
+  border-radius: 999px; padding: .3rem .5rem; min-height: 36px; cursor: pointer;
+}
+.ligne-suivante { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+button.discret.petit { font-size: .8rem; padding: .35rem .7rem; min-height: 36px; }
+button.principal.petit { padding: .45rem .9rem; min-height: 36px; font-size: .9rem; }
+#doute:disabled { opacity: .5; cursor: default; }
+.doute-form { margin: .8rem 0 0; padding: .7rem .8rem; background: var(--fond); border-radius: 10px; font-size: .9rem; }
+.doute-form fieldset { border: 0; margin: 0 0 .5rem; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.doute-form legend { font-weight: 600; margin-bottom: .3rem; padding: 0; }
+.doute-form input[type=text] {
+  font: inherit; width: 100%; margin: 0 0 .6rem; padding: .45rem .6rem; color: var(--encre); background: var(--carte);
+  border: 1px solid var(--trait); border-radius: 8px;
+}
+.doute-etat { margin: .6rem 0 0; font-size: .85rem; color: var(--doux); }
+
+/* ---------- mode Défi (v4) ---------- */
+.d-accueil, .d-fin { max-width: 560px; margin: 0 auto; background: var(--carte); border: 1px solid var(--trait); border-radius: var(--rayon); padding: 1.2rem 1.4rem; }
+.jeu[hidden], .d-accueil[hidden], .d-fin[hidden] { display: none; }
+.d-accueil h2, .d-fin h2 { margin: 0 0 .5rem; font-size: 1.25rem; }
+.d-recu { background: var(--fond); border-left: 3px solid var(--accent); padding: .5rem .8rem; border-radius: 0 10px 10px 0; font-weight: 600; margin: 0 0 1rem; }
+.d-choix { border: 1px solid var(--trait); border-radius: 10px; margin: 0 0 .8rem; padding: .4rem .8rem .6rem; display: flex; gap: 1.2rem; flex-wrap: wrap; }
+.d-choix legend { color: var(--doux); font-size: .85rem; padding: 0 .3rem; }
+.d-choix label { display: inline-flex; align-items: center; gap: .4rem; min-height: 36px; }
+.d-barre { display: flex; justify-content: space-between; align-items: baseline; gap: .8rem; margin: 0 0 .6rem; font-size: .9rem; color: var(--doux); }
+.d-score { font-weight: 600; color: var(--encre); }
+.d-temps { font-size: 1.6rem; font-weight: 700; color: var(--encre); font-variant-numeric: tabular-nums; min-width: 3.5ch; text-align: right; }
+.d-temps.urgent { color: var(--vieux); }
+.d-fin-score { font-size: 2.6rem; font-weight: 700; margin: .2rem 0; font-variant-numeric: tabular-nums; }
+.d-carres { font-size: 1.6rem; letter-spacing: .1em; margin: .2rem 0 .8rem; word-break: break-all; }
+.d-partage { width: 100%; font: inherit; font-size: .9rem; color: var(--encre); background: var(--fond); border: 1px solid var(--trait); border-radius: 10px; padding: .6rem .8rem; margin: 0 0 .8rem; resize: none; }
+.d-liste { display: grid; gap: .15rem; margin: .8rem 0 0; font-size: .82rem; color: var(--doux); }
+.d-ligne { overflow-wrap: anywhere; }
